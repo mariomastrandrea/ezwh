@@ -1,5 +1,5 @@
 
- #Requirements Document 
+# Requirements Document 
 
 Date: 22 march 2022
 
@@ -8,7 +8,7 @@ Version: 0.0
  
 | Version number | Change |
 | ----------------- |:-----------|
-| | | 
+| | | ffffffffff
 
 
 # Contents
@@ -19,19 +19,31 @@ Version: 0.0
 	+ [Context Diagram](#context-diagram)
 	+ [Interfaces](#interfaces) 
 	
+- [Requirements Document](#requirements-document)
+- [Contents](#contents)
+- [Informal description](#informal-description)
+- [Stakeholders](#stakeholders)
+- [Context Diagram and interfaces](#context-diagram-and-interfaces)
+  - [Context Diagram](#context-diagram)
+  - [Interfaces](#interfaces)
 - [Stories and personas](#stories-and-personas)
 - [Functional and non functional requirements](#functional-and-non-functional-requirements)
-	+ [Functional Requirements](#functional-requirements)
-	+ [Non functional requirements](#non-functional-requirements)
+  - [Functional Requirements](#functional-requirements)
+  - [Non Functional Requirements](#non-functional-requirements)
 - [Use case diagram and use cases](#use-case-diagram-and-use-cases)
-	+ [Use case diagram](#use-case-diagram)
-	+ [Use cases](#use-cases)
-    	+ [Relevant scenarios](#relevant-scenarios)
+  - [Use case diagram](#use-case-diagram)
+    - [Use case 1, UC1](#use-case-1-uc1)
+        - [Scenario 1.1](#scenario-11)
+        - [Scenario 1.2](#scenario-12)
+        - [Scenario 1.x](#scenario-1x)
+    - [Use case 2, UC2](#use-case-2-uc2)
+    - [Use case x, UCx](#use-case-x-ucx)
 - [Glossary](#glossary)
-- [System design](#system-design)
-- [Deployment diagram](#deployment-diagram)
+- [System Design](#system-design)
+- [Deployment Diagram](#deployment-diagram)
 
 # Informal description
+
 Medium companies and retailers need a simple application to manage the relationship with suppliers and the inventory of physical items stocked in a physical warehouse. 
 The warehouse is supervised by a manager, who supervises the availability of items. When a certain item is in short supply, the manager issues an order to a supplier. In general the same item can be purchased by many suppliers. The warehouse keeps a list of possible suppliers per item. 
 
@@ -47,10 +59,19 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 # Stakeholders
 
-
-| Stakeholder name  | Description | 
-| ----------------- |:-----------:|
-|   Stakeholder x..     |             | 
+| Stakeholder name    | Description | 
+| ------------------  | ------------|
+| Company             | Takes business decisions regarding the use of the application |
+| Organizational Unit | Requests internal orders by means of the application |
+| Warehouse manager   | Supervises the availability of items and issues orders to suppliers | 
+| Warehouse worker    | Deals with physical items in the warehouse |
+| Quality office      | In charge of quality testing on new arrived items |
+| Supplier            | Provides items to the warehouse  |
+| Software house      | Develops, updates and maintains the software system |
+| IT administrator    | Manages daily functioning of the application |
+| Security manager    | Supervises the security of the system |
+| DB manager          | In charge of the DBMS |
+| DBMS                | DataBase Management System used by the company |
 
 # Context Diagram and interfaces
 
