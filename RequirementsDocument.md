@@ -1,14 +1,15 @@
 
 # Requirements Document 
-
+Last-Modified: 31 march 2022
 Date: 22 march 2022
 
-Version: 0.0
+Version: 0.2
 
  
 | Version number | Change |
 | ----------------- |:-----------|
-| | | ffffffffff
+| 0.1| added stakeholders |
+| 0.2| context diagram, functional req|
 
 
 # Contents
@@ -27,6 +28,10 @@ Version: 0.0
   - [Context Diagram](#context-diagram)
   - [Interfaces](#interfaces)
 - [Stories and personas](#stories-and-personas)
+    - [A QO Employee](#a-qo-employee)
+    - [A WH Worker](#a-wh-worker)
+    - [A OU Executive](#a-ou-executive)
+    - [](#)
 - [Functional and non functional requirements](#functional-and-non-functional-requirements)
   - [Functional Requirements](#functional-requirements)
   - [Non Functional Requirements](#non-functional-requirements)
@@ -63,6 +68,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | ------------------  | ------------|
 | Company             | Takes business decisions regarding the use of the application |
 | Organizational Unit | Requests internal orders by means of the application |
+| OU executive        | employee of OU who personally request internal orders |
 | Warehouse manager   | Supervises the availability of items and issues orders to suppliers | 
 | Warehouse worker    | Deals with physical items in the warehouse |
 | Quality office      | In charge of quality testing on new arrived items |
@@ -72,6 +78,8 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Security manager    | Supervises the security of the system |
 | DB manager          | In charge of the DBMS |
 | DBMS                | DataBase Management System used by the company |
+| Payment Service     | Manages payments to suppliers |
+| Shipping company    | In charge of delivering items |
 
 # Context Diagram and interfaces
 
@@ -79,17 +87,32 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 \<Define here Context diagram using UML use case diagram>
 
 \<actors are a subset of stakeholders>
+![alt text](./assets/context_diagram_1.png)
 
 ## Interfaces
 \<describe here each interface in the context diagram>
 
 \<GUIs will be described graphically in a separate document>
 
-| Actor | Logical Interface | Physical Interface  |
-| ------------- |:-------------:| -----:|
-|   Actor x..     |  |  |
-
+| Actor               | Logical Interface| Physical Interface          |
+| ------------------- |:----------------:| ---------------------------:|
+|   WH Manager        | GUI              | Screen, Keyboard            |
+|   WH Worker         | GUI, ReadBarCode | Screen, Buttons, Laser Beam |
+|   QO Employee       | GUI              | Screen, Keyboard            |
+|   OU Executive      | GUI              | Screen, Keyboard            |
+|   Security Manager  | GUI              | Screen, Keyboard            |
+|   IT Administrator  | GUI              | Screen, Keyboard            |
+|   Payment Service   | Data             | Internet Connection         |
+|   Company's DBMS    | Data             | Network Connection          | 
+|   Supplier          | GUI              | Screen, Keyboard            |   
 # Stories and personas
+### A QO Employee
+They might receive an Item from a Supplier and, after ensuring its quality, have to check it in into EZWH. They might spot a defective item and promptly mark it our with their app. (?)
+### A WH Worker
+They will move our inventory when necessary, scanning each code with their reader and getting their instructions from a mobile screen (tablet?).
+### A OU Executive
+They might need a specific item and request it on the company's intranet.
+### 
 \<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
 
 \<Persona is-an-instance-of actor>
@@ -107,9 +130,43 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 | ID        | Description  |
 | ------------- |:-------------:| 
-|  FR1     |  |
-|  FR2     |   |
-| FRx..  | | 
+|  FR1     | Identify Items |
+|  FR2     | Assure Quality |
+|  FR2     | Manage  |
+|  FR2     | Track warehouse inventory  |
+| **FR1**  | Manage users|
+| FR1.1  | Add user|
+| FR1.2 | Edit user|
+| FR1.3  | Delete user|
+| **FR2**  | Manage suppliers|  
+| FR2.1  | Add supplier|  
+| FR2.2  | Edit supplier|  
+| FR2.3  | Delete supplier|  
+| FRx..  | Alert Stakeholders | 
+| FRx..  | Notify lack of items' avaibility | 
+| **FR3**  | Handle orders to supplier |
+| FR3.1  | Check free space per item|
+| FR3.2  | Find possible suppliers per item | 
+| FR3.3  | Issue order to a supplier |
+| FR3.4  | Notify payment service about the transaction    |  
+| FR3.5  | Track order status  |
+| **FR4**  | Manage items after delivery  |
+| FR4.1  | Change order status |
+| FR4.2  | Insert report of quality check | 
+| FR4.3  | Accept or refuse external order|
+| FR4.4  | Notify supplier about outcome of quality check | 
+| FR4.5  | Suggest position for new item|
+| **FR5**   | Get items position |
+| FR5.1      | Get items position by id |
+| FR5.2      | Get items position by type |
+|**FR6**  | Show list of items|
+| FR6.1   | filter items by type|
+| **FR7**     | Authentication|
+| FR7.1   | Login|
+| FR7.2   | Logout|
+
+
+
 
 ## Non Functional Requirements
 
