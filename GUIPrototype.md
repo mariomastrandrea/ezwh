@@ -6,15 +6,12 @@ Date: 07/04/2022
 
 Version: 0.1
 
-\<Report here the GUI that you propose. You are free to organize it as you prefer. A suggested presentation matches the Use cases and scenarios defined in the Requirement document. The GUI can be shown as a sequence of graphical files (jpg, png)  >
-
 ## Contents
 - [Graphical User Interface Prototype](#graphical-user-interface-prototype)
   - [Contents](#contents)
-    - [How to read](#how-to-read)
-  - [Autenthication](#autenthication)
+  - [Authentication](#authentication)
     - [Login](#login)
-  - [Admin / Manager View](#admin--manager-view)
+  - [IT Admin / Manager View](#it-admin--manager-view)
     - [Homepage](#homepage)
     - [Manage Users](#manage-users)
     - [Manage Suppliers](#manage-suppliers)
@@ -33,19 +30,18 @@ Version: 0.1
     - [Homepage](#homepage-3)
     - [Scan Item](#scan-item)
     - [Move Item](#move-item)
+  - [Notes](#notes)
 
-### How to read
-The GUI is composed of five main parts and a few sub-parts. The purpose of these parts is to provide a clear way to navigate the system. 
-
-## Autenthication
+## Authentication
 ### Login
 ![login](./assets/gui/auth/login.png)
 Recover password
 ![recovery](./assets/gui/auth/login_recovery.png)
-## Admin / Manager View
+## IT Admin / Manager View
 ### Homepage
 ![homepage](./assets/gui/it/it-homepage.png)
 ### Manage Users
+*In WH Manager homepage there aren't CRUD options*
 ![manage_users](./assets/gui/it/it-manage_users.png)
 Edit/Add User (template is the same)
 ![edit_user](./assets/gui/it/it-edit_add_user.png)
@@ -100,3 +96,6 @@ Edit final position of item
 ![wh_move_item_custom](./assets/gui/whw/whw-identified_item_edit_space.png)
 Move to pickup area for ou orders
 ![wh_move_to_pickup](./assets/gui/whw/whw-identified_pickup.png)
+
+## Notes
+In our system all users will use the software on a PC, except for the Warehouse Worker.
