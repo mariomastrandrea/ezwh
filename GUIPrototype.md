@@ -63,7 +63,7 @@ Edit/Add Item (template is the same)
 ![manage_warehouse](./assets/gui/it/it-structure_list.png)
 ![structure_onhover](./assets/gui/it/it-structure_on_hover.png)
 Add Structure Space
-![add_structure](./assets/gui/it/it-add_structure_space.png)
+![add_structure](./assets/gui/it/it-edit_add_structure_space.png)
 Edit Structure Space
 ![edit_structure](./assets/gui/it/it-edit_structure_space.png)
 ### External Orders
