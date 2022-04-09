@@ -1,9 +1,9 @@
 
 # Requirements Document 
-Last-Modified: 8 april 2022
+Last-Modified: 9 april 2022
 Date: 22 march 2022
 
-Version: 0.5
+Version: 0.8
 
  
 | Version number | Change                                     |
@@ -13,6 +13,10 @@ Version: 0.5
 | 0.3            | fr, nfr req                                |
 | 0.4            | modified context diagram and actors        |
 | 0.5            | Personas, Stories, added NFRs, modified FR |
+| 0.6            | Added Gantt diagram and Estimation         |
+| 0.7            | Added use cases and scenarios              |
+| 0.8            | Added System Design and Deployment Diagram |
+
 
 # Contents
 
@@ -264,15 +268,11 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 \<concepts are used consistently all over the document, ex in use cases, requirements etc>
 
+
 # System Design
-\<describe here system design>
+![EzWh System Diagram](./assets/SystemDesign.png)
 
-\<must be consistent with Context diagram>
-![EzWh System Diagram](./assets/system_diagram_0.png)
 # Deployment Diagram 
-
-\<describe here deployment diagram >
-![EzWh Deployment Diagram](./assets/deployment_diagram_0.png)
-
+![EzWh Deployment Diagram](./assets/DeploymentDiagram.png)
 
 
