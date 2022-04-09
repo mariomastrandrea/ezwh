@@ -116,6 +116,7 @@ Version: 0.8
 - [System Design](#system-design)
 - [Deployment Diagram](#deployment-diagram)
 
+
 # Informal description
 
 Medium companies and retailers need a simple application to manage the relationship with suppliers and the inventory of physical items stocked in a physical warehouse. 
@@ -387,27 +388,27 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 ##### Scenario 3.1
 
-| Scenario 3.1   |               Create account for new user               |
-| -------------- | :-----------------------------------------------------: |
-| Precondition   |               User account does not exist               |
-| Post condition |                  User account created                   |
-| Step#          |                       Description                       |
-| 1              |             IT admin asks to create account             |
-| 2              |         IT admin is promted to enter user data          |
-| 3              | System verfies that user does not have existing account |
-| 4              |               New user account is created               |
+| Scenario 3.1   |               Create account for new user                |
+| -------------- | :------------------------------------------------------: |
+| Precondition   |               User account does not exist                |
+| Post condition |                   User account created                   |
+| Step#          |                       Description                        |
+| 1              |             IT admin asks to create account              |
+| 2              |         IT admin is prompted to enter user data          |
+| 3              | System verifies that user does not have existing account |
+| 4              |               New user account is created                |
 
 ##### Scenario 3.2
 
-| Scenario 3.2   |         Create account for existing user         |
-| -------------- | :----------------------------------------------: |
-| Precondition   |               User account exists                |
-| Post condition |           New user account not created           |
-| Step#          |                   Description                    |
-| 1              |         IT admin asks to create account          |
-| 2              |      IT admin is promted to enter user data      |
-| 3              | System verfies that user has an existing account |
-| 4              |       System notifies user already exists        |
+| Scenario 3.2   |         Create account for existing user          |
+| -------------- | :-----------------------------------------------: |
+| Precondition   |                User account exists                |
+| Post condition |           New user account not created            |
+| Step#          |                    Description                    |
+| 1              |          IT admin asks to create account          |
+| 2              |      IT admin is prompted to enter user data      |
+| 3              | System verifies that user has an existing account |
+| 4              |        System notifies user already exists        |
 
 ### Use case 4, Modify User Account
 
@@ -487,7 +488,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Post condition |                        Supplier inserted                         |
 | Step#          |                           Description                            |
 | 1              |              WH manager asks to insert new supplier              |
-| 2              |           WH manager is promted to enter supplier data           |
+| 2              |          WH manager is prompted to enter supplier data           |
 | 3              | System verifies that supplier is not already present in the list |
 | 4              |               New supplier is inserted in the list               |
 
@@ -499,7 +500,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Post condition |                    Supplier not inserted                     |
 | Step#          |                         Description                          |
 | 1              |            WH manager asks to insert new supplier            |
-| 2              |         WH manager is promted to enter supplier data         |
+| 2              |        WH manager is prompted to enter supplier data         |
 | 3              | System verifies that supplier is already present in the list |
 | 4              |             Supplier is not inserted in the list             |
 
@@ -759,7 +760,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Post condition |                          Item inserted                          |
 | Step#          |                           Description                           |
 | 1              |               WH manager asks to insert new item                |
-| 2              |            WH manager is promted to enter item data             |
+| 2              |            WH manager is prompted to enter item data            |
 | 3              | System verifies that item is not already present in the catalog |
 | 4              |               New item is inserted in the catalog               |
 
@@ -771,7 +772,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Post condition |                      Item not inserted                      |
 | Step#          |                         Description                         |
 | 1              |             WH manager asks to insert new item              |
-| 2              |          WH manager is promted to enter item data           |
+| 2              |          WH manager is prompted to enter item data          |
 | 3              | System verifies that item is already present in the catalog |
 | 4              |             Item is not inserted in the catalog             |
 
@@ -865,13 +866,13 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | ---------------- | :----------------------------------------: |
 | Precondition     | Item and supplier exist and already linked |
 | Post condition   |        Item unlinked from supplier         |
-| Nominal Scenario |  Unink an item from one of its suppliers   |
+| Nominal Scenario |  Unlink an item from one of its suppliers  |
 | Variants         |                                            |
 | Exceptions       |                                            |
 
 ##### Scenario 17.1
 
-| Scenario 17.1  |            Unink an item from one of its suppliers             |
+| Scenario 17.1  |            Unlink an item from one of its suppliers            |
 | -------------- | :------------------------------------------------------------: |
 | Precondition   |           Item and supplier exist and already linked           |
 | Post condition |                  Item unlinked from supplier                   |
@@ -1098,7 +1099,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | 1              |                  WH manager opens order history                   |
 | 2              | System prompts user to select between internal or external orders |
 | 3              |                       User makes selections                       |
-| 4              |              Order history is diplayed on the screen              |
+| 4              |             Order history is displayed on the screen              |
 
 
 
@@ -1151,13 +1152,13 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 ##### Scenario 26.1
 
-| Scenario 26.1  |        Show history of OU orders        |
-| -------------- | :-------------------------------------: |
-| Precondition   |        OU executive is logged in        |
-| Post condition |       Order history is displayed        |
-| Step#          |               Description               |
-| 1              |    OU executive opens order history     |
-| 2              | Order history is diplayed on the screen |
+| Scenario 26.1  |        Show history of OU orders         |
+| -------------- | :--------------------------------------: |
+| Precondition   |        OU executive is logged in         |
+| Post condition |        Order history is displayed        |
+| Step#          |               Description                |
+| 1              |     OU executive opens order history     |
+| 2              | Order history is displayed on the screen |
 
 ### Use case 27, Fulfill internal order 
 
