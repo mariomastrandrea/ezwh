@@ -35,12 +35,83 @@ Version: 0.8
   - [Non Functional Requirements](#non-functional-requirements)
 - [Use case diagram and use cases](#use-case-diagram-and-use-cases)
   - [Use case diagram](#use-case-diagram)
-    - [Use case 1, UC1](#use-case-1-uc1)
+    - [Use case 1, Log In](#use-case-1-log-in)
         - [Scenario 1.1](#scenario-11)
         - [Scenario 1.2](#scenario-12)
-        - [Scenario 1.x](#scenario-1x)
-    - [Use case 2, UC2](#use-case-2-uc2)
-    - [Use case x, UCx](#use-case-x-ucx)
+        - [Scenario 1.3](#scenario-13)
+        - [Scenario 1.4](#scenario-14)
+    - [Use case 2, Log Out](#use-case-2-log-out)
+        - [Scenario 2.1](#scenario-21)
+    - [Use case 3, Create User Account](#use-case-3-create-user-account)
+        - [Scenario 3.1](#scenario-31)
+        - [Scenario 3.2](#scenario-32)
+    - [Use case 4, Modify User Account](#use-case-4-modify-user-account)
+        - [Scenario 4.1](#scenario-41)
+        - [Scenario 4.2](#scenario-42)
+    - [Use case 5, Delete User Account](#use-case-5-delete-user-account)
+        - [Scenario 5.1](#scenario-51)
+    - [Use case 6, Insert Supplier](#use-case-6-insert-supplier)
+        - [Scenario 6.1](#scenario-61)
+        - [Scenario 6.2](#scenario-62)
+    - [Use case 7, Modify Supplier](#use-case-7-modify-supplier)
+        - [Scenario 7.1](#scenario-71)
+        - [Scenario 7.2](#scenario-72)
+    - [Use case 8, Delete Supplier](#use-case-8-delete-supplier)
+        - [Scenario 8.1](#scenario-81)
+    - [Use case 9, Place order to supplier](#use-case-9-place-order-to-supplier)
+        - [Scenario 9.1](#scenario-91)
+        - [Scenario 9.2](#scenario-92)
+        - [Scenario 9.3](#scenario-93)
+    - [Use case 10, Read item location](#use-case-10-read-item-location)
+        - [Scenario 10.1](#scenario-101)
+        - [Scenario 10.2](#scenario-102)
+    - [Use case 11, Insert quality test report](#use-case-11-insert-quality-test-report)
+        - [Scenario 11.1](#scenario-111)
+        - [Scenario 11.2](#scenario-112)
+        - [Scenario 11.3](#scenario-113)
+    - [Use case 12, Show items in short supply](#use-case-12-show-items-in-short-supply)
+        - [Scenario 12.1](#scenario-121)
+        - [Scenario 12.2](#scenario-122)
+    - [Use case 13, Insert item into catalog](#use-case-13-insert-item-into-catalog)
+        - [Scenario 13.1](#scenario-131)
+        - [Scenario 13.2](#scenario-132)
+    - [Use case 14, Modify item in catalog](#use-case-14-modify-item-in-catalog)
+        - [Scenario 14.1](#scenario-141)
+        - [Scenario 14.2](#scenario-142)
+    - [Use case 15, Delete item from catalog](#use-case-15-delete-item-from-catalog)
+        - [Scenario 15.1](#scenario-151)
+    - [Use case 16, Link item to supplier](#use-case-16-link-item-to-supplier)
+        - [Scenario 16.1](#scenario-161)
+    - [Use case 17, Unlink item from supplier](#use-case-17-unlink-item-from-supplier)
+        - [Scenario 17.1](#scenario-171)
+    - [Use case 18, Configure new warehouse space](#use-case-18-configure-new-warehouse-space)
+        - [Scenario 18.1](#scenario-181)
+    - [Use case 19, Modify warehouse space](#use-case-19-modify-warehouse-space)
+        - [Scenario 19.1](#scenario-191)
+    - [Use case 20, Remove warehouse space](#use-case-20-remove-warehouse-space)
+        - [Scenario 20.1](#scenario-201)
+    - [Use case 21, Change item position](#use-case-21-change-item-position)
+        - [Scenario 21.1](#scenario-211)
+        - [Scenario 21.2](#scenario-212)
+        - [Scenario 21.3](#scenario-213)
+        - [Scenario 21.4](#scenario-214)
+        - [Scenario 21.5](#scenario-215)
+    - [Use case 22, Visualize items to be moved](#use-case-22-visualize-items-to-be-moved)
+        - [Scenario 22.1](#scenario-221)
+    - [Use case 23, Move item](#use-case-23-move-item)
+        - [Scenario 23.1](#scenario-231)
+    - [Use case 24, Show warehouse order history](#use-case-24-show-warehouse-order-history)
+        - [Scenario 24.1](#scenario-241)
+    - [Use case 25, Place internal order to warehouse](#use-case-25-place-internal-order-to-warehouse)
+        - [Scenario 25.1](#scenario-251)
+        - [Scenario 25.2](#scenario-252)
+    - [Use case 26, Show organizational unit order history](#use-case-26-show-organizational-unit-order-history)
+        - [Scenario 26.1](#scenario-261)
+    - [Use case 27, Fulfill internal order](#use-case-27-fulfill-internal-order)
+        - [Scenario 27.1](#scenario-271)
+        - [Scenario 27.2](#scenario-272)
+    - [Use case 28, Show items in pickup area](#use-case-28-show-items-in-pickup-area)
+        - [Scenario 28.1](#scenario-281)
 - [Glossary](#glossary)
 - [System Design](#system-design)
 - [Deployment Diagram](#deployment-diagram)
@@ -216,50 +287,935 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 # Use case diagram and use cases
 
-
 ## Use case diagram
-\<define here UML Use case diagram UCD summarizing all use cases, and their relationships>
 
+### Use case 1, Log In
 
-\<next describe here each use case in the UCD>
-### Use case 1, UC1
-| Actors Involved  |                                                                      |
-| ---------------- | :------------------------------------------------------------------: |
-| Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |
-| Post condition   |  \<Boolean expression, must evaluate to true after UC is finished>   |
-| Nominal Scenario |         \<Textual description of actions executed by the UC>         |
-| Variants         |                      \<other normal executions>                      |
-| Exceptions       |                        \<exceptions, errors >                        |
+| Actors Involved  |                             User                              |
+| ---------------- | :-----------------------------------------------------------: |
+| Precondition     |                 User account already created                  |
+| Post condition   | User has been authenticated and has access to the application |
+| Nominal Scenario |                Log in with correct credentials                |
+| Variants         |              Log in after recovering credentials              |
+| Exceptions       |                 Log in with wrong credentials                 |
+|                  |                    Log in without account                     |
 
-##### Scenario 1.1 
+##### Scenario 1.1
 
-\<describe here scenarios instances of UC1>
-
-\<a scenario is a sequence of steps that corresponds to a particular execution of one use case>
-
-\<a scenario is a more formal description of a story>
-
-\<only relevant scenarios should be described>
-
-| Scenario 1.1   |                                                                            |
-| -------------- | :------------------------------------------------------------------------: |
-| Precondition   | \<Boolean expression, must evaluate to true before the scenario can start> |
-| Post condition |  \<Boolean expression, must evaluate to true after scenario is finished>   |
-| Step#          |                                Description                                 |
-| 1              |                                                                            |
-| 2              |                                                                            |
-| ...            |                                                                            |
+| Scenario 1.1   |                Log in with correct credentials                |
+| -------------- | :-----------------------------------------------------------: |
+| Precondition   |                 User account already created                  |
+| Post condition | User has been authenticated and has access to the application |
+| Step#          |                          Description                          |
+| 1              |       Start application, user prompted for credentials        |
+| 2              |               User enters username and password               |
+| 3              |                System does the authentication                 |
+| 4              |                   Main screen is displayed                    |
 
 ##### Scenario 1.2
 
-##### Scenario 1.x
+| Scenario 1.2   |              Log in after recovering credentials              |
+| -------------- | :-----------------------------------------------------------: |
+| Precondition   |                 User account already created                  |
+| Post condition | User has been authenticated and has access to the application |
+| Step#          |                          Description                          |
+| 1              |       Start application, user prompted for credentials        |
+| 2              |          User chooses to recover/change credentials           |
+| 3              |              Promt user to enter necessary data               |
+| 4              |                  User inserts requested data                  |
+| 5              |               User recovers/changes credentials               |
+| 6              |                  Promt user for credentials                   |
+| 7              |                  User enters new credentials                  |
+| 8              |                System does the authentication                 |
+| 9              |                   Main screen is displayed                    |
 
-### Use case 2, UC2
-..
+##### Scenario 1.3
 
-### Use case x, UCx
-..
+| Scenario 1.3   |             Log in with wrong credentials             |
+| -------------- | :---------------------------------------------------: |
+| Precondition   |             User account already created              |
+| Post condition |            User has not been authenticated            |
+| Step#          |                      Description                      |
+| 1              |   Start application, user prompted for credentials    |
+| 2              |        User enters wrong username or password         |
+| 3              |                 Authentication failed                 |
+| 4              | Notify user that wrong credentials have been inserted |
 
+##### Scenario 1.4
+
+| Scenario 1.4   |                      Log in without account                       |
+| -------------- | :---------------------------------------------------------------: |
+| Precondition   |                     User account not created                      |
+| Post condition |                  User has not been authenticated                  |
+| Step#          |                            Description                            |
+| 1              |         Start application, user prompted for credentials          |
+| 2              |                 User enters username and password                 |
+| 3              |                       Authentication failed                       |
+| 4              | Notify user that account does not exist for the given credentials |
+
+### Use case 2, Log Out
+
+| Actors Involved  |            User            |
+| ---------------- | :------------------------: |
+| Precondition     |       User logged in       |
+| Post condition   |      User logged out       |
+| Nominal Scenario | Log out of current account |
+| Variants         |                            |
+| Exceptions       |                            |
+
+##### Scenario 2.1
+
+| Scenario 2.1   |      Log out of current account       |
+| -------------- | :-----------------------------------: |
+| Precondition   |            User logged in             |
+| Post condition |            User logged out            |
+| Step#          |              Description              |
+| 1              |       User click log out button       |
+| 2              | User asked to confirm log out request |
+| 3              |            User logged out            |
+| 4              |      Log in screen is displayed       |
+
+### Use case 3, Create User Account
+
+| Actors Involved  |         IT administrator         |
+| ---------------- | :------------------------------: |
+| Precondition     |   User account does not exist    |
+| Post condition   |       User account created       |
+| Nominal Scenario |   Create account for new user    |
+| Variants         |                                  |
+| Exceptions       | Create account for existing user |
+
+##### Scenario 3.1
+
+| Scenario 3.1   |               Create account for new user               |
+| -------------- | :-----------------------------------------------------: |
+| Precondition   |               User account does not exist               |
+| Post condition |                  User account created                   |
+| Step#          |                       Description                       |
+| 1              |             IT admin asks to create account             |
+| 2              |         IT admin is promted to enter user data          |
+| 3              | System verfies that user does not have existing account |
+| 4              |               New user account is created               |
+
+##### Scenario 3.2
+
+| Scenario 3.2   |         Create account for existing user         |
+| -------------- | :----------------------------------------------: |
+| Precondition   |               User account exists                |
+| Post condition |           New user account not created           |
+| Step#          |                   Description                    |
+| 1              |         IT admin asks to create account          |
+| 2              |      IT admin is promted to enter user data      |
+| 3              | System verfies that user has an existing account |
+| 4              |       System notifies user already exists        |
+
+### Use case 4, Modify User Account
+
+| Actors Involved  |       IT administrator       |
+| ---------------- | :--------------------------: |
+| Precondition     |     User account exists      |
+| Post condition   |    User account modified     |
+| Nominal Scenario | Modify existing user account |
+| Variants         |                              |
+| Exceptions       |  Cancel modification midway  |
+
+##### Scenario 4.1
+
+| Scenario 4.1   |         Modify existing user account         |
+| -------------- | :------------------------------------------: |
+| Precondition   |             User account exists              |
+| Post condition |            User account modified             |
+| Step#          |                 Description                  |
+| 1              |     IT admin opens list of user accounts     |
+| 2              |      IT admin selects account to modify      |
+| 3              | IT admin is prompted to enter data to modify |
+| 4              | System verifies correctness of inserted data |
+| 5              |    IT admin confirms modification request    |
+| 6              |           User account is modified           |
+
+##### Scenario 4.2
+
+| Scenario 4.2   |          Cancel modification midway          |
+| -------------- | :------------------------------------------: |
+| Precondition   |             User account exists              |
+| Post condition |          User account not modified           |
+| Step#          |                 Description                  |
+| 1              |     IT admin opens list of user accounts     |
+| 2              |      IT admin selects account to modify      |
+| 3              | IT admin is prompted to enter data to modify |
+| 4              |    System notifies error in inserted data    |
+| 5              |    IT admin cancels modification request     |
+| 6              |         User account is not modified         |
+
+### Use case 5, Delete User Account
+
+| Actors Involved  |       IT administrator       |
+| ---------------- | :--------------------------: |
+| Precondition     |     User account exists      |
+| Post condition   |     User account deleted     |
+| Nominal Scenario | Delete existing user account |
+| Variants         |                              |
+| Exceptions       |                              |
+
+##### Scenario 5.1
+
+| Scenario 5.1   |        Delete existing user account         |
+| -------------- | :-----------------------------------------: |
+| Precondition   |             User account exists             |
+| Post condition |            User account deleted             |
+| Step#          |                 Description                 |
+| 1              |    IT admin opens list of user accounts     |
+| 2              |     IT admin selects account to delete      |
+| 3              | IT admin is asked to confirm delete request |
+| 4              |           User account is deleted           |
+
+### Use case 6, Insert Supplier
+
+| Actors Involved  |            WH manager            |
+| ---------------- | :------------------------------: |
+| Precondition     | Supplier not present in the list |
+| Post condition   |        Supplier inserted         |
+| Nominal Scenario |       Insert new supplier        |
+| Variants         |                                  |
+| Exceptions       |     Insert existing supplier     |
+
+##### Scenario 6.1
+
+| Scenario 6.1   |                       Insert new supplier                        |
+| -------------- | :--------------------------------------------------------------: |
+| Precondition   |                 Supplier not present in the list                 |
+| Post condition |                        Supplier inserted                         |
+| Step#          |                           Description                            |
+| 1              |              WH manager asks to insert new supplier              |
+| 2              |           WH manager is promted to enter supplier data           |
+| 3              | System verifies that supplier is not already present in the list |
+| 4              |               New supplier is inserted in the list               |
+
+##### Scenario 6.2
+
+| Scenario 6.2   |                   Insert existing supplier                   |
+| -------------- | :----------------------------------------------------------: |
+| Precondition   |                 Supplier present in the list                 |
+| Post condition |                    Supplier not inserted                     |
+| Step#          |                         Description                          |
+| 1              |            WH manager asks to insert new supplier            |
+| 2              |         WH manager is promted to enter supplier data         |
+| 3              | System verifies that supplier is already present in the list |
+| 4              |             Supplier is not inserted in the list             |
+
+### Use case 7, Modify Supplier
+
+| Actors Involved  |         WH manager          |
+| ---------------- | :-------------------------: |
+| Precondition     | Supplier exists in the list |
+| Post condition   |      Supplier modified      |
+| Nominal Scenario |  Modify existing supplier   |
+| Variants         |                             |
+| Exceptions       | Cancel modification midway  |
+
+##### Scenario 7.1
+
+| Scenario 7.1   |            Modify existing supplier            |
+| -------------- | :--------------------------------------------: |
+| Precondition   |          Supplier exists in the list           |
+| Post condition |               Supplier modified                |
+| Step#          |                  Description                   |
+| 1              |       WH manager opens list of suppliers       |
+| 2              |     WH manager selects supplier to modify      |
+| 3              | WH manager is prompted to enter data to modify |
+| 4              |  System verifies correctness of inserted data  |
+| 5              |    WH manager confirms modification request    |
+| 6              |              Supplier is modified              |
+
+##### Scenario 7.2
+
+| Scenario 7.2   |           Cancel modification midway           |
+| -------------- | :--------------------------------------------: |
+| Precondition   |          Supplier exists in the list           |
+| Post condition |             Supplier not modified              |
+| Step#          |                  Description                   |
+| 1              |       WH manager opens list of suppliers       |
+| 2              |     WH manager selects supplier to modify      |
+| 3              | WH manager is prompted to enter data to modify |
+| 4              |     System notifies error in inserted data     |
+| 5              |    WH manager cancels modification request     |
+| 6              |            Supplier is not modified            |
+
+### Use case 8, Delete Supplier
+
+| Actors Involved  |         WH manager          |
+| ---------------- | :-------------------------: |
+| Precondition     | Supplier exists in the list |
+| Post condition   |      Supplier deleted       |
+| Nominal Scenario |  Delete existing supplier   |
+| Variants         |                             |
+| Exceptions       |                             |
+
+##### Scenario 8.1
+
+| Scenario 8.1   |           Delete existing supplier            |
+| -------------- | :-------------------------------------------: |
+| Precondition   |          Supplier exists in the list          |
+| Post condition |               Supplier deleted                |
+| Step#          |                  Description                  |
+| 1              |      WH manager opens list of suppliers       |
+| 2              |     WH manager selects supplier to delete     |
+| 3              | WH manager is asked to confirm delete request |
+| 4              |              Supplier is deleted              |
+
+### Use case 9, Place order to supplier
+
+| Actors Involved  |               WH manager               |
+| ---------------- | :------------------------------------: |
+| Precondition     |          WH manager logged in          |
+| Post condition   |        Order placed to supplier        |
+| Nominal Scenario |      Place new order to supplier       |
+| Variants         |                                        |
+| Exceptions       |      Cancel order creation midway      |
+|                  | Place new order when warehouse is full |
+
+##### Scenario 9.1
+
+| Scenario 9.1   |                Place new order to supplier                |
+| -------------- | :-------------------------------------------------------: |
+| Precondition   |                   WH manager logged in                    |
+| Post condition |                 Order placed to supplier                  |
+| Step#          |                        Description                        |
+| 1              |             WH manager selects item to order              |
+| 2              | WH manager selects supplier from the item's supplier list |
+| 3              |            WH manager select quantity to order            |
+| 4              |        System verifies free space in the warehouse        |
+| 5              |    System suggests position to put the item on arrival    |
+| 6              | WH manager allocates position to put the item on arrival  |
+| 7              |      Repeat 1,2,3,4,5,6 for every item to be ordered      |
+| 8              |               WH manager confirms the order               |
+| 9              |     System creates new order with status In Progress      |
+| 10             |  System notifies the payment service about the new order  |
+| 11             |     System notifies the supplier about the new order      |
+
+##### Scenario 9.2
+
+| Scenario 9.2   |               Cancel order creation midway                |
+| -------------- | :-------------------------------------------------------: |
+| Precondition   |                   WH manager logged in                    |
+| Post condition |               Order not placed to supplier                |
+| Step#          |                        Description                        |
+| 1              |             WH manager selects item to order              |
+| 2              | WH manager selects supplier from the item's supplier list |
+| 3              |            WH manager select quantity to order            |
+| 4              |        System verifies free space in the warehouse        |
+| 5              |    System suggests position to put the item on arrival    |
+| 6              | WH manager allocates position to put the item on arrival  |
+| 7              |      Repeat 1,2,3,4,5,6 for every item to be ordered      |
+| 8              |               WH manager cancels the order                |
+| 9              |             System does not create the order              |
+| 10             |  System frees the allocated space to the selected items   |
+
+##### Scenario 9.3
+
+| Scenario 9.3   |          Place new order when warehouse is full           |
+| -------------- | :-------------------------------------------------------: |
+| Precondition   |                   WH manager logged in                    |
+| Post condition |               Order not placed to supplier                |
+| Step#          |                        Description                        |
+| 1              |             WH manager selects item to order              |
+| 2              | WH manager selects supplier from the item's supplier list |
+| 3              |            WH manager select quantity to order            |
+| 4              |    System verifies there is no space in the warehouse     |
+| 8              |                  WH manager is notified                   |
+| 9              |             System does not create the order              |
+
+### Use case 10, Read item location
+
+| Actors Involved  |               WH worker                |
+| ---------------- | :------------------------------------: |
+| Precondition     |          WH worker logged in           |
+| Post condition   |        Item location displayed         |
+| Nominal Scenario | Read item location by scanning barcode |
+| Variants         |                                        |
+| Exceptions       | Read location when item code not found |
+
+##### Scenario 10.1
+
+| Scenario 10.1  | Read item location by scanning barcode |
+| -------------- | :------------------------------------: |
+| Precondition   |          WH worker logged in           |
+| Post condition |        Item location displayed         |
+| Step#          |              Description               |
+| 1              |      WH worker scans item barcode      |
+| 2              |     System displays item location      |
+
+##### Scenario 10.2
+
+| Scenario 10.2  |   Read location when item code not found   |
+| -------------- | :----------------------------------------: |
+| Precondition   |            WH worker logged in             |
+| Post condition |        Item location not displayed         |
+| Step#          |                Description                 |
+| 1              |        WH worker scans item barcode        |
+| 2              | Systems does not recognize/find item code  |
+| 3              |           WH worker is notified            |
+| 4              | WH worker is promted to retry or turn back |
+
+
+### Use case 11, Insert quality test report
+
+| Actors Involved  |               QO worker               |
+| ---------------- | :-----------------------------------: |
+| Precondition     |          QO worker logged in          |
+| Post condition   |     Quality test report inserted      |
+| Nominal Scenario | Insert successful quality test report |
+| Variants         |   Insert failed quality test report   |
+| Exceptions       |           Skip quality test           |
+|                  |  Cancel test report insertion midway  |
+
+##### Scenario 11.1
+
+| Scenario 11.1  |    Insert successful quality test report    |
+| -------------- | :-----------------------------------------: |
+| Precondition   |             QO worker logged in             |
+| Post condition |        Quality test report inserted         |
+| Step#          |                 Description                 |
+| 1              | QO worker selects item to insert report for |
+| 2              |  System prompts QO worker for report data   |
+| 3              |      QO worker confirms inserted data       |
+| 4              |   System verifies successful test outcome   |
+| 5              | System inserts quality report for the item  |
+
+##### Scenario 11.2
+
+| Scenario 11.2  |            Insert failed quality test report             |
+| -------------- | :------------------------------------------------------: |
+| Precondition   |                   QO worker logged in                    |
+| Post condition |               Quality test report inserted               |
+| Step#          |                       Description                        |
+| 1              |       QO worker selects item to insert report for        |
+| 2              |         System prompts QO worker for report data         |
+| 3              |             QO worker confirms inserted data             |
+| 4              |           System verifies failed test outcome            |
+| 5              |        System inserts quality report for the item        |
+| 6              |             System flags the item to retrun              |
+| 7              |    System notifies supplier of failed item to retrun     |
+| 8              | System notifies payment service of failed item to return |
+
+##### Scenario 11.3
+
+| Scenario 11.3  |        Cancel test report insertion midway         |
+| -------------- | :------------------------------------------------: |
+| Precondition   |                QO worker logged in                 |
+| Post condition |          Quality test report not inserted          |
+| Step#          |                    Description                     |
+| 1              |    QO worker selects item to insert report for     |
+| 2              |      System prompts QO worker for report data      |
+| 3              |         QO worker cancels report insertion         |
+| 4              | System does not insert quality report for the item |
+
+### Use case 12, Show items in short supply
+
+| Actors Involved  |                     WH manager                     |
+| ---------------- | :------------------------------------------------: |
+| Precondition     |                WH manager logged in                |
+| Post condition   |          Items in short supply visualized          |
+| Nominal Scenario |      Visualize list of items in short supply       |
+| Variants         | Visualize items in short supply and place an order |
+| Exceptions       |                                                    |
+
+##### Scenario 12.1
+
+| Scenario 12.1  |     Visualize list of items in short supply     |
+| -------------- | :---------------------------------------------: |
+| Precondition   |              WH manager logged in               |
+| Post condition |        Items in short supply visualized         |
+| Step#          |                   Description                   |
+| 1              |  WH manager enters in the short supply monitor  |
+| 2              | Items in short supply are listed in the monitor |
+
+##### Scenario 12.2
+
+| Scenario 12.2  | Visualize items in short supply and place order  |
+| -------------- | :----------------------------------------------: |
+| Precondition   |               WH manager logged in               |
+| Post condition |   Items in short supply visualized and ordered   |
+| Step#          |                   Description                    |
+| 1              |  WH manager enters in the short supply monitor   |
+| 2              | Items in short supply are listed in the monitor  |
+| 3              | WH manager selects items and creates order (UC9) |
+
+### Use case 13, Insert item into catalog
+
+| Actors Involved  |           WH manager            |
+| ---------------- | :-----------------------------: |
+| Precondition     | Item not present in the catalog |
+| Post condition   |          Item inserted          |
+| Nominal Scenario |         Insert new item         |
+| Variants         |                                 |
+| Exceptions       |      Insert existing item       |
+
+##### Scenario 13.1
+
+| Scenario 13.1  |                         Insert new item                         |
+| -------------- | :-------------------------------------------------------------: |
+| Precondition   |                 Item not present in the catalog                 |
+| Post condition |                          Item inserted                          |
+| Step#          |                           Description                           |
+| 1              |               WH manager asks to insert new item                |
+| 2              |            WH manager is promted to enter item data             |
+| 3              | System verifies that item is not already present in the catalog |
+| 4              |               New item is inserted in the catalog               |
+
+##### Scenario 13.2
+
+| Scenario 13.2  |                    Insert existing item                     |
+| -------------- | :---------------------------------------------------------: |
+| Precondition   |                 Item present in the catalog                 |
+| Post condition |                      Item not inserted                      |
+| Step#          |                         Description                         |
+| 1              |             WH manager asks to insert new item              |
+| 2              |          WH manager is promted to enter item data           |
+| 3              | System verifies that item is already present in the catalog |
+| 4              |             Item is not inserted in the catalog             |
+
+### Use case 14, Modify item in catalog
+
+| Actors Involved  |         WH manager         |
+| ---------------- | :------------------------: |
+| Precondition     | Item exists in the catalog |
+| Post condition   |       Item modified        |
+| Nominal Scenario |    Modify existing item    |
+| Variants         |                            |
+| Exceptions       | Cancel modification midway |
+
+##### Scenario 14.1
+
+| Scenario 14.1  |              Modify existing item              |
+| -------------- | :--------------------------------------------: |
+| Precondition   |           Item exists in the catalog           |
+| Post condition |                 Item modified                  |
+| Step#          |                  Description                   |
+| 1              |       WH manager opens catalog of items        |
+| 2              |       WH manager selects item to modify        |
+| 3              | WH manager is prompted to enter data to modify |
+| 4              |  System verifies correctness of inserted data  |
+| 5              |    WH manager confirms modification request    |
+| 6              |                Item is modified                |
+
+##### Scenario 14.2
+
+| Scenario 14.2  |           Cancel modification midway           |
+| -------------- | :--------------------------------------------: |
+| Precondition   |           Item exists in the catalog           |
+| Post condition |               Item not modified                |
+| Step#          |                  Description                   |
+| 1              |       WH manager opens catalog of items        |
+| 2              |       WH manager selects item to modify        |
+| 3              | WH manager is prompted to enter data to modify |
+| 4              |     System notifies error in inserted data     |
+| 5              |    WH manager cancels modification request     |
+| 6              |              Item is not modified              |
+
+### Use case 15, Delete item from catalog
+
+| Actors Involved  |         WH manager         |
+| ---------------- | :------------------------: |
+| Precondition     | Item exists in the catalog |
+| Post condition   |        Item deleted        |
+| Nominal Scenario |    Delete existing item    |
+| Variants         |                            |
+| Exceptions       |                            |
+
+##### Scenario 15.1
+
+| Scenario 15.1  |             Delete existing item              |
+| -------------- | :-------------------------------------------: |
+| Precondition   |          Item exists in the catalog           |
+| Post condition |                 Item deleted                  |
+| Step#          |                  Description                  |
+| 1              |       WH manager opens catalog of items       |
+| 2              |       WH manager selects item to delete       |
+| 3              | WH manager is asked to confirm delete request |
+| 4              |                Item is deleted                |
+
+### Use case 16, Link item to supplier
+
+| Actors Involved  |                   WH manager                   |
+| ---------------- | :--------------------------------------------: |
+| Precondition     | Item and supplier exist and not already linked |
+| Post condition   |            Item linked to supplier             |
+| Nominal Scenario |         Link an item to a new supplier         |
+| Variants         |                                                |
+| Exceptions       |                                                |
+
+##### Scenario 16.1
+
+| Scenario 16.1  |                       Link an item to a new supplier                       |
+| -------------- | :------------------------------------------------------------------------: |
+| Precondition   |               Item and supplier exist and not already linked               |
+| Post condition |                          Item linked to supplier                           |
+| Step#          |                                Description                                 |
+| 1              |                     WH manager opens catalog of items                      |
+| 2              |               WH manager selects item to link to a supplier                |
+| 3              | WH manager views list of possible suppliers not already linked to the item |
+| 4              |                        WH manager selects supplier                         |
+| 5              |                        WH manager confirms the link                        |
+| 6              |               Supplier is added to the suppliers of the item               |
+
+### Use case 17, Unlink item from supplier
+
+| Actors Involved  |                 WH manager                 |
+| ---------------- | :----------------------------------------: |
+| Precondition     | Item and supplier exist and already linked |
+| Post condition   |        Item unlinked from supplier         |
+| Nominal Scenario |  Unink an item from one of its suppliers   |
+| Variants         |                                            |
+| Exceptions       |                                            |
+
+##### Scenario 17.1
+
+| Scenario 17.1  |            Unink an item from one of its suppliers             |
+| -------------- | :------------------------------------------------------------: |
+| Precondition   |           Item and supplier exist and already linked           |
+| Post condition |                  Item unlinked from supplier                   |
+| Step#          |                          Description                           |
+| 1              |               WH manager opens catalog of items                |
+| 2              |        WH manager selects item to unlink from supplier         |
+| 3              | WH manager views list of possible suppliers linked to the item |
+| 4              |             WH manager selects supplier to unlink              |
+| 5              |                 WH manager confirms the unlink                 |
+| 6              |       Supplier is removed from the suppliers of the item       |
+
+### Use case 18, Configure new warehouse space
+
+| Actors Involved  |               WH manager               |
+| ---------------- | :------------------------------------: |
+| Precondition     |      Space not already configured      |
+| Post condition   |          New space configured          |
+| Nominal Scenario | Configure a new space in the warehouse |
+| Variants         |                                        |
+| Exceptions       |                                        |
+
+##### Scenario 18.1
+
+| Scenario 18.1  |     Configure a new space in the warehouse     |
+| -------------- | :--------------------------------------------: |
+| Precondition   |          Space not already configured          |
+| Post condition |              New space configured              |
+| Step#          |                  Description                   |
+| 1              |   WH manager visualizes warehouse structure    |
+| 2              | WH manager selects location to place new space |
+| 3              | WH manager is prompted to enter necessary data |
+| 4              |  System verifies that inserted data is valid   |
+| 5              |    New space is configured in the warehouse    |
+
+### Use case 19, Modify warehouse space
+
+| Actors Involved  |              WH manager              |
+| ---------------- | :----------------------------------: |
+| Precondition     | Space is configured in the warehouse |
+| Post condition   |          Space is modified           |
+| Nominal Scenario |   Modify existing warehouse space    |
+| Variants         |                                      |
+| Exceptions       |                                      |
+
+##### Scenario 19.1
+
+| Scenario 19.1  |        Modify existing warehouse space         |
+| -------------- | :--------------------------------------------: |
+| Precondition   |      Space is configured in the warehouse      |
+| Post condition |               Space is modified                |
+| Step#          |                  Description                   |
+| 1              |      WH manager opens warehouse structure      |
+| 2              |       WH manager selects space to modify       |
+| 3              | WH manager is prompted to enter data to modify |
+| 4              |  System verifies correctness of inserted data  |
+| 5              |    WH manager confirms modification request    |
+| 6              |          Warehouse space is modified           |
+
+### Use case 20, Remove warehouse space
+
+| Actors Involved  |              WH manager              |
+| ---------------- | :----------------------------------: |
+| Precondition     | Space is configured in the warehouse |
+| Post condition   |           Space is removed           |
+| Nominal Scenario | Remove existing space from warehouse |
+| Variants         |                                      |
+| Exceptions       |                                      |
+
+##### Scenario 20.1
+
+| Scenario 20.1  |     Remove existing space from warehouse      |
+| -------------- | :-------------------------------------------: |
+| Precondition   |     Space is configured in the warehouse      |
+| Post condition |               Space is removed                |
+| Step#          |                  Description                  |
+| 1              |      WH manager opens list of suppliers       |
+| 2              |     WH manager selects supplier to delete     |
+| 3              | WH manager is asked to confirm delete request |
+| 4              |              Supplier is deleted              |
+
+### Use case 21, Change item position
+
+| Actors Involved  |             WH manager, WH worker              |
+| ---------------- | :--------------------------------------------: |
+| Precondition     |               User is logged in                |
+| Post condition   |          Position of item is changed           |
+| Nominal Scenario |    Modify position of item in the warehouse    |
+| Variants         | Assign position to item entering the warehouse |
+|                  | Remove position of item exiting the warehouse  |
+| Exceptions       |       Item not present in the warehouse        |
+|                  |         New position is already taken          |
+
+##### Scenario 21.1
+
+| Scenario 21.1  |              Modify position of item in the warehouse               |
+| -------------- | :-----------------------------------------------------------------: |
+| Precondition   |                          User is logged in                          |
+| Post condition |                     Position of item is changed                     |
+| Step#          |                             Description                             |
+| 1              |          User scans an item or searches for it in the app           |
+| 2              |             Item data and current position is displayed             |
+| 3              |                      User inserts new position                      |
+| 4              |              System verifies new position is available              |
+| 5              |                    User confirms position change                    |
+| 6              | Item is flagged as to be moved and new position is flagged as taken |
+
+##### Scenario 21.2
+
+| Scenario 21.1  |           Assign position to item entering the warehouse            |
+| -------------- | :-----------------------------------------------------------------: |
+| Precondition   |                          User is logged in                          |
+| Post condition |                     Position of item is changed                     |
+| Step#          |                             Description                             |
+| 1              |       User scans entering item or searches for it in the app        |
+| 2              |             Item data and current position is displayed             |
+| 3              |             System suggests position to insert the item             |
+| 4              |                        User picks a position                        |
+| 5              |              System verifies new position is available              |
+| 6              |                    User confirms position change                    |
+| 7              | Item is flagged as to be moved and new position is flagged as taken |
+
+##### Scenario 21.3
+
+| Scenario 21.3  |     Remove position of item exiting the warehouse     |
+| -------------- | :---------------------------------------------------: |
+| Precondition   |                   User is logged in                   |
+| Post condition |              Position of item is changed              |
+| Step#          |                      Description                      |
+| 1              | User scans exiting item or searches for it in the app |
+| 2              |      Item data and current position is displayed      |
+| 3              |       User chooses to remove item from position       |
+| 4              |             User confirms position change             |
+| 5              |            Item is flagged as to be moved             |
+
+##### Scenario 21.4
+
+| Scenario 21.4  |           Item not present in the warehouse            |
+| -------------- | :----------------------------------------------------: |
+| Precondition   |                   User is logged in                    |
+| Post condition |            Position of item is not changed             |
+| Step#          |                      Description                       |
+| 1              | User scans entering item or searches for it in the app |
+| 2              |   System notifies item not present in the warehouse    |
+| 3              |          System prompts user to retry or exit          |
+| 4              |                 No position is changed                 |
+
+##### Scenario 21.5
+
+| Scenario 21.5  |             New position is already taken              |
+| -------------- | :----------------------------------------------------: |
+| Precondition   |                   User is logged in                    |
+| Post condition |            Position of item is not changed             |
+| Step#          |                      Description                       |
+| 1              | User scans entering item or searches for it in the app |
+| 2              |      Item data and current position is displayed       |
+| 3              |               User inserts new position                |
+| 4              |     System verifies new position is not available      |
+| 5              | System notifies user and prompts them to retry or exit |
+| 6              |                 No position is changed                 |
+
+
+### Use case 22, Visualize items to be moved
+
+| Actors Involved  |           WH worker, WH manager            |
+| ---------------- | :----------------------------------------: |
+| Precondition     |             User is logged in              |
+| Post condition   | Overview of items to be moved is displayed |
+| Nominal Scenario |  Visualize overview of items to be moved   |
+| Variants         |                                            |
+| Exceptions       |                                            |
+
+##### Scenario 22.1
+
+| Scenario 22.1  |       Visualize overview of items to be moved        |
+| -------------- | :--------------------------------------------------: |
+| Precondition   |                  User is logged in                   |
+| Post condition |      Overview of items to be moved is displayed      |
+| Step#          |                     Description                      |
+| 1              |            User opens warehouse overview             |
+| 2              | User selects to display items flagged as to be moved |
+| 3              |    Items to be moved are displayed on the screen     |
+
+### Use case 23, Move item
+
+| Actors Involved  |            WH manager, WH worker             |
+| ---------------- | :------------------------------------------: |
+| Precondition     |              User is logged in               |
+| Post condition   | Item has been moved to the assigned position |
+| Nominal Scenario |        Move item to assigned position        |
+| Variants         |                                              |
+| Exceptions       |                                              |
+
+##### Scenario 23.1
+
+| Scenario 23.1  |        Move item to assigned position        |
+| -------------- | :------------------------------------------: |
+| Precondition   |              User is logged in               |
+| Post condition | Item has been moved to the assigned position |
+| Step#          |                 Description                  |
+| 1              |       User scans or selects moved item       |
+| 2              |          User confirms new position          |
+| 3              |     System unflags item from to be moved     |
+| 4              |    System links item to current position     |
+| 5              |        System frees previous position        |
+
+
+### Use case 24, Show warehouse order history
+
+| Actors Involved  |            WH manager            |
+| ---------------- | :------------------------------: |
+| Precondition     |     WH manager is logged in      |
+| Post condition   |    Order history is displayed    |
+| Nominal Scenario | Show history of warehouse orders |
+| Variants         |                                  |
+| Exceptions       |                                  |
+
+##### Scenario 24.1
+
+| Scenario 24.1  |                 Show history of warehouse orders                  |
+| -------------- | :---------------------------------------------------------------: |
+| Precondition   |                      WH manager is logged in                      |
+| Post condition |                    Order history is displayed                     |
+| Step#          |                            Description                            |
+| 1              |                  WH manager opens order history                   |
+| 2              | System prompts user to select between internal or external orders |
+| 3              |                       User makes selections                       |
+| 4              |              Order history is diplayed on the screen              |
+
+
+
+### Use case 25, Place internal order to warehouse
+
+| Actors Involved  |             OU executive              |
+| ---------------- | :-----------------------------------: |
+| Precondition     |        OU executive logged in         |
+| Post condition   |       Order placed to warehouse       |
+| Nominal Scenario | Place new internal order to warehouse |
+| Variants         |                                       |
+| Exceptions       |     Cancel order creation midway      |
+
+##### Scenario 25.1
+
+| Scenario 25.1  |       Place new internal order to warehouse       |
+| -------------- | :-----------------------------------------------: |
+| Precondition   |              OU executive logged in               |
+| Post condition |             Order placed to warehouse             |
+| Step#          |                    Description                    |
+| 1              |        OU executive selects item to order         |
+| 2              |       OU executive select quantity to order       |
+| 3              |      Repeat 1,2 for every item to be ordered      |
+| 4              |          OU executive confirms the order          |
+| 5              | System creates new order with status In Progress  |
+| 6              | System notifies the warehouse about the new order |
+
+##### Scenario 25.2
+
+| Scenario 25.2  |      Cancel order creation midway       |
+| -------------- | :-------------------------------------: |
+| Precondition   |         OU executive logged in          |
+| Post condition |    Order not placed to the warehouse    |
+| Step#          |               Description               |
+| 1              |   OU executive selects item to order    |
+| 2              |  OU executive select quantity to order  |
+| 3              | Repeat 1,2 for every item to be ordered |
+| 4              |     OU executive cancels the order      |
+| 5              |    System does not create the order     |
+
+### Use case 26, Show organizational unit order history
+
+| Actors Involved  |        OU executive        |
+| ---------------- | :------------------------: |
+| Precondition     | OU executive is logged in  |
+| Post condition   | Order history is displayed |
+| Nominal Scenario | Show history of OU orders  |
+| Variants         |                            |
+| Exceptions       |                            |
+
+##### Scenario 26.1
+
+| Scenario 26.1  |        Show history of OU orders        |
+| -------------- | :-------------------------------------: |
+| Precondition   |        OU executive is logged in        |
+| Post condition |       Order history is displayed        |
+| Step#          |               Description               |
+| 1              |    OU executive opens order history     |
+| 2              | Order history is diplayed on the screen |
+
+### Use case 27, Fulfill internal order 
+
+| Actors Involved  |            WH manager, WH worker             |
+| ---------------- | :------------------------------------------: |
+| Precondition     |                User logged in                |
+| Post condition   |           Internal order fulfilled           |
+| Nominal Scenario |  Fulfill internal orders made to warehouse   |
+| Variants         |                                              |
+| Exceptions       | Ordered items not available in the warehouse |
+
+##### Scenario 27.1
+
+| Scenario 27.1  |                             Fulfill internal orders made to warehouse                              |
+| -------------- | :------------------------------------------------------------------------------------------------: |
+| Precondition   |                                           User logged in                                           |
+| Post condition |                                      Internal order fulfilled                                      |
+| Step#          |                                            Description                                             |
+| 1              |                                 User opens internal order history                                  |
+| 2              |                                   User selects an unfilled order                                   |
+| 3              |                     User checks availability of ordered items in the warehouse                     |
+| 4              |                   User flags the ordered items as to be moved to the pickup area                   |
+| 5              |                             System updates order status to In Progress                             |
+| 6              | System updates order status to Completed when all items in this order are moved to the pickup area |
+
+##### Scenario 27.2
+
+| Scenario 27.2  |          Ordered items not available in the warehouse          |
+| -------------- | :------------------------------------------------------------: |
+| Precondition   |                         User logged in                         |
+| Post condition |                  Internal order not fulfilled                  |
+| Step#          |                          Description                           |
+| 1              |               User opens internal order history                |
+| 2              |                 User selects an unfilled order                 |
+| 3              | User verifies unavailability of ordered items in the warehouse |
+| 4              |                  Order status is not updated                   |
+
+### Use case 28, Show items in pickup area 
+
+| Actors Involved  |        WH manager, WH worker, OU executive         |
+| ---------------- | :------------------------------------------------: |
+| Precondition     |                   User logged in                   |
+| Post condition   |           Items in pickup area displayed           |
+| Nominal Scenario | Show items available for pickup in the pickup area |
+| Variants         |                                                    |
+| Exceptions       |                                                    |
+
+##### Scenario 28.1
+
+| Scenario 28.1  |         Show items available for pickup in the pickup area         |
+| -------------- | :----------------------------------------------------------------: |
+| Precondition   |                           User logged in                           |
+| Post condition |                   Items in pickup area displayed                   |
+| Step#          |                            Description                             |
+| 1              |                  User opens pickup area item list                  |
+| 2              | User is prompted to view all items or only items delivered to them |
+| 3              |                        User makes a choice                         |
+| 4              |                 Items in pickup area are displayed                 |
 
 
 # Glossary
