@@ -116,7 +116,7 @@ Interfaces shared between different users
 
 #### Add Structure Space
 ![add_structure](./assets/gui/it/it-edit_add_structure_space.png)
-
+*You can decide to not make active a space on adding. This feature could be useful in case of you first create a space on the software and then you let the physical space ready to store items*
 
   *Different look for already assigned spaces on virtual map*
 
@@ -131,6 +131,7 @@ Interfaces shared between different users
 
 #### Place new order
 ![new_order](./assets/gui/it/it-ext_order_new.png)
+*You can see maximum quantity that you can order*
 
 ### Internal Orders
 ![internal_orders](./assets/gui/it/it-int_order_list.png)
@@ -167,7 +168,7 @@ Interfaces shared between different users
 
 
 ## WH Worker View
-
+These interfaces have big buttons to facilitate warehouse workers actions due to touchscreen sensibility of common tablets.
 ### Homepage
 ![wh_homepage](./assets/gui/whw/whw-homepage.png)
 
