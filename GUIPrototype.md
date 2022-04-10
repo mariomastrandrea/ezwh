@@ -1,10 +1,10 @@
 # Graphical User Interface Prototype  
 
 Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko, Alessandro Migliardi
-
 Date: 10/04/2022
 
 Version: 0.9
+
 
 ## Contents
 - [Graphical User Interface Prototype](#graphical-user-interface-prototype)
@@ -102,7 +102,7 @@ Interfaces shared between different users
 ### Manage Warehouse Structure
 #### WH Spaces - map view
 ![manage_warehouse_map](./assets/gui/it/it-structure.png)
-![structure_onhover](./assets/gui/it/it-structure_on_hover.png)
+![structure_on_hover](./assets/gui/it/it-structure_on_hover.png)
 
 ##### WH Spaces - list view
 ![manage_warehouse](./assets/gui/it/it-structure_list.png)
@@ -116,9 +116,10 @@ Interfaces shared between different users
 
 #### Add Structure Space
 ![add_structure](./assets/gui/it/it-edit_add_structure_space.png)
+
 *You can decide to not make active a space on adding. This feature could be useful in case of you first create a space on the software and then you let the physical space ready to store items*
 
-  *Different look for already assigned spaces on virtual map*
+*Different look for already assigned spaces on virtual map*
 
 #### Edit Structure Space
 ![edit_structure](./assets/gui/it/it-edit_structure_space.png)
@@ -131,6 +132,7 @@ Interfaces shared between different users
 
 #### Place new order
 ![new_order](./assets/gui/it/it-ext_order_new.png)
+
 *You can see maximum quantity that you can order*
 
 ### Internal Orders
@@ -169,6 +171,7 @@ Interfaces shared between different users
 
 ## WH Worker View
 These interfaces have big buttons to facilitate warehouse workers actions due to touchscreen sensibility of common tablets.
+
 ### Homepage
 ![wh_homepage](./assets/gui/whw/whw-homepage.png)
 
@@ -177,12 +180,13 @@ These interfaces have big buttons to facilitate warehouse workers actions due to
 
 ### Move Item
 After scanning you see where to put the item
+
 ![wh_move_item](./assets/gui/whw/whw-identified_item.png)
 
+*In some circumstances the suggested final space can be unexpectedly unavailable, so the warehouse worker is able to edit this information*
 
 #### Edit final position of item
 ![wh_move_item_custom](./assets/gui/whw/whw-identified_item_edit_space.png)
-
 
 #### Move to pickup area for ou orders
 ![wh_move_to_pickup](./assets/gui/whw/whw-identified_pickup.png)

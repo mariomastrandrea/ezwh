@@ -1,22 +1,25 @@
 
 # Requirements Document 
-Last-Modified: 9 april 2022
+
+Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko, Alessandro Migliardi
+Last-Modified: 10 april 2022
 Date: 22 march 2022
 
-Version: 0.9
+Version: 0.91
 
  
 | Version number | Change                                     |
 | -------------- | :----------------------------------------- |
-| 0.1            | added stakeholders                         |
-| 0.2            | context diagram, functional req            |
-| 0.3            | fr, nfr req                                |
-| 0.4            | modified context diagram and actors        |
+| 0.1            | Added Stakeholders                         |
+| 0.2            | Context diagram, FRs                       |
+| 0.3            | FRs, NFRs                                  |
+| 0.4            | Modified Context diagram and Actors        |
 | 0.5            | Personas, Stories, added NFRs, modified FR |
 | 0.6            | Added Gantt diagram and Estimation         |
 | 0.7            | Added use cases and scenarios              |
-| 0.8            | Added System Design and Deployment Diagram |
+| 0.8            | Added System design and Deployment diagram |
 | 0.9            | Edited use cases and scenarios             |
+| 0.91           | Added Glossary, updated FRs                |
 
 
 # Contents
@@ -154,7 +157,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 # Context Diagram and interfaces
 
 ## Context Diagram
-![EzWh context diagram](./assets/ContextDiagram.png)
+![EzWh Context Diagram - UML use case diagram](./assets/ContextDiagram.png)
 
 ## Interfaces
 
@@ -198,15 +201,15 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 * **Kathryn** has to deal with lots of rejected orders from a supplier of LED components: 5 of the last 10 orders have been rejected due to the failure of the energy efficiency tests. She decides to terminate the relationship with this supplier and replace it with a new one: she logs into the EzWh on her PC, deletes the old supplier from the system and creates a new one, specifying the LED components he is able to supply. Since this new supplier is not able to supply all the necessary components, she get some from another supplier that was already supplying other items to the company. She then adds this new supplier into the corresponding items' list of possible suppliers.
 
-* **Kathryn** starts a new working day and logs into the EzWh app. The system shows her all the items that are in short supply and that need to be ordered again. She then places a new order for each of them, specifying the requested quantity and selecting the supplier she wants to charge for them. After a few hours she receives a phone call from one of the suppliers who warns her that they will not be able to fulfil the requested order. She then decides to edit the corresponding order and select a different supplier for that item. 
+* **Kathryn** starts a new working day and logs into the EzWh app. The system shows her all the items that are in short supply and that need to be ordered again. She then places a new order for each of them, specifying the requested quantity and selecting the supplier she wants to charge for them.
 
-* **Quentin** is on his first day of work in the company, so he receives his new credentials (username and password) from the IT Administrator in order to log into EzWh for the first time. He does not like the actual password, so he decides to change it from his portal and choosing a more familiar one, but he must provide a new password that meets all the security requirements too.
+* **Quentin** is on his first day of work in the company, so he receives his new credentials (email and password) from the IT Administrator in order to log into EzWh for the first time. He does not like the actual password, so he decides to change it from his portal and choosing a more familiar one, but he must provide a new password that meets all the security requirements too.
 
 * **Quentin** receives lots of mails and phone calls every day from his colleagues, who ask him to provide several different items which are needed within the OU or are running out, such as stationery, PCs for new employees, some additional chairs and some wallpaper for a new marketing campaign. Therefore he logs into the EzWh app, searches for these items within the portal, selects the required quantity for each of them and issues the new internal order to the Warehouse.
 
-* **Christopher** learns of 2 new employees from the HR manager: 1 WH worker and 1 R&D executive. Therefore he logs into the EzWh app on his computer and adds 2 new users to the system, selecting the corresponding privileges for each of them: in fact the two employees will have a different access to the system. He indicates the usernames of the new users and the app provides default secure passwords for them. Christopher then emails the new employees providing them with the new credentials to log into the WH system.
+* **Christopher** learns of 2 new employees from the HR manager: 1 WH worker and 1 R&D executive. Therefore he logs into the EzWh app on his computer and adds 2 new users to the system, selecting the corresponding privileges for each of them: in fact the two employees will have a different access to the system. He indicates the emails of the new users and the app provides default secure passwords for them. Christopher then emails the new employees providing them with the new credentials to log into the WH system.
 
-* **Martin** was informed by the company management of the purchase of a new building for the company warehouse in order to contain all the final products of size XXL, so he has to modify the internal representation of the warehouse inventory within the EzWh app. Therefore he logs in and creates a new warehouse space, specifying its capacity. He then searches for these types of items in the app and changes their physical position, moving them to the new WH space.
+* **Martin** was informed by the company management of the purchase of a new building for the company warehouse in order to contain all the final products of size XXL, so he has to modify the internal representation of the warehouse inventory within the EzWh app. Therefore he logs in and creates a new warehouse space, specifying its capacity. He then searches for these types of items in the app and schedules their physical position changes, moving them to the new WH space.
   
 
 # Functional and non functional requirements
@@ -247,6 +250,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | FR7.5    |         Place new item in a position         |
 | FR7.6    |            Change item's position            |
 | FR7.7    |          Remove item from position           |
+| FR7.8    |   Visualize overview of items to be moved    |
 | **FR8**  |        Monitor items in short supply         |
 | **FR9**  |            Handle external orders            |
 | FR9.1    |       Find possible suppliers per item       |
@@ -289,6 +293,8 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 # Use case diagram and use cases
 
 ## Use case diagram
+\<add the UML use case diagram>
+
 
 ### Use case 1, Log In
 
@@ -322,10 +328,10 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Step#          |                          Description                          |
 | 1              |       Start application, user prompted for credentials        |
 | 2              |          User chooses to recover/change credentials           |
-| 3              |              Promt user to enter necessary data               |
+| 3              |              Prompt user to enter necessary data              |
 | 4              |                  User inserts requested data                  |
 | 5              |               User recovers/changes credentials               |
-| 6              |                  Promt user for credentials                   |
+| 6              |                  Prompt user for credentials                  |
 | 7              |                  User enters new credentials                  |
 | 8              |                System does the authentication                 |
 | 9              |                   Main screen is displayed                    |
@@ -1184,11 +1190,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 
 # Glossary
-
-\<use UML class diagram to define important terms, or concepts in the domain of the system, and their relationships> 
-
-\<concepts are used consistently all over the document, ex in use cases, requirements etc>
-
+![EzWh Glossary - UML class diagram](./assets/Glossary.png)
 
 # System Design
 ![EzWh System Diagram](./assets/SystemDesign.png)
