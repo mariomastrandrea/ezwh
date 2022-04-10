@@ -8,18 +8,18 @@ Date: 22 march 2022
 Version: 0.91
 
  
-| Version number | Change                                     |
-| -------------- | :----------------------------------------- |
-| 0.1            | Added Stakeholders                         |
-| 0.2            | Context diagram, FRs                       |
-| 0.3            | FRs, NFRs                                  |
-| 0.4            | Modified Context diagram and Actors        |
-| 0.5            | Personas, Stories, added NFRs, modified FR |
-| 0.6            | Added Gantt diagram and Estimation         |
-| 0.7            | Added use cases and scenarios              |
-| 0.8            | Added System design and Deployment diagram |
-| 0.9            | Edited use cases and scenarios             |
-| 0.91           | Added Glossary, updated FRs                |
+| Version number | Change                                          |
+| -------------- | :---------------------------------------------- |
+| 0.1            | Added Stakeholders                              |
+| 0.2            | Context diagram, FRs                            |
+| 0.3            | FRs, NFRs                                       |
+| 0.4            | Modified Context diagram and Actors             |
+| 0.5            | Personas, Stories, added NFRs, modified FR      |
+| 0.6            | Added Gantt diagram and Estimation              |
+| 0.7            | Added use cases and scenarios                   |
+| 0.8            | Added System design and Deployment diagram      |
+| 0.9            | Edited use cases and scenarios                  |
+| 0.91           | Added Glossary, updated FRs; updated UML images |
 
 
 # Contents
@@ -157,7 +157,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 # Context Diagram and interfaces
 
 ## Context Diagram
-![EzWh Context Diagram - UML use case diagram](./assets/ContextDiagram.png)
+<img src="./assets/ContextDiagram.png" alt="EzWh Context Diagram - UML use case diagram" style="background-color:white">
 
 ## Interfaces
 
@@ -1190,12 +1190,12 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 
 # Glossary
-![EzWh Glossary - UML class diagram](./assets/Glossary.png)
+<img src="./assets/Glossary.png" alt="EzWh Glossary - UML class diagram" style="background-color:white">
 
 # System Design
-![EzWh System Diagram](./assets/SystemDesign.png)
+<img src="./assets/SystemDesign.png" alt="EzWh System Design - UML class diagram" style="background-color:white">
 
 # Deployment Diagram 
-![EzWh Deployment Diagram](./assets/DeploymentDiagram.png)
+<img src="./assets/DeploymentDiagram.png" alt="EzWh Deployment Diagram - UML deployment diagram" style="background-color:white">
 
 
