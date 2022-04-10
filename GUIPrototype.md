@@ -2,9 +2,9 @@
 
 Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko, Alessandro Migliardi
 
-Date: 07/04/2022
+Date: 10/04/2022
 
-Version: 0.1
+Version: 0.9
 
 ## Contents
 - [Graphical User Interface Prototype](#graphical-user-interface-prototype)
@@ -12,25 +12,41 @@ Version: 0.1
     - [How to read](#how-to-read)
   - [Shared Interfaces](#shared-interfaces)
     - [Login](#login)
+      - [Recover password](#recover-password)
+      - [My profile](#my-profile)
+      - [My profile edit](#my-profile-edit)
   - [IT Admin / Manager View](#it-admin--manager-view)
     - [Homepage](#homepage)
     - [Manage Users](#manage-users)
     - [Manage Suppliers](#manage-suppliers)
+      - [Edit/Add Supplier (template is the same)](#editadd-supplier-template-is-the-same)
     - [Manage Inventory](#manage-inventory)
     - [Manage Catalogue](#manage-catalogue)
+      - [Edit/Add Item (template is the same)](#editadd-item-template-is-the-same)
     - [Manage Warehouse Structure](#manage-warehouse-structure)
+      - [WH Spaces - map view](#wh-spaces---map-view)
+        - [WH Spaces - list view](#wh-spaces---list-view)
+      - [WH Spaces - edit view](#wh-spaces---edit-view)
+      - [Add Structure Space](#add-structure-space)
+      - [Edit Structure Space](#edit-structure-space)
     - [External Orders](#external-orders)
+      - [Place new order](#place-new-order)
     - [Internal Orders](#internal-orders)
   - [Quality Office View](#quality-office-view)
     - [Homepage](#homepage-1)
+      - [After click on a order](#after-click-on-a-order)
+      - [Outcome](#outcome)
   - [OU View](#ou-view)
     - [Homepage](#homepage-2)
     - [Orders List](#orders-list)
     - [New Order](#new-order)
+      - [Order basket](#order-basket)
   - [WH Worker View](#wh-worker-view)
     - [Homepage](#homepage-3)
     - [Scan Item](#scan-item)
     - [Move Item](#move-item)
+      - [Edit final position of item](#edit-final-position-of-item)
+      - [Move to pickup area for ou orders](#move-to-pickup-area-for-ou-orders)
   - [Notes](#notes)
 
 ### How to read
@@ -43,16 +59,13 @@ Interfaces shared between different users
 ### Login
 ![login](./assets/gui/all/login.png)
 
-
-Recover password
+#### Recover password
 ![recovery](./assets/gui/all/login_recovery.png)
 
-
-My profile
+#### My profile
 ![profile](./assets/gui/all/all-myprofile.png)
 
-
-My profile edit
+#### My profile edit
 ![profile edit](./assets/gui/all/all-myprofile_change_password.png)
 
 ## IT Admin / Manager View
@@ -64,15 +77,13 @@ My profile edit
 ### Manage Users
 ![manage_users](./assets/gui/it/it-manage_users.png)
 
-
-Edit/Add User (template is the same)
+#### Edit/Add User (template is the same)
 ![edit_user](./assets/gui/it/it-edit_add_user.png)
 
 ### Manage Suppliers
 ![manage_suppliers](./assets/gui/it/it-manage_suppliers.png)
 
-
-Edit/Add Supplier (template is the same)
+#### Edit/Add Supplier (template is the same)
 ![edit_user](./assets/gui/it/it-edit_add_supplier.png)
 
 ### Manage Inventory
@@ -82,35 +93,31 @@ Edit/Add Supplier (template is the same)
 ![manage_catalogue](./assets/gui/it/it-manage_catalogue.png)
 ![manage_catalogue_popup](assets/gui/it/it-manage_catalogue_popup_suppliers.png)
 
-
-Edit/Add Item (template is the same)
+#### Edit/Add Item (template is the same)
 ![edit_item](./assets/gui/it/it-edit_add_catalogue_item.png)
 
 ### Manage Warehouse Structure
-WH Spaces - map view
+#### WH Spaces - map view
 ![manage_warehouse_map](./assets/gui/it/it-structure.png)
 ![structure_onhover](./assets/gui/it/it-structure_on_hover.png)
 
-
-WH Spaces - list view
+##### WH Spaces - list view
 ![manage_warehouse](./assets/gui/it/it-structure_list.png)
 
-
-WH Spaces - edit view
+#### WH Spaces - edit view
 ![structure_edit](./assets/gui/it/it-structure_edit.png)
 
 
 *Delete icon become clickable only if there are no items inside (0 busy slots)*
 
 
-
-Add Structure Space
+#### Add Structure Space
 ![add_structure](./assets/gui/it/it-edit_add_structure_space.png)
 
 
   *Different look for already assigned spaces on virtual map*
 
-Edit Structure Space
+#### Edit Structure Space
 ![edit_structure](./assets/gui/it/it-edit_structure_space.png)
 
 
@@ -119,8 +126,7 @@ Edit Structure Space
 ### External Orders
 ![external_orders](./assets/gui/it/it-ext_order_list.png)
 
-
-Place new order
+#### Place new order
 ![new_order](./assets/gui/it/it-ext_order_new.png)
 
 ### Internal Orders
@@ -133,11 +139,11 @@ Place new order
 ![qo_homepage](./assets/gui/qo/qo-homepage.png)
 
 
-After click on a order
+#### After click on a order
 ![qo_homepage_selection](./assets/gui/qo/qo-homepage_selection.png)
 
 
-Outcome
+#### Outcome
 ![qo_outcome](./assets/gui/qo/qo-report.png)
 
 
@@ -153,7 +159,7 @@ Outcome
 ![ou_new_order](./assets/gui/ou/ou-int_order_new.png)
 
 
-Order basket
+#### Order basket
 ![ou_order_basket](./assets/gui/ou/ou-int_order_basket.png)
 
 
@@ -170,11 +176,11 @@ After scanning you see where to put the item
 ![wh_move_item](./assets/gui/whw/whw-identified_item.png)
 
 
-Edit final position of item
+#### Edit final position of item
 ![wh_move_item_custom](./assets/gui/whw/whw-identified_item_edit_space.png)
 
 
-Move to pickup area for ou orders
+#### Move to pickup area for ou orders
 ![wh_move_to_pickup](./assets/gui/whw/whw-identified_pickup.png)
 
 ## Notes
