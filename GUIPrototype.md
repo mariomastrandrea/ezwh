@@ -18,6 +18,7 @@ Version: 0.9
   - [IT Admin / Manager View](#it-admin--manager-view)
     - [Homepage](#homepage)
     - [Manage Users](#manage-users)
+      - [Edit/Add User (template is the same)](#editadd-user-template-is-the-same)
     - [Manage Suppliers](#manage-suppliers)
       - [Edit/Add Supplier (template is the same)](#editadd-supplier-template-is-the-same)
     - [Manage Inventory](#manage-inventory)
@@ -77,7 +78,9 @@ Interfaces shared between different users
 ### Manage Users
 ![manage_users](./assets/gui/it/it-manage_users.png)
 
-#### Edit/Add User (template is the same)
+#### Edit/Add User (template is the same)
+
+
 ![edit_user](./assets/gui/it/it-edit_add_user.png)
 
 ### Manage Suppliers
