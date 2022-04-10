@@ -3,7 +3,7 @@
 Last-Modified: 9 april 2022
 Date: 22 march 2022
 
-Version: 0.8
+Version: 0.9
 
  
 | Version number | Change                                     |
@@ -16,6 +16,7 @@ Version: 0.8
 | 0.6            | Added Gantt diagram and Estimation         |
 | 0.7            | Added use cases and scenarios              |
 | 0.8            | Added System Design and Deployment Diagram |
+| 0.9            | Edited use cases and scenarios             |
 
 
 # Contents
@@ -65,20 +66,20 @@ Version: 0.8
     - [Use case 10, Read item location](#use-case-10-read-item-location)
         - [Scenario 10.1](#scenario-101)
         - [Scenario 10.2](#scenario-102)
-    - [Use case 11, Insert quality test report](#use-case-11-insert-quality-test-report)
+    - [Use case 11, Insert quality test outcome](#use-case-11-insert-quality-test-outcome)
         - [Scenario 11.1](#scenario-111)
         - [Scenario 11.2](#scenario-112)
         - [Scenario 11.3](#scenario-113)
     - [Use case 12, Show items in short supply](#use-case-12-show-items-in-short-supply)
         - [Scenario 12.1](#scenario-121)
         - [Scenario 12.2](#scenario-122)
-    - [Use case 13, Insert item into catalog](#use-case-13-insert-item-into-catalog)
+    - [Use case 13, Insert item into catalogue](#use-case-13-insert-item-into-catalogue)
         - [Scenario 13.1](#scenario-131)
         - [Scenario 13.2](#scenario-132)
-    - [Use case 14, Modify item in catalog](#use-case-14-modify-item-in-catalog)
+    - [Use case 14, Modify item in catalogue](#use-case-14-modify-item-in-catalogue)
         - [Scenario 14.1](#scenario-141)
         - [Scenario 14.2](#scenario-142)
-    - [Use case 15, Delete item from catalog](#use-case-15-delete-item-from-catalog)
+    - [Use case 15, Delete item from catalogue](#use-case-15-delete-item-from-catalogue)
         - [Scenario 15.1](#scenario-151)
     - [Use case 16, Link item to supplier](#use-case-16-link-item-to-supplier)
         - [Scenario 16.1](#scenario-161)
@@ -93,25 +94,24 @@ Version: 0.8
     - [Use case 21, Change item position](#use-case-21-change-item-position)
         - [Scenario 21.1](#scenario-211)
         - [Scenario 21.2](#scenario-212)
-        - [Scenario 21.3](#scenario-213)
-        - [Scenario 21.4](#scenario-214)
-        - [Scenario 21.5](#scenario-215)
     - [Use case 22, Visualize items to be moved](#use-case-22-visualize-items-to-be-moved)
         - [Scenario 22.1](#scenario-221)
     - [Use case 23, Move item](#use-case-23-move-item)
         - [Scenario 23.1](#scenario-231)
-    - [Use case 24, Show warehouse order history](#use-case-24-show-warehouse-order-history)
+        - [Scenario 23.2](#scenario-232)
+    - [Use case 24, Show warehouse orders history](#use-case-24-show-warehouse-orders-history)
         - [Scenario 24.1](#scenario-241)
-    - [Use case 25, Place internal order to warehouse](#use-case-25-place-internal-order-to-warehouse)
+    - [Use case 25, Visualize items available in the warehouse](#use-case-25-visualize-items-available-in-the-warehouse)
         - [Scenario 25.1](#scenario-251)
-        - [Scenario 25.2](#scenario-252)
-    - [Use case 26, Show organizational unit order history](#use-case-26-show-organizational-unit-order-history)
+    - [Use case 26, Place internal order to warehouse](#use-case-26-place-internal-order-to-warehouse)
         - [Scenario 26.1](#scenario-261)
-    - [Use case 27, Fulfill internal order](#use-case-27-fulfill-internal-order)
+        - [Scenario 26.2](#scenario-262)
+    - [Use case 27, Show organizational unit order history](#use-case-27-show-organizational-unit-order-history)
         - [Scenario 27.1](#scenario-271)
-        - [Scenario 27.2](#scenario-272)
     - [Use case 28, Show items in pickup area](#use-case-28-show-items-in-pickup-area)
         - [Scenario 28.1](#scenario-281)
+    - [Use case 29, Move internal order item to pickup area](#use-case-29-move-internal-order-item-to-pickup-area)
+        - [Scenario 29.1](#scenario-291)
 - [Glossary](#glossary)
 - [System Design](#system-design)
 - [Deployment Diagram](#deployment-diagram)
@@ -194,7 +194,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 * **Alfred** goes back to work after the lunch break, and after logging in from his tablet he sees several items that passed the quality tests and need to be positioned in the warehouse. He scans each item with the barcode reader and the app suggests him where it has to be positioned. Some suggested spots are already taken because of an unexpected early delivery, so in those cases he manually inserts an available WH space for the item.  
 
-* **Sofia** logs in into the EzWh app on his Personal Computer and notice that new external orders have been delivered and need to be examined. She and her team decide which of them must be quality tested and she indicates on the app which items skip the test phase. After the tests are made, she inserts a report for each order describing the tests' outcome and indicates if the order is accepted or rejected.
+* **Sofia** logs in into the EzWh app on his Personal Computer and notice that new external orders have been delivered and need to be examined. She and her team decide which of them must be quality tested and she indicates on the app which items skip the test phase. After the tests are made, she inserts a outcome for each order describing the tests' outcome and indicates if the order is accepted or rejected.
 
 * **Kathryn** has to deal with lots of rejected orders from a supplier of LED components: 5 of the last 10 orders have been rejected due to the failure of the energy efficiency tests. She decides to terminate the relationship with this supplier and replace it with a new one: she logs into the EzWh on her PC, deletes the old supplier from the system and creates a new one, specifying the LED components he is able to supply. Since this new supplier is not able to supply all the necessary components, she get some from another supplier that was already supplying other items to the company. She then adds this new supplier into the corresponding items' list of possible suppliers.
 
@@ -309,7 +309,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Post condition | User has been authenticated and has access to the application |
 | Step#          |                          Description                          |
 | 1              |       Start application, user prompted for credentials        |
-| 2              |               User enters username and password               |
+| 2              |                User enters email and password                 |
 | 3              |                System does the authentication                 |
 | 4              |                   Main screen is displayed                    |
 
@@ -338,7 +338,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Post condition |            User has not been authenticated            |
 | Step#          |                      Description                      |
 | 1              |   Start application, user prompted for credentials    |
-| 2              |        User enters wrong username or password         |
+| 2              |          User enters wrong email or password          |
 | 3              |                 Authentication failed                 |
 | 4              | Notify user that wrong credentials have been inserted |
 
@@ -350,7 +350,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Post condition |                  User has not been authenticated                  |
 | Step#          |                            Description                            |
 | 1              |         Start application, user prompted for credentials          |
-| 2              |                 User enters username and password                 |
+| 2              |                  User enters email and password                   |
 | 3              |                       Authentication failed                       |
 | 4              | Notify user that account does not exist for the given credentials |
 
@@ -588,11 +588,10 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | 4              |        System verifies free space in the warehouse        |
 | 5              |    System suggests position to put the item on arrival    |
 | 6              | WH manager allocates position to put the item on arrival  |
-| 7              |      Repeat 1,2,3,4,5,6 for every item to be ordered      |
-| 8              |               WH manager confirms the order               |
-| 9              |     System creates new order with status In Progress      |
-| 10             |  System notifies the payment service about the new order  |
-| 11             |     System notifies the supplier about the new order      |
+| 7              |               WH manager confirms the order               |
+| 8              |     System creates new order with status In Progress      |
+| 9              |  System notifies the payment service about the new order  |
+| 10             |     System notifies the supplier about the new order      |
 
 ##### Scenario 9.2
 
@@ -607,24 +606,19 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | 4              |        System verifies free space in the warehouse        |
 | 5              |    System suggests position to put the item on arrival    |
 | 6              | WH manager allocates position to put the item on arrival  |
-| 7              |      Repeat 1,2,3,4,5,6 for every item to be ordered      |
-| 8              |               WH manager cancels the order                |
-| 9              |             System does not create the order              |
-| 10             |  System frees the allocated space to the selected items   |
+| 7              |               WH manager cancels the order                |
+| 8              |             System does not create the order              |
 
 ##### Scenario 9.3
 
-| Scenario 9.3   |          Place new order when warehouse is full           |
-| -------------- | :-------------------------------------------------------: |
-| Precondition   |                   WH manager logged in                    |
-| Post condition |               Order not placed to supplier                |
-| Step#          |                        Description                        |
-| 1              |             WH manager selects item to order              |
-| 2              | WH manager selects supplier from the item's supplier list |
-| 3              |            WH manager select quantity to order            |
-| 4              |    System verifies there is no space in the warehouse     |
-| 8              |                  WH manager is notified                   |
-| 9              |             System does not create the order              |
+| Scenario 9.3   |       Place new order when warehouse is full       |
+| -------------- | :------------------------------------------------: |
+| Precondition   |                WH manager logged in                |
+| Post condition |            Order not placed to supplier            |
+| Step#          |                    Description                     |
+| 1              |          WH manager selects item to order          |
+| 2              | WH manager is notified there is no available space |
+| 3              |          System does not create the order          |
 
 ### Use case 10, Read item location
 
@@ -648,68 +642,66 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 ##### Scenario 10.2
 
-| Scenario 10.2  |   Read location when item code not found   |
-| -------------- | :----------------------------------------: |
-| Precondition   |            WH worker logged in             |
-| Post condition |        Item location not displayed         |
-| Step#          |                Description                 |
-| 1              |        WH worker scans item barcode        |
-| 2              | Systems does not recognize/find item code  |
-| 3              |           WH worker is notified            |
-| 4              | WH worker is promted to retry or turn back |
+| Scenario 10.2  |   Read location when item code not found    |
+| -------------- | :-----------------------------------------: |
+| Precondition   |             WH worker logged in             |
+| Post condition |         Item location not displayed         |
+| Step#          |                 Description                 |
+| 1              |        WH worker scans item barcode         |
+| 2              |  Systems does not recognize/find item code  |
+| 3              |            WH worker is notified            |
+| 4              | WH worker is prompted to retry or turn back |
 
 
-### Use case 11, Insert quality test report
+### Use case 11, Insert quality test outcome
 
-| Actors Involved  |               QO worker               |
-| ---------------- | :-----------------------------------: |
-| Precondition     |          QO worker logged in          |
-| Post condition   |     Quality test report inserted      |
-| Nominal Scenario | Insert successful quality test report |
-| Variants         |   Insert failed quality test report   |
-| Exceptions       |           Skip quality test           |
-|                  |  Cancel test report insertion midway  |
+| Actors Involved  |               QO worker                |
+| ---------------- | :------------------------------------: |
+| Precondition     |          QO worker logged in           |
+| Post condition   |     Quality test outcome inserted      |
+| Nominal Scenario | Insert successful quality test outcome |
+| Variants         |   Insert failed quality test outcome   |
+|                  |           Skip quality test            |
+| Exceptions       |  Cancel test outcome insertion midway  |
 
 ##### Scenario 11.1
 
-| Scenario 11.1  |    Insert successful quality test report    |
-| -------------- | :-----------------------------------------: |
-| Precondition   |             QO worker logged in             |
-| Post condition |        Quality test report inserted         |
-| Step#          |                 Description                 |
-| 1              | QO worker selects item to insert report for |
-| 2              |  System prompts QO worker for report data   |
-| 3              |      QO worker confirms inserted data       |
-| 4              |   System verifies successful test outcome   |
-| 5              | System inserts quality report for the item  |
+| Scenario 11.1  |      Insert successful quality test outcome      |
+| -------------- | :----------------------------------------------: |
+| Precondition   |               QO worker logged in                |
+| Post condition |          Quality test outcome inserted           |
+| Step#          |                   Description                    |
+| 1              |   QO worker selects item to insert outcome for   |
+| 2              |    System prompts QO worker for outcome data     |
+| 3              |         QO worker confirms inserted data         |
+| 4              | System inserts quality test outcome for the item |
 
 ##### Scenario 11.2
 
-| Scenario 11.2  |            Insert failed quality test report             |
-| -------------- | :------------------------------------------------------: |
-| Precondition   |                   QO worker logged in                    |
-| Post condition |               Quality test report inserted               |
-| Step#          |                       Description                        |
-| 1              |       QO worker selects item to insert report for        |
-| 2              |         System prompts QO worker for report data         |
-| 3              |             QO worker confirms inserted data             |
-| 4              |           System verifies failed test outcome            |
-| 5              |        System inserts quality report for the item        |
-| 6              |             System flags the item to retrun              |
-| 7              |    System notifies supplier of failed item to retrun     |
-| 8              | System notifies payment service of failed item to return |
+| Scenario 11.2  |              Insert failed quality test outcome               |
+| -------------- | :-----------------------------------------------------------: |
+| Precondition   |                      QO worker logged in                      |
+| Post condition |                 Quality test outcome inserted                 |
+| Step#          |                          Description                          |
+| 1              |         QO worker selects item to insert outcome for          |
+| 2              |           System prompts QO worker for outcome data           |
+| 3              |               QO worker confirms inserted data                |
+| 4              |          System inserts quality outcome for the item          |
+| 5              |              System flags the item(s) to return               |
+| 6              |    System notifies supplier of rejected item(s) to return     |
+| 7              | System notifies payment service of rejected item(s) to return |
 
 ##### Scenario 11.3
 
-| Scenario 11.3  |        Cancel test report insertion midway         |
-| -------------- | :------------------------------------------------: |
-| Precondition   |                QO worker logged in                 |
-| Post condition |          Quality test report not inserted          |
-| Step#          |                    Description                     |
-| 1              |    QO worker selects item to insert report for     |
-| 2              |      System prompts QO worker for report data      |
-| 3              |         QO worker cancels report insertion         |
-| 4              | System does not insert quality report for the item |
+| Scenario 11.3  |        Cancel test outcome insertion midway         |
+| -------------- | :-------------------------------------------------: |
+| Precondition   |                 QO worker logged in                 |
+| Post condition |          Quality test outcome not inserted          |
+| Step#          |                     Description                     |
+| 1              |    QO worker selects item to insert outcome for     |
+| 2              |      System prompts QO worker for outcome data      |
+| 3              |         QO worker cancels outcome insertion         |
+| 4              | System does not insert quality outcome for the item |
 
 ### Use case 12, Show items in short supply
 
@@ -742,58 +734,58 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | 2              | Items in short supply are listed in the monitor  |
 | 3              | WH manager selects items and creates order (UC9) |
 
-### Use case 13, Insert item into catalog
+### Use case 13, Insert item into catalogue
 
-| Actors Involved  |           WH manager            |
-| ---------------- | :-----------------------------: |
-| Precondition     | Item not present in the catalog |
-| Post condition   |          Item inserted          |
-| Nominal Scenario |         Insert new item         |
-| Variants         |                                 |
-| Exceptions       |      Insert existing item       |
+| Actors Involved  |            WH manager             |
+| ---------------- | :-------------------------------: |
+| Precondition     | Item not present in the catalogue |
+| Post condition   |           Item inserted           |
+| Nominal Scenario |          Insert new item          |
+| Variants         |                                   |
+| Exceptions       |       Insert existing item        |
 
 ##### Scenario 13.1
 
-| Scenario 13.1  |                         Insert new item                         |
-| -------------- | :-------------------------------------------------------------: |
-| Precondition   |                 Item not present in the catalog                 |
-| Post condition |                          Item inserted                          |
-| Step#          |                           Description                           |
-| 1              |               WH manager asks to insert new item                |
-| 2              |            WH manager is prompted to enter item data            |
-| 3              | System verifies that item is not already present in the catalog |
-| 4              |               New item is inserted in the catalog               |
+| Scenario 13.1  |                          Insert new item                          |
+| -------------- | :---------------------------------------------------------------: |
+| Precondition   |                 Item not present in the catalogue                 |
+| Post condition |                           Item inserted                           |
+| Step#          |                            Description                            |
+| 1              |                WH manager asks to insert new item                 |
+| 2              |             WH manager is prompted to enter item data             |
+| 3              | System verifies that item is not already present in the catalogue |
+| 4              |               New item is inserted in the catalogue               |
 
 ##### Scenario 13.2
 
-| Scenario 13.2  |                    Insert existing item                     |
-| -------------- | :---------------------------------------------------------: |
-| Precondition   |                 Item present in the catalog                 |
-| Post condition |                      Item not inserted                      |
-| Step#          |                         Description                         |
-| 1              |             WH manager asks to insert new item              |
-| 2              |          WH manager is prompted to enter item data          |
-| 3              | System verifies that item is already present in the catalog |
-| 4              |             Item is not inserted in the catalog             |
+| Scenario 13.2  |                     Insert existing item                      |
+| -------------- | :-----------------------------------------------------------: |
+| Precondition   |                 Item present in the catalogue                 |
+| Post condition |                       Item not inserted                       |
+| Step#          |                          Description                          |
+| 1              |              WH manager asks to insert new item               |
+| 2              |           WH manager is prompted to enter item data           |
+| 3              | System verifies that item is already present in the catalogue |
+| 4              |             Item is not inserted in the catalogue             |
 
-### Use case 14, Modify item in catalog
+### Use case 14, Modify item in catalogue
 
-| Actors Involved  |         WH manager         |
-| ---------------- | :------------------------: |
-| Precondition     | Item exists in the catalog |
-| Post condition   |       Item modified        |
-| Nominal Scenario |    Modify existing item    |
-| Variants         |                            |
-| Exceptions       | Cancel modification midway |
+| Actors Involved  |          WH manager          |
+| ---------------- | :--------------------------: |
+| Precondition     | Item exists in the catalogue |
+| Post condition   |        Item modified         |
+| Nominal Scenario |     Modify existing item     |
+| Variants         |                              |
+| Exceptions       |  Cancel modification midway  |
 
 ##### Scenario 14.1
 
 | Scenario 14.1  |              Modify existing item              |
 | -------------- | :--------------------------------------------: |
-| Precondition   |           Item exists in the catalog           |
+| Precondition   |          Item exists in the catalogue          |
 | Post condition |                 Item modified                  |
 | Step#          |                  Description                   |
-| 1              |       WH manager opens catalog of items        |
+| 1              |      WH manager opens catalogue of items       |
 | 2              |       WH manager selects item to modify        |
 | 3              | WH manager is prompted to enter data to modify |
 | 4              |  System verifies correctness of inserted data  |
@@ -804,34 +796,34 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 | Scenario 14.2  |           Cancel modification midway           |
 | -------------- | :--------------------------------------------: |
-| Precondition   |           Item exists in the catalog           |
+| Precondition   |          Item exists in the catalogue          |
 | Post condition |               Item not modified                |
 | Step#          |                  Description                   |
-| 1              |       WH manager opens catalog of items        |
+| 1              |      WH manager opens catalogue of items       |
 | 2              |       WH manager selects item to modify        |
 | 3              | WH manager is prompted to enter data to modify |
 | 4              |     System notifies error in inserted data     |
 | 5              |    WH manager cancels modification request     |
 | 6              |              Item is not modified              |
 
-### Use case 15, Delete item from catalog
+### Use case 15, Delete item from catalogue
 
-| Actors Involved  |         WH manager         |
-| ---------------- | :------------------------: |
-| Precondition     | Item exists in the catalog |
-| Post condition   |        Item deleted        |
-| Nominal Scenario |    Delete existing item    |
-| Variants         |                            |
-| Exceptions       |                            |
+| Actors Involved  |          WH manager          |
+| ---------------- | :--------------------------: |
+| Precondition     | Item exists in the catalogue |
+| Post condition   |         Item deleted         |
+| Nominal Scenario |     Delete existing item     |
+| Variants         |                              |
+| Exceptions       |                              |
 
 ##### Scenario 15.1
 
 | Scenario 15.1  |             Delete existing item              |
 | -------------- | :-------------------------------------------: |
-| Precondition   |          Item exists in the catalog           |
+| Precondition   |         Item exists in the catalogue          |
 | Post condition |                 Item deleted                  |
 | Step#          |                  Description                  |
-| 1              |       WH manager opens catalog of items       |
+| 1              |      WH manager opens catalogue of items      |
 | 2              |       WH manager selects item to delete       |
 | 3              | WH manager is asked to confirm delete request |
 | 4              |                Item is deleted                |
@@ -853,7 +845,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Precondition   |               Item and supplier exist and not already linked               |
 | Post condition |                          Item linked to supplier                           |
 | Step#          |                                Description                                 |
-| 1              |                     WH manager opens catalog of items                      |
+| 1              |                    WH manager opens catalogue of items                     |
 | 2              |               WH manager selects item to link to a supplier                |
 | 3              | WH manager views list of possible suppliers not already linked to the item |
 | 4              |                        WH manager selects supplier                         |
@@ -877,7 +869,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Precondition   |           Item and supplier exist and already linked           |
 | Post condition |                  Item unlinked from supplier                   |
 | Step#          |                          Description                           |
-| 1              |               WH manager opens catalog of items                |
+| 1              |              WH manager opens catalogue of items               |
 | 2              |        WH manager selects item to unlink from supplier         |
 | 3              | WH manager views list of possible suppliers linked to the item |
 | 4              |             WH manager selects supplier to unlink              |
@@ -943,95 +935,52 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 ##### Scenario 20.1
 
-| Scenario 20.1  |     Remove existing space from warehouse      |
-| -------------- | :-------------------------------------------: |
-| Precondition   |     Space is configured in the warehouse      |
-| Post condition |               Space is removed                |
-| Step#          |                  Description                  |
-| 1              |      WH manager opens list of suppliers       |
-| 2              |     WH manager selects supplier to delete     |
-| 3              | WH manager is asked to confirm delete request |
-| 4              |              Supplier is deleted              |
+| Scenario 20.1  |          Remove existing space from warehouse           |
+| -------------- | :-----------------------------------------------------: |
+| Precondition   |          Space is configured in the warehouse           |
+| Post condition |                    Space is removed                     |
+| Step#          |                       Description                       |
+| 1              |          WH manager opens warehouse structure           |
+| 2              | System renders selectable only structures with no items |
+| 2              |           WH manager selects space to delete            |
+| 3              |      WH manager is asked to confirm delete request      |
+| 4              |                Existing space is deleted                |
 
 ### Use case 21, Change item position
 
-| Actors Involved  |             WH manager, WH worker              |
-| ---------------- | :--------------------------------------------: |
-| Precondition     |               User is logged in                |
-| Post condition   |          Position of item is changed           |
-| Nominal Scenario |    Modify position of item in the warehouse    |
-| Variants         | Assign position to item entering the warehouse |
-|                  | Remove position of item exiting the warehouse  |
-| Exceptions       |       Item not present in the warehouse        |
-|                  |         New position is already taken          |
+| Actors Involved  |             WH manager, WH worker             |
+| ---------------- | :-------------------------------------------: |
+| Precondition     |               User is logged in               |
+| Post condition   |          Position of item is changed          |
+| Nominal Scenario |   Modify position of item in the warehouse    |
+| Variants         | Remove position of item exiting the warehouse |
+| Exceptions       |                                               |
 
 ##### Scenario 21.1
 
 | Scenario 21.1  |              Modify position of item in the warehouse               |
 | -------------- | :-----------------------------------------------------------------: |
-| Precondition   |                          User is logged in                          |
+| Precondition   |                  Warehouse structure is visualized                  |
 | Post condition |                     Position of item is changed                     |
 | Step#          |                             Description                             |
-| 1              |          User scans an item or searches for it in the app           |
+| 1              |              User selects item to modify position for               |
 | 2              |             Item data and current position is displayed             |
-| 3              |                      User inserts new position                      |
-| 4              |              System verifies new position is available              |
+| 3              |         System renders selectable only available positions          |
+| 4              |                      User inserts new position                      |
 | 5              |                    User confirms position change                    |
 | 6              | Item is flagged as to be moved and new position is flagged as taken |
 
 ##### Scenario 21.2
 
-| Scenario 21.1  |           Assign position to item entering the warehouse            |
-| -------------- | :-----------------------------------------------------------------: |
-| Precondition   |                          User is logged in                          |
-| Post condition |                     Position of item is changed                     |
-| Step#          |                             Description                             |
-| 1              |       User scans entering item or searches for it in the app        |
-| 2              |             Item data and current position is displayed             |
-| 3              |             System suggests position to insert the item             |
-| 4              |                        User picks a position                        |
-| 5              |              System verifies new position is available              |
-| 6              |                    User confirms position change                    |
-| 7              | Item is flagged as to be moved and new position is flagged as taken |
-
-##### Scenario 21.3
-
-| Scenario 21.3  |     Remove position of item exiting the warehouse     |
-| -------------- | :---------------------------------------------------: |
-| Precondition   |                   User is logged in                   |
-| Post condition |              Position of item is changed              |
-| Step#          |                      Description                      |
-| 1              | User scans exiting item or searches for it in the app |
-| 2              |      Item data and current position is displayed      |
-| 3              |       User chooses to remove item from position       |
-| 4              |             User confirms position change             |
-| 5              |            Item is flagged as to be moved             |
-
-##### Scenario 21.4
-
-| Scenario 21.4  |           Item not present in the warehouse            |
-| -------------- | :----------------------------------------------------: |
-| Precondition   |                   User is logged in                    |
-| Post condition |            Position of item is not changed             |
-| Step#          |                      Description                       |
-| 1              | User scans entering item or searches for it in the app |
-| 2              |   System notifies item not present in the warehouse    |
-| 3              |          System prompts user to retry or exit          |
-| 4              |                 No position is changed                 |
-
-##### Scenario 21.5
-
-| Scenario 21.5  |             New position is already taken              |
-| -------------- | :----------------------------------------------------: |
-| Precondition   |                   User is logged in                    |
-| Post condition |            Position of item is not changed             |
-| Step#          |                      Description                       |
-| 1              | User scans entering item or searches for it in the app |
-| 2              |      Item data and current position is displayed       |
-| 3              |               User inserts new position                |
-| 4              |     System verifies new position is not available      |
-| 5              | System notifies user and prompts them to retry or exit |
-| 6              |                 No position is changed                 |
+| Scenario 21.2  | Remove position of item exiting the warehouse |
+| -------------- | :-------------------------------------------: |
+| Precondition   |       Warehouse structure is visualized       |
+| Post condition |          Position of item is changed          |
+| Step#          |                  Description                  |
+| 1              |   User selects item to remove position for    |
+| 2              |  Item data and current position is displayed  |
+| 3              |        User removes item from position        |
+| 4              |        Item is flagged as to be moved         |
 
 
 ### Use case 22, Visualize items to be moved
@@ -1057,81 +1006,111 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 ### Use case 23, Move item
 
-| Actors Involved  |            WH manager, WH worker             |
-| ---------------- | :------------------------------------------: |
-| Precondition     |              User is logged in               |
-| Post condition   | Item has been moved to the assigned position |
-| Nominal Scenario |        Move item to assigned position        |
-| Variants         |                                              |
-| Exceptions       |                                              |
+| Actors Involved  |                   WH worker                   |
+| ---------------- | :-------------------------------------------: |
+| Precondition     |       Items to be moved are visualized        |
+| Post condition   | Item has been moved to the assigned position  |
+| Nominal Scenario |        Move item to assigned position         |
+| Variants         |                                               |
+| Exceptions       | Assigned position is unexpectedly unavailable |
 
 ##### Scenario 23.1
 
 | Scenario 23.1  |        Move item to assigned position        |
 | -------------- | :------------------------------------------: |
-| Precondition   |              User is logged in               |
+| Precondition   |       Items to be moved are visualized       |
 | Post condition | Item has been moved to the assigned position |
 | Step#          |                 Description                  |
-| 1              |       User scans or selects moved item       |
-| 2              |          User confirms new position          |
+| 1              | WH worker scans or selects item to be moved  |
+| 2              |       WH worker confirms new position        |
 | 3              |     System unflags item from to be moved     |
-| 4              |    System links item to current position     |
+| 4              |      System links item to new position       |
 | 5              |        System frees previous position        |
 
+##### Scenario 23.2
 
-### Use case 24, Show warehouse order history
+| Scenario 23.2  |             Assigned position is unexpectedly unavailable              |
+| -------------- | :--------------------------------------------------------------------: |
+| Precondition   |                    Items to be moved are visualized                    |
+| Post condition | Item has been moved to a different position than the assigned position |
+| Step#          |                              Description                               |
+| 1              |                 WH worker scans or selects moved item                  |
+| 2              |              WH worker finds the new position unavailable              |
+| 3              |           WH worker assigns new position to the item (UC21)            |
+| 4              |                  System unflags item from to be moved                  |
+| 5              |                   System links item to new position                    |
+| 6              |                     System frees previous position                     |
+
+
+### Use case 24, Show warehouse orders history
 
 | Actors Involved  |            WH manager            |
 | ---------------- | :------------------------------: |
 | Precondition     |     WH manager is logged in      |
-| Post condition   |    Order history is displayed    |
+| Post condition   |   Orders history is displayed    |
 | Nominal Scenario | Show history of warehouse orders |
 | Variants         |                                  |
 | Exceptions       |                                  |
 
 ##### Scenario 24.1
 
-| Scenario 24.1  |                 Show history of warehouse orders                  |
-| -------------- | :---------------------------------------------------------------: |
-| Precondition   |                      WH manager is logged in                      |
-| Post condition |                    Order history is displayed                     |
-| Step#          |                            Description                            |
-| 1              |                  WH manager opens order history                   |
-| 2              | System prompts user to select between internal or external orders |
-| 3              |                       User makes selections                       |
-| 4              |             Order history is displayed on the screen              |
+| Scenario 24.1  |           Show history of warehouse orders            |
+| -------------- | :---------------------------------------------------: |
+| Precondition   |                WH manager is logged in                |
+| Post condition |              Orders history is displayed              |
+| Step#          |                      Description                      |
+| 1              | WH manager selects internal or external order history |
+| 2              |       Order history is displayed on the screen        |
 
+### Use case 25, Visualize items available in the warehouse
 
-
-### Use case 25, Place internal order to warehouse
-
-| Actors Involved  |             OU executive              |
-| ---------------- | :-----------------------------------: |
-| Precondition     |        OU executive logged in         |
-| Post condition   |       Order placed to warehouse       |
-| Nominal Scenario | Place new internal order to warehouse |
-| Variants         |                                       |
-| Exceptions       |     Cancel order creation midway      |
+| Actors Involved  |                       OU executive                        |
+| ---------------- | :-------------------------------------------------------: |
+| Precondition     |                     User is logged in                     |
+| Post condition   |           List of available items is displayed            |
+| Nominal Scenario | Visualize list of items available to order from warehouse |
+| Variants         |                                                           |
+| Exceptions       |                                                           |
 
 ##### Scenario 25.1
 
-| Scenario 25.1  |       Place new internal order to warehouse       |
-| -------------- | :-----------------------------------------------: |
-| Precondition   |              OU executive logged in               |
-| Post condition |             Order placed to warehouse             |
-| Step#          |                    Description                    |
-| 1              |        OU executive selects item to order         |
-| 2              |       OU executive select quantity to order       |
-| 3              |      Repeat 1,2 for every item to be ordered      |
-| 4              |          OU executive confirms the order          |
-| 5              | System creates new order with status In Progress  |
-| 6              | System notifies the warehouse about the new order |
+| Scenario 25.1  | Visualize list of items available to order from warehouse |
+| -------------- | :-------------------------------------------------------: |
+| Precondition   |                     User is logged in                     |
+| Post condition |           List of available items is displayed            |
+| Step#          |                        Description                        |
+| 1              |              User opens available items list              |
+| 2              |   Items available to order are displayed on the screen    |
 
-##### Scenario 25.2
+### Use case 26, Place internal order to warehouse
 
-| Scenario 25.2  |      Cancel order creation midway       |
+| Actors Involved  |              OU executive              |
+| ---------------- | :------------------------------------: |
+| Precondition     | Available items to order are displayed |
+| Post condition   |       Order placed to warehouse        |
+| Nominal Scenario | Place new internal order to warehouse  |
+| Variants         |                                        |
+| Exceptions       |      Cancel order creation midway      |
+
+##### Scenario 26.1
+
+| Scenario 26.1  |            Place new internal order to warehouse             |
+| -------------- | :----------------------------------------------------------: |
+| Precondition   |            Available items to order are displayed            |
+| Post condition |                  Order placed to warehouse                   |
+| Step#          |                         Description                          |
+| 1              |              OU executive selects item to order              |
+| 2              |            OU executive select quantity to order             |
+| 3              |           Repeat 1,2 for every item to be ordered            |
+| 4              |               OU executive confirms the order                |
+| 5              |       System creates new order with status In Progress       |
+| 6              | System flags ordered items as to be moved to the pickup area |
+
+##### Scenario 26.2
+
+| Scenario 26.2  |      Cancel order creation midway       |
 | -------------- | :-------------------------------------: |
-| Precondition   |         OU executive logged in          |
+| Precondition   | Available items to order are displayed  |
 | Post condition |    Order not placed to the warehouse    |
 | Step#          |               Description               |
 | 1              |   OU executive selects item to order    |
@@ -1140,7 +1119,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | 4              |     OU executive cancels the order      |
 | 5              |    System does not create the order     |
 
-### Use case 26, Show organizational unit order history
+### Use case 27, Show organizational unit order history
 
 | Actors Involved  |        OU executive        |
 | ---------------- | :------------------------: |
@@ -1150,51 +1129,15 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 | Variants         |                            |
 | Exceptions       |                            |
 
-##### Scenario 26.1
+##### Scenario 27.1
 
-| Scenario 26.1  |        Show history of OU orders         |
+| Scenario 27.1  |        Show history of OU orders         |
 | -------------- | :--------------------------------------: |
 | Precondition   |        OU executive is logged in         |
 | Post condition |        Order history is displayed        |
 | Step#          |               Description                |
 | 1              |     OU executive opens order history     |
 | 2              | Order history is displayed on the screen |
-
-### Use case 27, Fulfill internal order 
-
-| Actors Involved  |            WH manager, WH worker             |
-| ---------------- | :------------------------------------------: |
-| Precondition     |                User logged in                |
-| Post condition   |           Internal order fulfilled           |
-| Nominal Scenario |  Fulfill internal orders made to warehouse   |
-| Variants         |                                              |
-| Exceptions       | Ordered items not available in the warehouse |
-
-##### Scenario 27.1
-
-| Scenario 27.1  |                             Fulfill internal orders made to warehouse                              |
-| -------------- | :------------------------------------------------------------------------------------------------: |
-| Precondition   |                                           User logged in                                           |
-| Post condition |                                      Internal order fulfilled                                      |
-| Step#          |                                            Description                                             |
-| 1              |                                 User opens internal order history                                  |
-| 2              |                                   User selects an unfilled order                                   |
-| 3              |                     User checks availability of ordered items in the warehouse                     |
-| 4              |                   User flags the ordered items as to be moved to the pickup area                   |
-| 5              |                             System updates order status to In Progress                             |
-| 6              | System updates order status to Completed when all items in this order are moved to the pickup area |
-
-##### Scenario 27.2
-
-| Scenario 27.2  |          Ordered items not available in the warehouse          |
-| -------------- | :------------------------------------------------------------: |
-| Precondition   |                         User logged in                         |
-| Post condition |                  Internal order not fulfilled                  |
-| Step#          |                          Description                           |
-| 1              |               User opens internal order history                |
-| 2              |                 User selects an unfilled order                 |
-| 3              | User verifies unavailability of ordered items in the warehouse |
-| 4              |                  Order status is not updated                   |
 
 ### Use case 28, Show items in pickup area 
 
@@ -1208,15 +1151,36 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 ##### Scenario 28.1
 
-| Scenario 28.1  |         Show items available for pickup in the pickup area         |
-| -------------- | :----------------------------------------------------------------: |
-| Precondition   |                           User logged in                           |
-| Post condition |                   Items in pickup area displayed                   |
-| Step#          |                            Description                             |
-| 1              |                  User opens pickup area item list                  |
-| 2              | User is prompted to view all items or only items delivered to them |
-| 3              |                        User makes a choice                         |
-| 4              |                 Items in pickup area are displayed                 |
+| Scenario 28.1  |     Show items available for pickup in the pickup area      |
+| -------------- | :---------------------------------------------------------: |
+| Precondition   |                       User logged in                        |
+| Post condition |               Items in pickup area displayed                |
+| Step#          |                         Description                         |
+| 1              |              User opens pickup area item list               |
+| 2              | System displays items of user's interest in the pickup area |
+
+### Use case 29, Move internal order item to pickup area
+
+| Actors Involved  |                   WH worker                    |
+| ---------------- | :--------------------------------------------: |
+| Precondition     |        Items to be moved are visualized        |
+| Post condition   |     Item has been moved to the pickup area     |
+| Nominal Scenario | Move item of internal order to the pickup area |
+| Variants         |                                                |
+| Exceptions       |                                                |
+
+##### Scenario 29.1
+
+| Scenario 29.1  |   Move item of internal order to the pickup area    |
+| -------------- | :-------------------------------------------------: |
+| Precondition   | Items to be moved to the pickup area are visualized |
+| Post condition |       Item has been moved to the pickup area        |
+| Step#          |                     Description                     |
+| 1              |     WH worker scans or selects item to be moved     |
+| 2              |            WH worker confirms the moving            |
+| 3              |        System unflags item from to be moved         |
+| 4              |           System frees previous position            |
+| 5              |        System links item to the pickup area         |
 
 
 # Glossary
