@@ -60,10 +60,10 @@ At the end of the document we will have a table with the results of the estimati
 
 # Summary
 
-|                                    | Estimated effort | Estimated duration |
-| ---------------------------------- | ---------------: | -----------------: |
-| estimate by size                   |            200PH |          6.25 days |
-| estimate by product decomposition  |            208PH |          6.50 days |
-| estimate by activity decomposition |            224PH |          ~ 1 month |
+|                                    | Estimated effort |      Estimated duration |
+| ---------------------------------- | ---------------: | ----------------------: |
+| estimate by size                   |            200PH |               6.25 days |
+| estimate by product decomposition  |            208PH |               6.50 days |
+| estimate by activity decomposition |            224PH | 9 days (7 working days) |
 
-Comparing results we can see that the estimated effort is similar for the three techniques, but the estimated duration is different. The estimated duration is much longer for the activity decomposition technique. This is because the estimated duration is calculated by the number of days in the project, and the number of days in the project is much longer than the number of days in the size estimation. 
+Comparing results we can see that the estimated effort is similar for the three techniques. The differences are due to the different approaches used.
