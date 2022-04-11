@@ -2,10 +2,10 @@
 # Requirements Document 
 
 Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko, Alessandro Migliardi
-Last-Modified: 10 april 2022
+Last-Modified: 11 april 2022
 Date: 22 march 2022
 
-Version: 0.91
+Version: 0.92
 
  
 | Version number | Change                                          |
@@ -20,6 +20,7 @@ Version: 0.91
 | 0.8            | Added System design and Deployment diagram      |
 | 0.9            | Edited use cases and scenarios                  |
 | 0.91           | Added Glossary, updated FRs; updated UML images |
+| 0.92           | Fixed Deployment diagram and updated bgcolors   |
 
 
 # Contents
@@ -157,7 +158,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 # Context Diagram and interfaces
 
 ## Context Diagram
-<img src="./assets/ContextDiagram.png" alt="EzWh Context Diagram - UML use case diagram" style="background-color:white">
+<img src="./assets/ContextDiagram.png" alt="EzWh Context Diagram - UML use case diagram" style="background-color:#eee">
 
 ## Interfaces
 
@@ -1190,12 +1191,12 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 
 
 # Glossary
-<img src="./assets/Glossary.png" alt="EzWh Glossary - UML class diagram" style="background-color:white">
+<img src="./assets/Glossary.png" alt="EzWh Glossary - UML class diagram" style="background-color:#eee">
 
 # System Design
-<img src="./assets/SystemDesign.png" alt="EzWh System Design - UML class diagram" style="background-color:white">
+<img src="./assets/SystemDesign.png" alt="EzWh System Design - UML class diagram" style="background-color:#eee">
 
 # Deployment Diagram 
-<img src="./assets/DeploymentDiagram.png" alt="EzWh Deployment Diagram - UML deployment diagram" style="background-color:white">
+<img src="./assets/DeploymentDiagram_2.png" alt="EzWh Deployment Diagram - UML deployment diagram" style="background-color:#eee">
 
 
