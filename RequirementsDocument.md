@@ -1,11 +1,11 @@
 
 # Requirements Document 
 
-Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko, Alessandro Migliardi
+Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko
 Last-Modified: 11 april 2022
 Date: 22 march 2022
 
-Version: 0.92
+Version: 1.0
 
  
 | Version number | Change                                          |

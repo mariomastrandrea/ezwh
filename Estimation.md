@@ -1,9 +1,10 @@
 # Project Estimation  
-Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko, Alessandro Migliardi
+Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko
 
-Date: 06/04/2021
+Last Update: 12/04/2022
+Date: 06/04/2022
 
-Version: 0.1
+Version: 1.0
 
 
 # Estimation approach
@@ -13,29 +14,29 @@ At the end of the document we will have a table with the results of the estimati
 
 ## Estimate by size
 ### 
-|                                                                                                         |             Estimate |
-| ------------------------------------------------------------------------------------------------------- | -------------------: |
-| NC =  Estimated number of classes to be developed                                                       |                   10 |
-| A = Estimated average size per class, in LOC                                                            |              200 LOC |
-| S = Estimated size of project, in LOC (= NC * A)                                                        |             2000 LOC |
-| E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)                    |               200 PH |
-| C = Estimated cost, in euro (here use 1 person hour cost = 30 euro)                                     |                6000€ |
-| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) | 200/(4*8)= 6.25 days |
+|                                                                                                         |              Estimate |
+| ------------------------------------------------------------------------------------------------------- | --------------------: |
+| NC =  Estimated number of classes to be developed                                                       |                    15 |
+| A = Estimated average size per class, in LOC                                                            |               200 LOC |
+| S = Estimated size of project, in LOC (= NC * A)                                                        |              3000 LOC |
+| E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)                    |                300 PH |
+| C = Estimated cost, in euro (here use 1 person hour cost = 30 euro)                                     |                 9000€ |
+| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) | 200/(4*8)= 9.375 days |
 
 
 ## Estimate by product decomposition
 ### 
 | component name       | Estimated effort (person hours) |
 | -------------------- | ------------------------------: |
-| requirement document |                              52 |
-| GUI prototype        |                               8 |
-| design document      |                              40 |
-| code                 |                              52 |
-| unit tests           |                              24 |
+| requirement document |                              65 |
+| GUI prototype        |                              14 |
+| design document      |                              51 |
+| code                 |                              68 |
+| unit tests           |                              30 |
 | api tests            |                              20 |
-| management documents |                              12 |
-| **Total**            |                             224 |
-
+| management documents |                              13 |
+| **Total**            |                             261 |
+*This estimation has been obtained applying Delphi technique*
 
 ## Estimate by activity decomposition
 ### 
@@ -43,31 +44,34 @@ At the end of the document we will have a table with the results of the estimati
 | --------------------------- | ------------------------------: |
 | Analysis of requirements    |                              16 |
 | Requirements document       |                              40 |
-| Design of GUI prototype     |                               8 |
-| Plan of assignments         |                               4 |
+| Design of GUI prototype     |                              16 |
+| Plan of assignments         |                               8 |
 | Analysis of design document |                              16 |
 | Design document             |                              36 |
 | Coding                      |                              40 |
-| Database design             |                               4 |
-| Database creation           |                               6 |
+| Database design             |                               8 |
+| Database creation           |                               8 |
 | Code and Unit Testing       |                              32 |
 | System Testing              |                              12 |
+| Validation and Integration  |                              24 |
 | Deployment                  |                               8 |
 | End project self assessment |                               4 |
-| **Total**                   |                             226 |
+| Risk Management             |                              12 |
+| **Total**                   |                             280 |
 
 ### Gantt Diagram
 ![gantt_diagram](./assets/GanttDiagram.png)
 
-\*This diagram has been generated by <a href="https://www.onlinegantt.com">Online Gantt</a>\*
+
+*This diagram has been captured from the application ProjectLibre*
 
 
 # Summary
 
-|                                    | Estimated effort |      Estimated duration |
-| ---------------------------------- | ---------------: | ----------------------: |
-| estimate by size                   |            200PH |               6.25 days |
-| estimate by product decomposition  |            208PH |               6.50 days |
-| estimate by activity decomposition |            224PH | 9 days (7 working days) |
+|                                    | Estimated effort |          Estimated duration |
+| ---------------------------------- | ---------------: | --------------------------: |
+| estimate by size                   |            300PH |                  9.375 days |
+| estimate by product decomposition  |            261PH |                   8.16 days |
+| estimate by activity decomposition |            280PH | 8.75 days (11 calendar days) |
 
-Comparing results we can see that the estimated effort is similar for the three techniques. The differences are due to the different approaches used.
+The estimation results are different because they are based on different approaches. In our opinion the estimation by size is the most accurate one because it is based on the size of the project. Other approaches are based on personal experience and knowledge and they are not always accurate.

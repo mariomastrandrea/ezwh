@@ -1,9 +1,10 @@
 # Graphical User Interface Prototype  
+Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko
 
-Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko, Alessandro Migliardi
+Last Update: 12/04/2022
 Date: 10/04/2022
 
-Version: 0.9
+Version: 1.0
 
 
 ## Contents
