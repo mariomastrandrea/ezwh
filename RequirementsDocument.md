@@ -2,7 +2,7 @@
 # Requirements Document 
 
 Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko
-Last-Modified: 11 april 2022
+Last-Modified: 12 april 2022
 Date: 22 march 2022
 
 Version: 1.0
@@ -21,6 +21,7 @@ Version: 1.0
 | 0.9            | Edited use cases and scenarios                  |
 | 0.91           | Added Glossary, updated FRs; updated UML images |
 | 0.92           | Fixed Deployment diagram and updated bgcolors   |
+| 0.93           | Added Use Case Diagram                          |
 
 
 # Contents
@@ -294,7 +295,7 @@ EZWH (EaSy WareHouse) is a software application to support the management of a w
 # Use case diagram and use cases
 
 ## Use case diagram
-\<add the UML use case diagram>
+<img src="./assets/UseCaseDiagram.png" alt="EzWh Use Case Diagram - UML use case diagram" style="background-color:#eee">
 
 
 ### Use case 1, Log In
