@@ -2,7 +2,12 @@
 # Requirements Document 
 
 Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko
+
+
+
 Last-Modified: 12 april 2022
+
+
 Date: 22 march 2022
 
 Version: 1.0
@@ -22,6 +27,7 @@ Version: 1.0
 | 0.91           | Added Glossary, updated FRs; updated UML images |
 | 0.92           | Fixed Deployment diagram and updated bgcolors   |
 | 0.93           | Added Use Case Diagram                          |
+| 1.0            | Final Release                                   |
 
 
 # Contents

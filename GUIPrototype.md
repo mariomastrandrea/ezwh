@@ -2,6 +2,8 @@
 Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko
 
 Last Update: 12/04/2022
+
+
 Date: 10/04/2022
 
 Version: 1.0
@@ -103,6 +105,8 @@ Interfaces shared between different users
 ### Manage Warehouse Structure
 #### WH Spaces - map view
 ![manage_warehouse_map](./assets/gui/it/it-structure.png)
+
+
 ![structure_on_hover](./assets/gui/it/it-structure_on_hover.png)
 
 ##### WH Spaces - list view
