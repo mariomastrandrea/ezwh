@@ -10,6 +10,7 @@ Version: 0.2
 | :------------: | :---------- |
 | 0.1 | Initial version |
 | 0.2 | Added high level diagram and description, added verification matrix based on internal draft of design model  |
+|0.3|Added verification sequence diagrams|
 
 
 # Contents
@@ -77,5 +78,36 @@ The EzWh class represents the facade of the application.
 
 
 # Verification sequence diagrams 
-\<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
+
+![1](./assets/design/sequence_diagram/S1.1%20Create%20SKU.png)
+
+
+![2](./assets/design/sequence_diagram/S1.2%20Modify%20SKU%20location.png)
+
+
+![3](./assets/design/sequence_diagram/S2.1%20Create%20Position.png)
+
+
+![4](./assets/design/sequence_diagram/S2.4%20Modify%20aisle%20ID%2C%20row%20and%20column%20of%20P.png)
+
+
+![5](./assets/design/sequence_diagram/UC3%20%20Manage%20issue%20of%20restock%20orders.png)
+
+
+![6](./assets/design/sequence_diagram/S5.1.1%20Record%20restock%20order%20arrival.png)
+
+
+![7](./assets/design/sequence_diagram/UC5.2%20Manage%20testing%20of%20SKU%20Items%20of%20a%20restock%20Order.png)
+
+
+![8](./assets/design/sequence_diagram/UC5.3%20Manage%20acceptance%20of%20tested%20SKU%20Items%20of%20a%20restock%20Order.png)
+
+
+![9](./assets/design/sequence_diagram/UC6%20Manage%20return%20order%20of%20SKU%20items.png)
+
+
+![10](./assets/design/sequence_diagram/UC9%20Manage%20internal%20orders%20creation%20and%20acceptance.png)
+
+
+![11](./assets/design/sequence_diagram/S10.1%20Internal%20Order%20IO%20Completed.png)
