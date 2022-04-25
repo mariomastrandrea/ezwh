@@ -35,7 +35,7 @@ package it.polito.ezwh.data:
    /* Position */
 	- getAllPositions(): List<Position>
 	- createPosition(positionId: String, aisleId: String, row: String, col: String, maxWeight: float, maxVolume: float) : Position
-	- updatePosition(newAisleId: String, newRow: String, newCol: String, newMaxWeight: float, newMaxVolume: float, newOccupiedWeight: float, newOccupiedVolume: float): boolean  /* this updates also 'positionId' */
+	- updatePosition(positionId: String, newAisleId: String, newRow: String, newCol: String, newMaxWeight: float, newMaxVolume: float, newOccupiedWeight: float, newOccupiedVolume: float): boolean  /* this updates also 'positionId' */
    - updatePositionId(oldPositionId: String, newPositionId: String): boolean  /* this updates also 'aisleId', 'row' and 'col' */
    - deletePosition(positionId: String): boolean
 
@@ -85,7 +85,7 @@ package it.polito.ezwh.data:
 	- getIssuedInternalOrders(): List<InternalOrder>
 	- getAcceptedInternalOrders(): List<InternalOrder>
 	- getInternalOrderById(id: int): InternalOrder
-	- createInternalOrder(issueDate: LocalDateTime, products: List<Map<Sku, int>>, customerId: int): InternalOrder
+	- createInternalOrder(issueDate: LocalDateTime, products: List<Map<Sku, Integer>>, customerId: int): InternalOrder
 	- updateInternalOrder(id: int, newState: String, products: Map<String, Object>): boolean
 	- deleteInternalOrder(id: int): boolean
 
