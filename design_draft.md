@@ -157,7 +157,7 @@ package it.polito.ezwh.data:
 - ReturnOrder
 	+ id: int {get; }
 	+ returnDate: LocalDateTime {get; }
-	+ products: Map<String, Object> {get; }
+	+ products: List<Map<String, Object>> {get; }
 	+ restockOrderId: int {get; }
 
 - InternalOrder

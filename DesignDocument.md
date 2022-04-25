@@ -5,13 +5,13 @@ Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko
 
 Date:
 
-Version: 0.2
-| Version Number | Description |
-| :------------: | :---------- |
-| 0.1 | Initial version |
-| 0.2 | Added high level diagram and description, added verification matrix based on internal draft of design model  |
-|0.3|Added verification sequence diagrams|
-|0.35|Updated verification sequence diagrams|
+Version: 0.35
+| Version Number | Description                                                                                                 |
+| :------------: | :---------------------------------------------------------------------------------------------------------- |
+|      0.1       | Initial version                                                                                             |
+|      0.2       | Added high level diagram and description, added verification matrix based on internal draft of design model |
+|      0.3       | Added verification sequence diagrams                                                                        |
+|      0.35      | Updated verification sequence diagrams                                                                      |
 
 
 # Contents
@@ -60,13 +60,13 @@ The EzWh class represents the facade of the application.
 # Verification traceability matrix
 |  FR   |  SKU  | SKUItem | Position | TestDescriptor | TestResult | User  | RestockOrder | ReturnOrder | InternalOrder | Item  | EzWh  |
 | :---: | :---: | :-----: | :------: | :------------: | :--------: | :---: | :----------: | :---------: | :-----------: | :---: | :---: |
-|  FR1  |       |         |          |                |            |    X   |              |             |               |       |    X   |
-|  FR2  |    X   |         |          |                |            |       |              |             |               |       |    X   |
-|  FR3  |       |         |     X     |         X       |      X      |       |              |             |               |       |    X   |
-|  FR4  |       |         |          |                |            |   X    |              |             |               |       |    X   |
-|  FR5  |   X    |    X     |          |                |    X        |   X    |       X       |     X        |               |       |   X    |
-|  FR6  |   X    |   X      |          |                |            |       |              |             |         X      |       |   X    |
-|  FR7  |       |         |          |                |            |       |              |             |               |    X   |    X   |
+|  FR1  |       |         |          |                |            |   X   |              |             |               |       |   X   |
+|  FR2  |   X   |         |          |                |            |       |              |             |               |       |   X   |
+|  FR3  |       |         |    X     |       X        |     X      |       |              |             |               |       |   X   |
+|  FR4  |       |         |          |                |            |   X   |              |             |               |       |   X   |
+|  FR5  |   X   |    X    |          |                |     X      |   X   |      X       |      X      |               |       |   X   |
+|  FR6  |   X   |    X    |          |                |            |       |              |             |       X       |       |   X   |
+|  FR7  |       |         |          |                |            |       |              |             |               |   X   |   X   |
 
 
 
