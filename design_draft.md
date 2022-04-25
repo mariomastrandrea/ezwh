@@ -77,7 +77,7 @@ package it.polito.ezwh.data:
    /* ReturnOrder */
    - getAllReturnOrders(): List<ReturnOrder>
 	- getReturnOrderById(id: int): ReturnOrder
-	- createReturnOrder(returnDate: LocalDateTime, products: Map<String, Object>, restockOrderId: int): ReturnOrder
+	- createReturnOrder(returnDate: LocalDateTime, products: List<Map<String, Object>>, restockOrderId: int): ReturnOrder
 	- deleteReturnOrder(id: int): boolean
 	
    /* InternalOrder */
