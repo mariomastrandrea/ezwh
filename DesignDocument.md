@@ -11,6 +11,7 @@ Version: 0.2
 | 0.1 | Initial version |
 | 0.2 | Added high level diagram and description, added verification matrix based on internal draft of design model  |
 |0.3|Added verification sequence diagrams|
+|0.35|Updated verification sequence diagrams|
 
 
 # Contents
