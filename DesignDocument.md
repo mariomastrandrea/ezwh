@@ -55,6 +55,8 @@ The EzWh class represents the façade of the application and is implemented as a
 
 <img src="./assets/design/DesignDiagram.png" alt="EzWh Low Level Design - UML class diagram" style="background-color:#eee">
 
+*All data types (class attributes, method parameters and method return types) refers to Java primitive types or Java main classes, and are expressed according to Java language conventions*
+
 
 # Verification traceability matrix
 
