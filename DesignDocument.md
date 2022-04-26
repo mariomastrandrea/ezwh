@@ -45,7 +45,7 @@ The application is composed of a main package and a set of subpackages, describe
 
 * it.polito.ezwh (the main package) contains the main application, in particular the façade
 * it.polito.ezwh.gui contains the graphical user interface
-* it.polito.ezwh.data contains the data structures used by the application
+* it.polito.ezwh.data contains the data structures used by the application and the database access
 * it.polito.ezwh.exceptions contains the code used by the application to handle exceptions triggered by the user
 
 The EzWh application follows the **MVC** (Model-View-Controller) architectural pattern consisting of:
