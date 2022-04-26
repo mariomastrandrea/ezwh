@@ -35,40 +35,47 @@ The design must satisfy the Official Requirements document, notably functional a
 
 
 # High level design 
-The proposed architecture for EzWh software is based on the high level layered design. 
+The proposed architecture for EzWh software is based on the high level **layered** design. 
 
-The high level design is composed by a set of layers, each one of them representing a different level of abstraction.
+The high level design is composed by a set of **layers**: *GUI (front-end), Application Logic and Data(DB)*
 
 <img src="./assets/design/high_level_diagram.png" alt="EzWh High Level Design" style="background-color:#eee">
 
 The application is composed of a main package and a set of subpackages, described by the following bulleted list:
 
-* it.polito.ezwh (the main package) contains the main application
+* it.polito.ezwh (the main package) contains the main application, in particular the façade
 * it.polito.ezwh.gui contains the graphical user interface
-* it.polito.ezwh.data contains the data structures
+* it.polito.ezwh.data contains the data structures used by the application
 * it.polito.ezwh.exceptions contains the code used by the application to handle exceptions triggered by the user
+
+The EzWh application follows the **MVC** (Model-View-Controller) architectural pattern consisting of:
+- Model -> all the classes in *data* subpackage where are represented the data structures
+- View -> GUI (front-end)
+- Controller -> *EzWh* - the class exposing the APIs of the app back-end, that performs interaction on the data objects and manages user inputs from the *View*.
 
 # Low level design
 In the following diagram, the classes of the high level design are exploded in the low level design.
 
-The EzWh class represents the façade of the application and is implemented as a Singleton instance.
+The *EzWh* class represents the **façade** of the application and is implemented as a **Singleton** instance.
+
+The *DbManager* class complies with **Repository Pattern**, so it represents the unique access point to all the persistent data managed by the application and it is the only one interacting with the Database. It is implemented as a **Singleton** instance too.
 
 <img src="./assets/design/DesignDiagram.png" alt="EzWh Low Level Design - UML class diagram" style="background-color:#eee">
 
-*All data types (class attributes, method parameters and method return types) refers to Java primitive types or Java main classes, and are expressed according to Java language conventions*
+*All data types (class attributes, method parameters and method return types) refers to Java primitive types or Java main classes, and are expressed according to Java language conventions. Regarding the collections we used interfaces like List instead of specific classes in order to increase the level of abstraction and give to developers the possibility of choosing the best implementation*
 
 
 # Verification traceability matrix
 
-|  FR   |  SKU  | SKUItem | Position | TestDescriptor | TestResult | User  | RestockOrder | ReturnOrder | InternalOrder | Item  | EzWh  |
-| :---: | :---: | :-----: | :------: | :------------: | :--------: | :---: | :----------: | :---------: | :-----------: | :---: | :---: |
-|  FR1  |       |         |          |                |            |   X   |              |             |               |       |   X   |
-|  FR2  |   X   |         |          |                |            |       |              |             |               |       |   X   |
-|  FR3  |       |         |    X     |       X        |     X      |       |              |             |               |       |   X   |
-|  FR4  |       |         |          |                |            |   X   |              |             |               |       |   X   |
-|  FR5  |   X   |    X    |          |                |     X      |   X   |      X       |      X      |               |       |   X   |
-|  FR6  |   X   |    X    |          |                |            |       |              |             |       X       |       |   X   |
-|  FR7  |       |         |          |                |            |       |              |             |               |   X   |   X   |
+|  FR   |  SKU  | SKUItem | Position | TestDescriptor | TestResult | User  | RestockOrder | ReturnOrder | InternalOrder | Item  | EzWh  | DbManager|
+| :---: | :---: | :-----: | :------: | :------------: | :--------: | :---: | :----------: | :---------: | :-----------: | :---: | :---: | :---:|
+|  FR1  |       |         |          |                |            |   X   |              |             |               |       |   X   |   X   |
+|  FR2  |   X   |         |          |                |            |       |              |             |               |       |   X   | X   |
+|  FR3  |       |         |    X     |       X        |     X      |       |              |             |               |       |   X   | X   |
+|  FR4  |       |         |          |                |            |   X   |              |             |               |       |   X   | X   |
+|  FR5  |   X   |    X    |          |                |     X      |   X   |      X       |      X      |               |       |   X   | X   |
+|  FR6  |   X   |    X    |          |                |            |       |              |             |       X       |       |   X   | X   |
+|  FR7  |       |         |          |                |            |       |              |             |               |   X   |   X   | X   |
 
 
 # Verification sequence diagrams 

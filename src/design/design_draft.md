@@ -1,13 +1,17 @@
 # High level architecture
 
-MVC?
-
-Façade
+- **3 Layers**: *GUI* (front-end), *Application Logic*, *Data* (DB)
+- **MVC** (Model-View-Controller): 
+  - View -> gui (not implemented in the application logic layer)
+  - Controller -> *EzWh* class - contains all the methods implementations for the APIs
+  - Model -> (all other classes in the it.polito.ezwh.data package)
+- **Façade** -> all the clients' requests are managed by the *EzWh* class, which represent the *façade* of the application
+- **Repository** -> the *DbManager* class represents the unique access point to all the persistent data managed by the application and it is the only one interacting with the Database 
 
 
 # Packages:
-- it.polito.ezwh
-	- it.polito.ezwh.data
+- **it.polito.ezwh**
+	- **it.polito.ezwh.data**
 	- it.polito.ezwh.exception
 	- it.polito.ezwh.gui
 
@@ -20,7 +24,7 @@ Façade
 - UserType \<enum> {CLERK, CUSTOMER, DELIVERYEMPLOYEE, MANAGER, QUALITYEMPLOYEE, SUPPLIER}
 
 ### classes
-- EzWh (façade)
+- **EzWh** (façade)
   
    #### *// Sku*
   	- getSkuById(id: int): Sku
@@ -102,7 +106,7 @@ Façade
 	- updateItem(id: int, newDescription: String, newPrice: float): boolean
 	- deleteItem(id: int): boolean
   
-- Sku
+- **Sku**
 	+ id: int {get; } 
 	+ description: String {get; set;}
 	+ weight: float {get; set;}
@@ -113,14 +117,14 @@ Façade
 	+ price: float	{get; set;}
 	+ testDescriptors: List\<Integer> {get; set;}
 	
-- SkuItem
+- **SkuItem**
 	+ rfid: String {get; set;}
 	+ skuId: int {get; }
 	+ available: int {get; set;}   // 0 or 1
 	+ dateOfStock: LocalDateTime {get; set;}
 	+ testResults: List\<Integer> {get; set;}
 		
-- Position
+- **Position**
 	+ positionId: String {get; set;}
 	+ aisle: String {get; set;}
 	+ row: String  {get; set;}
@@ -130,20 +134,20 @@ Façade
 	+ occupiedWeight: float {get; set;}
 	+ occupiedVolume: float {get; set;}
 
-- TestDescriptor
+- **TestDescriptor**
 	+ id: int {get; }
 	+ name: String {get; set;}
 	+ procedureDescription: String {get; set;}
 	+ idSku: int {get; set;}
 
-- TestResult
+- **TestResult**
 	+ id: int {get; }
 	+ rfid: String {get; }
 	+ testDescriptorId: int {get; set;}
 	+ date: LocalDate {get; set;}
 	+ result: boolean {get; set;}
 
-- User
+- **User**
 	+ id: int {get; }
 	+ name: String {get; }
 	+ surname: String {get; }
@@ -151,7 +155,7 @@ Façade
 	+ type: UserType {get; set;}
 	+ password: String {get; set;}
 
-- RestockOrder
+- **RestockOrder**
 	+ id: int {get; }
 	+ issueDate: LocalDateTime {get; }
 	+ state: RestockOrderState {get; set;}
@@ -160,28 +164,103 @@ Façade
 	+ transportNote: Map\<String, String> {get; set;}
 	+ skuItems: Map\<String, Object> {get; set->merge;}
 
-- ReturnOrder
+- **ReturnOrder**
 	+ id: int {get; }
 	+ returnDate: LocalDateTime {get; }
 	+ products: List\<Map\<String, Object>> {get; }
 	+ restockOrderId: int {get; }
 
-- InternalOrder
+- **InternalOrder**
 	+ id: int {get; }
 	+ issueDate: LocalDateTime {get; }
 	+ state: InternalOrderState {get; set;}
 	+ products: List\<Map\<String, Object>> {get; }
 	+ customerId: int {get; }
 
-- Item
+- **Item**
 	+ id: int {get; }
 	+ description: String {get; set;}
 	+ price: float {get; set;}
 	+ skuId: int {get; }
 	+ supplierId: int {get; }
+  
+// to be reviewed
 
-- Supplier?
-- Customer?
+- **DbManager**
+   - (private) openDbConnection(): boolean 
+   - (private) closeDbConnection(): boolean
+   
+   *// sku*
+   - getSku(id: int): Sku
+	- getAllSkus(): List\<Sku>
+	- storeSku(newSku: Sku): Sku
+   - updateSku(updatedSku: Sku): Sku
+	- deleteSku(id: int): Sku
+   
+   *// skuItem*
+   - getAllSkuItems(): List\<SkuItem>
+	- getAvailableSkuItems(skuId: int): List\<SkuItem>
+	- getSkuItem(rfid: String): SkuItem
+	- storeSkuItem(newSkuItem: SkuItem): SkuItem
+	- updateSkuItem(updatedSkuItem: SkuItem): SkuItem
+   - deleteSkuItem(rfid: String): SkuItem
+
+   *// Position*
+	- getAllPositions(): List\<Position>
+	- storePosition(newPosition: Position): Position
+	- updatePosition(updatedPosition: Position): Position
+   - deletePosition(positionId: String): Position
+
+   *// TestDescriptor*
+	- getAllTestDescriptors(): List\<TestDescriptor>
+	- getTestDescriptor(id: int): TestDescriptor
+	- storeTestDescriptor(newTestDescriptor: TestDescriptor): TestDescriptor
+	- updateTestDescriptor(updatedTestDescriptor: TestDescriptor): TestDescriptor
+	- deleteTestDescriptor(id: int): TestDescriptor
+
+   *// TestResult*
+	- getTestResults(rfid: String): List\<TestResults>
+	- getTestResult(rfid: String, id: int): TestResult
+	- storeTestResult(newTestResult: TestResult): TestResult
+	- updateTestResult(updatedTestResult: TestResult): TestResult
+	- deleteTestResult(rfid: String, id: int): TestResult
+
+   *// User*
+	- getUser(username: String, password: String): User   
+	- getAllUsersOfType(type: UserType): List\<User>
+	- getAllUsers(): List\<User>
+	- storeNewUser(newUser: User): User
+	- updateUser(updatedUser: User): User
+	- deleteUser(username: String, type: String): User
+
+   *// Restock Order*
+	- getAllRestockOrders(): List\<RestockOrder>
+	- getRestockOrdersInState(state: RestockOrderState): List\<RestockOrder>
+	- getRestockOrder(id: int): RestockOrder
+	- storeRestockOrder(newRestockOrder: RestockOrder): RestockOrder
+	- updateRestockOrder(updatedRestockOrder: RestockOrder): RestockOrder
+	- deleteRestockOrder(id: int): RestockOrder
+
+   *// ReturnOrder*
+   - getAllReturnOrders(): List\<ReturnOrder>
+	- getReturnOrder(id: int): ReturnOrder
+	- storeReturnOrder(newReturnOrder: ReturnOrder): ReturnOrder
+	- deleteReturnOrder(id: int): ReturnOrder
+	
+   *// InternalOrder*
+	- getAllInternalOrders(): List\<InternalOrder>
+	- getInternalOrdersInState(state: InternalOrderState): List\<InternalOrder>
+	- getInternalOrder(id: int): InternalOrder
+	- storeInternalOrder(newInternalOrder: InternalOrder): InternalOrder
+	- updateInternalOrder(updatedInternalOrder: InternalOrder): InternalOrder
+	- deleteInternalOrder(id: int): InternalOrder
+
+   *// Item*
+	- getAllItems(): List\<Item>
+	- getItem(id: int): Item
+	- storeItem(newItem: Item): Item
+	- updateItem(updatedItem: Item): Item
+	- deleteItem(id: int): Item
 
 ## Notes
 - All data types (class attributes, method parameters and method return types) refers to Java primitive types or Java main classes, and are expressed according to Java language conventions
