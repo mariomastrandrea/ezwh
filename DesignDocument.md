@@ -45,7 +45,6 @@ The high level design is composed by a set of **layers**: *GUI (front-end), Appl
 The application is composed of a main package and a set of subpackages, described by the following bulleted list:
 
 * it.polito.ezwh (the main package) contains the main application, in particular the façade
-* it.polito.ezwh.gui contains the graphical user interface
 * it.polito.ezwh.data contains the data structures used by the application and the database access
 * it.polito.ezwh.exceptions contains the code used by the application to handle exceptions triggered by the user
 
@@ -53,6 +52,9 @@ The EzWh application follows the **MVC** (Model-View-Controller) architectural p
 - Model -> all the classes in *data* subpackage where are represented the data structures
 - View -> GUI (front-end)
 - Controller -> *EzWh* - the class exposing the APIs of the app back-end, that performs interaction on the data objects and manages user inputs from the *View*.
+
+Note that GUI is not part of the *EzWh* package, but it is **a separate project**, so that can be developed independently of the *EzWh* package out of the *EzWh* repository. 
+
 
 # Low level design
 In the following diagram, the classes of the high level design are exploded in the low level design.
