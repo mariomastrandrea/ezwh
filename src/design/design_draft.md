@@ -57,7 +57,7 @@
 	- deleteTestDescriptor(id: int): boolean
 
    #### *// TestResult*
-	- getTestResultsBySkuItem(rfid: String): List\<TestResults>
+	- getTestResultsBySkuItem(rfid: String): List\<TestResult>
 	- getTestResult(rfid: String, id: int): TestResult
 	- createTestResult(rfid: String, idTestDescriptor: int, date: LocalDate, result: boolean): TestResult
 	- updateTestResult(rfid: String, id: int, newIdTestDescriptor: int, newDate: LocalDate, newResult: boolean): boolean
@@ -184,8 +184,6 @@
 	+ skuId: int {get; }
 	+ supplierId: int {get; }
   
-// to be reviewed
-
 - **DbManager**
    - (private) openDbConnection(): boolean 
    - (private) closeDbConnection(): boolean
@@ -208,7 +206,7 @@
    *// Position*
 	- getAllPositions(): List\<Position>
 	- storePosition(newPosition: Position): Position
-	- updatePosition(updatedPosition: Position): Position
+	- updatePosition(oldPosition: String, updatedPosition: Position): Position
    - deletePosition(positionId: String): Position
 
    *// TestDescriptor*
@@ -219,7 +217,7 @@
 	- deleteTestDescriptor(id: int): TestDescriptor
 
    *// TestResult*
-	- getTestResults(rfid: String): List\<TestResults>
+	- getTestResults(rfid: String): List\<TestResult>
 	- getTestResult(rfid: String, id: int): TestResult
 	- storeTestResult(newTestResult: TestResult): TestResult
 	- updateTestResult(updatedTestResult: TestResult): TestResult

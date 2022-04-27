@@ -3,9 +3,9 @@
 
 Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko
 
-Last-modified date: 25/04/2022
+Last-modified date: 27/04/2022
 
-Version: 0.4
+Version: 0.6
 
 
 | Version Number | Description                                                                                                 |
@@ -15,7 +15,8 @@ Version: 0.4
 |      0.3       | Added verification sequence diagrams                                                                        |
 |      0.35      | Updated verification sequence diagrams                                                                      |
 |      0.4       | Added low level class diagram                                                                               |
-|                |                                                                                                             |
+|      0.5       | Final design diagrams: high-level and low-level                                                             |
+|      0.6       | Fixed verification sequence diagrams                                                                        |
 
 
 # Contents
@@ -67,15 +68,15 @@ The *DbManager* class complies with **Repository Pattern**, so it represents the
 
 # Verification traceability matrix
 
-|  FR   |  SKU  | SKUItem | Position | TestDescriptor | TestResult | User  | RestockOrder | ReturnOrder | InternalOrder | Item  | EzWh  | DbManager|
-| :---: | :---: | :-----: | :------: | :------------: | :--------: | :---: | :----------: | :---------: | :-----------: | :---: | :---: | :---:|
-|  FR1  |       |         |          |                |            |   X   |              |             |               |       |   X   |   X   |
-|  FR2  |   X   |         |          |                |            |       |              |             |               |       |   X   | X   |
-|  FR3  |       |         |    X     |       X        |     X      |       |              |             |               |       |   X   | X   |
-|  FR4  |       |         |          |                |            |   X   |              |             |               |       |   X   | X   |
-|  FR5  |   X   |    X    |          |                |     X      |   X   |      X       |      X      |               |       |   X   | X   |
-|  FR6  |   X   |    X    |          |                |            |       |              |             |       X       |       |   X   | X   |
-|  FR7  |       |         |          |                |            |       |              |             |               |   X   |   X   | X   |
+|  FR   |  Sku  | SkuItem | Position | TestDescriptor | TestResult | User  | RestockOrder | ReturnOrder | InternalOrder | Item  | EzWh  | DbManager |
+| :---: | :---: | :-----: | :------: | :------------: | :--------: | :---: | :----------: | :---------: | :-----------: | :---: | :---: | :-------: |
+|  FR1  |       |         |          |                |            |   X   |              |             |               |       |   X   |     X     |
+|  FR2  |   X   |         |          |                |            |       |              |             |               |       |   X   |     X     |
+|  FR3  |       |         |    X     |       X        |     X      |       |              |             |               |       |   X   |     X     |
+|  FR4  |       |         |          |                |            |   X   |              |             |               |       |   X   |     X     |
+|  FR5  |   X   |    X    |          |                |     X      |   X   |      X       |      X      |               |       |   X   |     X     |
+|  FR6  |   X   |    X    |          |                |            |       |              |             |       X       |       |   X   |     X     |
+|  FR7  |       |         |          |                |            |       |              |             |               |   X   |   X   |     X     |
 
 
 # Verification sequence diagrams 
@@ -96,7 +97,7 @@ The *DbManager* class complies with **Repository Pattern**, so it represents the
 
 <img src="./assets/design/sequence_diagram/UC5.3%20Manage%20acceptance%20of%20tested%20SKU%20Items%20of%20a%20restock%20Order.png" alt="S5.3 Manage acceptance of tested SKU Items of a Restock Order" style="background-color:#eee">
 
-<img src="./assets/design/sequence_diagram/UC6%20Manage%20return%20order%20of%20SKU%20items.png" alt="S6 Manage return order of SKU Items" style="background-color:#eee">
+<img src="./assets/design/sequence_diagram/S6.1%20Manage%20return%20order%20of%20SKU%20items.png" alt="S6 Manage return order of SKU Items" style="background-color:#eee">
 
 <img src="./assets/design/sequence_diagram/UC9%20Manage%20internal%20orders%20creation%20and%20acceptance.png" alt="S9 Manage internal orders creation and acceptance" style="background-color:#eee">
 
