@@ -5,7 +5,7 @@ Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko
 
 Last-modified date: 27/04/2022
 
-Version: 0.6
+Version: 1.0
 
 
 | Version Number | Description                                                                                                 |
@@ -17,7 +17,7 @@ Version: 0.6
 |      0.4       | Added low level class diagram                                                                               |
 |      0.5       | Final design diagrams: high-level and low-level                                                             |
 |      0.6       | Fixed verification sequence diagrams                                                                        |
-
+|      1.0       | Final version                                                                                               |
 
 # Contents
 
