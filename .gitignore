@@ -1,3 +1,7 @@
 assets/.DS_Store
 .DS_Store
 .vscode/settings.json
+*.DS_Store
+code/server/coverage/
+code/server/node_modules/
+code/client/node_modules/
