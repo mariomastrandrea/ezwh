@@ -1,10 +1,12 @@
 const InternalOrder = require('../models/internalOrder');
-const generateInternalOrders = require('./utility');
+const DbManager = require('../db/dbManager');
 const dayjs = require('dayjs');
 
 // todo - verify params id
+const DbManagerInstance = new DbManager();
 
 const internalOrderStates = ['ISSUED', 'ACCEPTED', 'REFUSED', 'CANCELED', 'COMPLETED'];
+
 
 const getAllInternalOrders = ((req, res) => {
     // todo add login check
@@ -13,14 +15,15 @@ const getAllInternalOrders = ((req, res) => {
     }
     try{
         // todo: add sqlite3 query
-        const internalOrders = generateInternalOrders();
-
-        if(internalOrders.length > 0) {
-            return res.status(200).json(internalOrders);
+        const io = DbManagerInstance.getAllInternalOrders();
+        if(io.length > 0) {
+            return res.status(200).json(io);
         }
     }catch(err){
+        console.log(err);
         return res.status(500).send('Internal Server Error');
     }
+
     return res.status(500).send('Internal Server Error');
 });
 
@@ -31,11 +34,9 @@ const getIssuedInternalOrder = ((req, res) => {
     }
     try{
         // todo add sqlite3 query
-        const internalOrders = generateInternalOrders();
-        const internalOrdersIssued = internalOrders.filter(io => io.getState() === 'ISSUED');
-
-        if(internalOrders.length > 0) {
-            return res.status(200).json(internalOrdersIssued);
+        const io = DbManagerInstance.getInternalOrderInState('ISSUED');
+        if(io.length > 0) {
+            return res.status(200).json(io);
         }
         return res.status(500).send('Internal Server Error');
     }catch(err){
@@ -51,11 +52,10 @@ const getAcceptedInternalOrder = ((req, res) => {
     }
     try{
         // todo add sqlite3 query
-        const internalOrders = generateInternalOrders();
-        const internalOrdersIssued = internalOrders.filter(io => io.getState() === 'ACCEPTED');
+        const io = DbManagerInstance.getInternalOrderInState('ACCEPTED');
 
-        if(internalOrders.length > 0) {
-            return res.status(200).json(internalOrdersIssued);
+        if(io.length > 0) {
+            return res.status(200).json(io);
         }
     }catch(err){
         return res.status(500).send('Internal Server Error');
@@ -72,8 +72,7 @@ const getInternalOrderById = ((req, res) => {
     try{
         if(req.params.id){
             // todo add sqlite3 query
-            const notCompletedIO = generateInternalOrders().filter(io => io.getState() !== 'COMPLETED');
-            const internalOrder = notCompletedIO.filter(io => io.getId() === parseInt(req.params.id));
+            const internalOrder = DbManagerInstance.getInternalOrder(parseInt(req.params.id));
 
             if(internalOrder.length > 0) {
                 return res.status(200).json(internalOrder);
@@ -94,7 +93,7 @@ const createInternalOrder = ((req, res) => {
     try{
         if(req.body.issueDate && req.body.products && req.body.customerId){
             // to do add sqlite3 query to check get last id
-            const id = generateInternalOrders().length;
+            const id = DbManagerInstance.getNextAvailableIOId();
             const internalOrder = new InternalOrder(
                 id,
                 dayjs(req.body.issueDate).format('YYYY-MM-DD HH:mm'),
@@ -102,8 +101,9 @@ const createInternalOrder = ((req, res) => {
                 req.body.customerId
             );
             if(internalOrder){
-                // todo add sqlite3 query to push updated internal order
-                return res.status(201).send('Created');
+                newLength = DbManagerInstance.storeInternalOrder(internalOrder);
+                if (newLength > id) return res.status(201).send('Created');
+                return res.status(500).send('Creation error');
             }
         }else{
             return res.status(422).send('Unprocessable Entity');
@@ -121,7 +121,7 @@ const updateInternalOrder = ((req, res) => {
     try{
         if(req.params.id && internalOrderStates.includes(req.body.newState)){
             // todo add sqlite3 query
-            const internalOrder = generateInternalOrders().filter(io => io.getId() === parseInt(req.params.id));
+            const internalOrder = DbManagerInstance.getInternalOrder(parseInt(req.params.id));
             if(internalOrder.length > 0){
                 internalOrder[0].setState(req.body.newState);
                 if (req.body.newState === 'COMPLETED') {
@@ -132,6 +132,7 @@ const updateInternalOrder = ((req, res) => {
                     }
                 }
                 // todo add sqlite3 query to push updated internal order
+                DbManagerInstance.updateInternalOrder(internalOrder[0]);
                 return res.status(200).send('OK');
             }else {
                 return res.status(404).send('Not Found');
@@ -153,8 +154,9 @@ const deleteInternalOrder = ((req, res) => {
     try{
         if(req.params.id){
             // todo add sqlite3 query
-            const internalOrder = generateInternalOrders().filter(io => io.getId() === parseInt(req.params.id));
+            const internalOrder = DbManagerInstance.getInternalOrder(parseInt(req.params.id));
             // todo add sqlite3 query to delete internal order
+            DbManagerInstance.deleteInternalOrder(internalOrder[0].getId());
             return res.status(204).send('No Content');
         } else{
             return res.status(422).send('Unprocessable Entity');
