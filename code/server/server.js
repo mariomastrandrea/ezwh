@@ -1,5 +1,6 @@
 'use strict';
 const express = require('express');
+const io_router = require('./api/internalOrdersRouter');
 // init express
 const app = new express();
 const port = 3001;
@@ -18,5 +19,7 @@ app.get('/api/hello', (req,res)=>{
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+app.use('/api',io_router)
 
 module.exports = app;
