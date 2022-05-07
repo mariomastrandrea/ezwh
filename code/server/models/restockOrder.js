@@ -1,6 +1,5 @@
 class RestockOrder{
-    #restockOrderStates = ['ISSUED', 'DELIVERY', 'DELIVERED', 'TESTED', 'COMPLETED', 'COMPLETEDRETURN'];
-    // variables
+// variables
     #id;
     #issueDate;
     #state = 'ISSUED';
@@ -23,8 +22,13 @@ class RestockOrder{
     getState = () => this.#state;
     getProducts = () => this.#products;
     getSupplierId = () => this.#supplierId;
-    getTransportNote = () => this.#transportNote;
-    getSkuItems = () => this.#skuItems;
+    getTransportNote = () => this.getState() === 'ISSUED' ? null : this.#transportNote;
+    getSkuItems = function() {
+        if(this.getState() === 'ISSUED' || this.getState() === 'DELIVERY'){
+            return [];
+        }
+        return this.#skuItems;
+    };
     // setters
     setState = (state) => this.#state = state;
     setTransportNote = (transportNote) => this.#transportNote = transportNote;
@@ -40,3 +44,5 @@ class RestockOrder{
         skuItems: this.getSkuItems()
     });
 }
+
+module.exports = RestockOrder;
