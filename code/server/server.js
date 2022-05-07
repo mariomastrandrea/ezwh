@@ -27,7 +27,6 @@ app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
 
-app.use('/api',io_router)
 app.use('/api',testDescriptorRouter);
 app.use('/api',testResultRouter);
 app.use('/api',userRouter);
