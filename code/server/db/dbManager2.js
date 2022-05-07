@@ -165,11 +165,11 @@ class DbManager2 {
     //#endregion
 
     //#region User
-    async getUser(username){
+    async getUser(username,password){
         let user;
-        let sql = 'SELECT * FROM User WHERE Email=?';
+        let sql = 'SELECT * FROM User WHERE Email=? AND Password=?';
         return new Promise((resolve, reject) => {
-            this.#db.all(sql, [username], (err, rows) => {
+            this.#db.all(sql, [username,password], (err, rows) => {
                 if (err)
                     reject(err);
 
@@ -216,22 +216,22 @@ class DbManager2 {
         })
     }
 
-    async storeNewUser(user){
-        let sql = 'INSERT INTO TestResult(RFID, TestDescriptorId, Date, Result) VALUES (?,?,?,?)';
+    async storeNewUser(us){
+        let sql = 'INSERT INTO User(Name, Surname, Email, Type, Password) VALUES (?,?,?,?,?)';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()], function(err){
+            this.#db.run(sql, [us.getName(),us.getSurname(),us.getEmail(),us.getType(),us.getPassword()], function(err){
                 if (err)
                     reject(err);
 
-                resolve(new TestResult(this.lastID, tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()));
+                resolve(new User(this.lastID, us.getName(),us.getSurname(),us.getEmail(),us.getType(),us.getPassword()));
             });
         })
     }
 
     async updateUser(us){
-        let sql = 'UPDATE User SET Name=?,Surname=?,Type=?,Password=? WHERE Email=?';
+        let sql = 'UPDATE User SET Name=?,Surname=?,Email=?,Type=?,Password=? WHERE ID=?';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [us.getName(),us.getSurname(),us.getType(),us.getPassword(),us.getEmail()], function(err){
+            this.#db.run(sql, [us.getName(),us.getSurname(),us.getEmail(),us.getType(),us.getPassword(),us.getId()], function(err){
                 if (err)
                     reject(err);
 
@@ -240,10 +240,10 @@ class DbManager2 {
         })
     }
 
-    async deleteUser(username){
-        let sql = 'DELETE FROM User WHERE Email=?';
+    async deleteUser(id){
+        let sql = 'DELETE FROM User WHERE ID=?';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [username], function(err){
+            this.#db.run(sql, [id], function(err){
                 if (err)
                     reject(err);
 
