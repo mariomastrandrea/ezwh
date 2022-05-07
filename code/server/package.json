@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "dayjs": "^1.11.1",
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "joi": "^17.6.0"
   },
   "devDependencies": {
     "babel": "^6.23.0",
