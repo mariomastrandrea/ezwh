@@ -27,3 +27,5 @@ class ReturnOrder{
         restockOrderId: this.getRestockOrderId()
     });
 }
+
+module.exports = ReturnOrder;
