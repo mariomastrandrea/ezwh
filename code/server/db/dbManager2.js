@@ -2,6 +2,7 @@ const sqlite = require('sqlite3');
 const TestDescriptor = require('../models/testDescriptor');
 const TestResult = require('../models/testResult');
 const User = require('../models/user');
+const DBSOURCE = './db/ezwh.sqlite';
 
 
 class DbManager2 {
@@ -9,7 +10,7 @@ class DbManager2 {
     #db;
 
     constructor() {
-        this.#db = new sqlite.Database('C:/Users/User/Downloads/polito/Master/I.2/Software engineering/project/EzWhCoding/assets/coding/EZWHDB.sqlite', (err) => {
+        this.#db = new sqlite.Database(DBSOURCE, (err) => {
             if (err)
                 throw err;
         });
