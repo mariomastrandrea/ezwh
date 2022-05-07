@@ -2,6 +2,7 @@
 const express = require('express');
 const orders_router = require('./api/ordersRouter');
 const items_router = require('./api/itemsRouter');
+const testDescriptorRouter = require('./api/testDescriptorRouter');
 
 // init express
 const app = new express();
@@ -25,6 +26,6 @@ app.listen(port, () => {
 
 app.use('/api',orders_router)
 app.use('/api',items_router)
-
+app.use('/api',testDescriptorRouter)
 
 module.exports = app;

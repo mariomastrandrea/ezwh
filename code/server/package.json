@@ -4,11 +4,8 @@
     "aws-sdk": "^2.1129.0",
     "bcrypt": "^5.0.1",
     "dayjs": "^1.11.1",
-    "eslint": "^8.14.0",
     "express": "^4.17.3",
-    "joy": "^0.1.1",
-    "nan": "^2.15.0",
-    "node-pre-gyp": "^0.17.0",
+    "joi": "^17.6.0",
     "sqlite3": "^5.0.8"
   },
   "devDependencies": {
