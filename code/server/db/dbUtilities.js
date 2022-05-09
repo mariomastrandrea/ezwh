@@ -7,8 +7,10 @@ const tables = [
     'skuitem',
     'item',
     'restockOrder',
+    'restockOrderSkuItem',
     'returnOrder',
-    'internalOrder'
+    'internalOrder',
+    'internalOrderSkuItem',
 ];
 
 // tables' parameters
@@ -41,28 +43,59 @@ const params = {
         'FOREIGN KEY(skuId) REFERENCES sku(id)',
     ],
     restockOrder: [
-        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'id INTEGER',
         'issueDate text',
         'state text',
-        'products text',
+        'skuId numeric',
+        'description text',
+        'price numeric',
         'supplierId numeric',
-        'transportNote numeric',
-        'skuItems text',
+        'transportNote text',
+        'quantity numeric',
+        'PRIMARY KEY(id, skuId)',
+        'FOREIGN KEY(skuId) REFERENCES sku(id)'
+    ],
+    restockOrderSkuItem: [
+        'restockOrderId numeric',
+        'skuId numeric',
+        'RFID text',
+        'PRIMARY KEY(restockOrderId, skuId, RFID)',
+        'FOREIGN KEY(restockOrderId) REFERENCES restockOrder(id)',
+        'FOREIGN KEY(skuId) REFERENCES sku(id)',
+        'FOREIGN KEY(RFID) REFERENCES skuitem(RFID)'
     ],
     returnOrder: [
-        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'id INTEGER',
         'returnDate text',
-        'products text',
+        'skuId numeric',
+        'description text',
+        'price numeric',
+        'rfid text',
         'restockOrderId numeric',
-        'FOREIGN KEY(restockOrderId) REFERENCES restockOrder(id)'
+        'PRIMARY KEY(id, rfid)',
+        'FOREIGN KEY(restockOrderId) REFERENCES restockOrder(id)',
+        'FOREIGN KEY(skuId) REFERENCES sku(id)',
+        'FOREIGN KEY(rfid) REFERENCES skuitem(RFID)'
     ],
     internalOrder: [
-        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'id INTEGER',
         'issueDate text',
         'state text',
-        'products text',
+        'skuId text',
+        'description text',
+        'price numeric',
+        'quantity numeric',
         'customerId numeric',
-    ]
+        'PRIMARY KEY(id, SKUId)',
+        'FOREIGN KEY(SKUId) REFERENCES sku(id)',
+        'FOREIGN KEY(customerId) REFERENCES customer(id)'
+    ],
+    internalOrderSkuItem: [
+        'internalOrderId numeric',
+        'skuId numeric',
+        'RFID text',
+        'PRIMARY KEY(internalOrderId, skuId, RFID)',
+    ],
 }
 
 // db connection 
