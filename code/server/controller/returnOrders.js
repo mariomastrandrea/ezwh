@@ -3,21 +3,27 @@ const ReturnOrder = require('../models/returnOrder');
 
 const DbManager = require('../db/dbManager');
 const DbManagerInstance = DbManager.getInstance();
+
 const getAllReturnOrders = ((req, res) => {
     // todo add login check
     if(!true){
         return res.status(401).send('Unauthorized');
     }
-    try{
-        // todo add sqlite3 query
-        const ros = DbManagerInstance.getAllReturnOrders();
-        if(ros.length > 0) {
-            return res.status(200).json(ros);
-        }
-    }catch(err){
+    try {
+        DbManagerInstance.getAllReturnOrders().then((ros) => {
+            if (ros.length > 0) {
+                return res.status(200).json(ros);
+            } else {
+                return res.status(500).send('Internal Server Error');
+            }
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).send('Internal Server Error')
+        });
+    } catch (err) {
+        console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-    return res.status(500).send('Internal Server Error');
 });
 
 const getReturnOrderById = ((req, res) => {
@@ -27,14 +33,12 @@ const getReturnOrderById = ((req, res) => {
     }
     try{
         if(!isNaN(req.params.id)){
-            // todo add sqlite3 query
-            const returnOrder = DbManagerInstance.getReturnOrder(parseInt(req.params.id));
-
-            if(returnOrder.length > 0) {
-                return res.status(200).json(returnOrder);
-            }else{
+            DbManagerInstance.getReturnOrder(parseInt(req.params.id)).then((ro) => {
+                return res.status(200).json(ro);
+            }).catch((err) => {
+                console.log(err);
                 return res.status(404).send('Not Found');
-            }
+            });
         }else {
             return res.status(422).send('Unprocessable Entity');
         }
@@ -48,32 +52,49 @@ const createReturnOrder = ((req, res) => {
     if(!true){
         return res.status(401).send('Unauthorized');
     }
-    try{
-        if(
-            dayjs(req.body.returnDate, 'YYYY/MM/DD HH:mm', true).isValid() 
-            && req.body.products && !isNaN(req.body.restockOrderId)){
-            // to do add sqlite3 query to check get last id
-            const id = DbManagerInstance.getNextAvailableReturnOId();
-            console.log(id);
-            if(!DbManagerInstance.getRestockOrder(parseInt(req.body.restockOrderId))){
-                return res.status(404).send('Not Found');
-            }
-            const returnOrder = new ReturnOrder(
-                id,
-                dayjs(req.body.returnDate).format('YYYY-MM-DD HH:mm'),
-                req.body.products,
-                req.body.restockOrderId
-            );
-            console.log(returnOrder);
-            if(returnOrder){
-                newLength = DbManagerInstance.storeReturnOrder(returnOrder);
-                if (newLength+1 > id) return res.status(201).send('Created');
-                return res.status(500).send('Creation error');
-            }
-        }else{
+    try {
+        if (
+            dayjs(req.body.returnDate, 'YYYY/MM/DD HH:mm', true).isValid()
+            && dayjs() >= dayjs(req.body.returnDate, 'YYYY/MM/DD HH:mm')
+            && req.body.products.length > 0
+            && !isNaN(req.body.restockOrderId)
+        ) {
+
+            const products = req.body.products.map((p) => {
+                if (!isNaN(p.SKUId) && !isNaN(p.price)
+                    && p.description && p.price > 0
+                ) {
+                    return {
+                        SKUId: p.SKUId,
+                        description: p.description,
+                        price: p.price,
+                        RFID: p.RFID,
+                    };
+                } else return res.status(422).send('Unprocessable Entity');
+            });
+
+            DbManagerInstance.getNextAvailableId('returnOrder').then((id) => {
+                const ro = new ReturnOrder(
+                    dayjs(req.body.returnDate).format('YYYY/MM/DD HH:mm'),
+                    products,
+                    req.body.restockOrderId,
+                    id
+                );
+                DbManagerInstance.storeReturnOrder(ro.toJSON()).then((x) => {
+                    if (x > 0) {
+                        return res.status(201).send('Created');
+                    } else {
+                        return res.status(404).send('Not Found');
+                    }
+                })
+            }).catch((err) => {
+                console.log(err);
+                return res.status(503).send('Service Unavailable');
+            });
+        } else {
             return res.status(422).send('Unprocessable Entity');
         }
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
@@ -84,17 +105,23 @@ const deleteReturnOrder = ((req, res) => {
     if(!true){
         return res.status(401).send('Unauthorized');
     }
-    try{
-        if(!isNaN(req.params.id)){
-            // todo add sqlite3 query
-            const returnOrder = DbManagerInstance.getReturnOrder(parseInt(req.params.id));
-            // todo add sqlite3 query to delete internal order
-            DbManagerInstance.deleteReturnOrder(returnOrder[0].getId());
-            return res.status(204).send('No Content');
-        } else{
+    try {
+        if (isNaN(req.params.id)) {
             return res.status(422).send('Unprocessable Entity');
         }
-    }catch(err){
+        DbManagerInstance.deleteReturnOrder(parseInt(req.params.id)).then((x) => {
+            if (x > 0) {
+                return res.status(200).send('OK');
+            } else {
+                return res.status(503).send('Service Unavailable');
+            }
+        }).catch((err) => {
+            console.log(err);
+            return res.status(503).send('Service Unavailable');
+        });
+
+    } catch (err) {
+        console.log(err);
         return res.status(503).send('Service Unavailable');
     }
 });

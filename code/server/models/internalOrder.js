@@ -1,13 +1,14 @@
-class InternalOrder{
+class InternalOrder {
     // variables
     #id;
     #issueDate;
-    #state = 'ISSUED';
+    #state;
     #products;
     #customerId;
-    constructor(id, issueDate, products, customerId) {
+    constructor(issueDate, products, customerId, state = 'ISSUED', id = null) {
         this.#id = id;
         this.#issueDate = issueDate;
+        this.#state = state;
         this.#products = products;
         this.#customerId = customerId;
     }
@@ -18,10 +19,19 @@ class InternalOrder{
     getState = () => this.#state;
     getProducts = () => this.#products;
     getCustomerId = () => this.#customerId;
-    
+
     // setters
     setState = (state) => this.#state = state;
     setProducts = (products) => this.#products = products;
+    setSkuItems = (skuItems) => {
+        let products = [];
+        this.#products.forEach(product => {
+            skuItems.filter(skuItem => skuItem.SKUId === product.SKUId).forEach(skuItem => {
+                products.push([product.SKUId, product.description, product.price, skuItem.RFID]);
+            })
+        });
+        this.#products = products;
+    };
 
     // toJSON
     toJSON = () => ({

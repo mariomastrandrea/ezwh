@@ -6,7 +6,7 @@ class ReturnOrder{
     #restockOrderId;
 
     // constructor
-    constructor(id, returnDate, products, restockOrderId){
+    constructor(returnDate, products, restockOrderId, id=null){
         this.#id = id;
         this.#returnDate = returnDate;
         this.#products = products;

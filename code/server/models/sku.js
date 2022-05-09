@@ -1,3 +1,7 @@
+Number.prototype.pad = function(size) {
+    return new Array(size).join('0').slice((size || 2)*-1) + this;
+}
+
 class Sku {
     // variables
     #id;
@@ -11,7 +15,7 @@ class Sku {
     #testDescriptors;
 
     constructor(description, weight, volume, notes, price, availableQuantity, position="", testDescriptors=[], id=null) {
-        this.#id = id;
+        this.#id = id.pad(12);
         this.#description = description;
         this.#weight = weight;
         this.#volume = volume;

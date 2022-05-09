@@ -44,6 +44,8 @@ router.get('/restockOrdersIssued', getIssuedRestockOrders)
 
 router.post('/restockOrder', createRestockOrder)
 router.put('/restockOrder/:id', updateRestockOrder)
+router.put('/restockOrder/:id/skuItems', updateRestockOrder)
+router.put('/restockOrder/:id/transportNote', updateRestockOrder)
 router.delete('/restockOrder/:id', deleteRestockOrder)
 
 

@@ -83,6 +83,7 @@ const createSkuItem = ((req, res) => {
     try{
         if(
             !isNaN(req.body.RFID)
+            && req.body.RFID.length === 32
             && !isNaN(req.body.SKUId)
             && dayjs(req.body.DateOfStock).isValid()
             && dayjs() >= dayjs(req.body.DateOfStock)

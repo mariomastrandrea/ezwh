@@ -13,17 +13,34 @@ const getAllInternalOrders = ((req, res) => {
     if(!true){
         return res.status(401).send('Unauthorized');
     }
-    try{
-        // todo: add sqlite3 query
-        const io = DbManagerInstance.getAllInternalOrders();
-        if(io.length > 0) {
-            return res.status(200).json(io);
-        }
-    }catch(err){
+    try {
+        DbManagerInstance.getAllInternalOrders().then((ios) => {
+            if (ios.length > 0) {
+                ios.forEach(io => {
+                    if(io.getState() === 'COMPLETED'){
+                        let iosToReturn = [];
+                        DbManagerInstance.getInternalOrderSkuItems(io.getId()).then((skuItems) => {
+                            io.setSkuItems(skuItems);
+                            ios.push(io);
+                            
+                        }).catch((err) => {
+                            console.log(err);
+                        });
+                    }
+                });
+
+                return res.status(200).json(ios);
+            } else {
+                return res.status(500).send('Internal Server Error');
+            }
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).send('Internal Server Error')
+        });
+    } catch (err) {
+        console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-
-    return res.status(500).send('Internal Server Error');
 });
 
 const getIssuedInternalOrder = ((req, res) => {
@@ -31,14 +48,19 @@ const getIssuedInternalOrder = ((req, res) => {
     if(!true){
         return res.status(401).send('Unauthorized');
     }
-    try{
-        // todo add sqlite3 query
-        const io = DbManagerInstance.getInternalOrderInState('ISSUED');
-        if(io.length > 0) {
-            return res.status(200).json(io);
-        }
-        return res.status(500).send('Internal Server Error');
-    }catch(err){
+    try {
+        DbManagerInstance.getInternalOrderInState('ISSUED').then((ios) => {
+            if (ios.length > 0) {
+                return res.status(200).json(ios);
+            } else {
+                return res.status(500).send('Internal Server Error');
+            }
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).send('Internal Server Error')
+        });
+    } catch (err) {
+        console.log(err);
         return res.status(500).send('Internal Server Error');
     }
 
@@ -49,17 +71,21 @@ const getAcceptedInternalOrder = ((req, res) => {
     if(!true){
         return res.status(401).send('Unauthorized');
     }
-    try{
-        // todo add sqlite3 query
-        const io = DbManagerInstance.getInternalOrderInState('ACCEPTED');
-
-        if(io.length > 0) {
-            return res.status(200).json(io);
-        }
-    }catch(err){
+    try {
+        DbManagerInstance.getInternalOrderInState('ACCEPTED').then((ios) => {
+            if (ios.length > 0) {
+                return res.status(200).json(ios);
+            } else {
+                return res.status(500).send('Internal Server Error');
+            }
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).send('Internal Server Error')
+        });
+    } catch (err) {
+        console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-    return res.status(500).send('Internal Server Error');
 
 });
 
@@ -68,20 +94,28 @@ const getInternalOrderById = ((req, res) => {
     if(!true){
         return res.status(401).send('Unauthorized');
     }
-    try{
-        if(!isNaN(req.params.id)){
-            // todo add sqlite3 query
-            const internalOrder = DbManagerInstance.getInternalOrder(parseInt(req.params.id));
-
-            if(internalOrder.length > 0) {
-                return res.status(200).json(internalOrder);
-            }else{
+    try {
+        if (!isNaN(req.params.id)) {
+            DbManagerInstance.getInternalOrder(parseInt(req.params.id)).then((io) => {
+                let ioToReturn;
+                if(io.getState() === 'COMPLETED'){
+                    DbManagerInstance.getInternalOrderSkuItems(io.getId()).then((skuItems) => {
+                        io.setSkuItems(skuItems);
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                }
+                ioToReturn = io;
+                return res.status(200).json(ioToReturn);
+            }).catch((err) => {
+                console.log(err);
                 return res.status(404).send('Not Found');
-            }
-        }else {
+            });
+        } else {
             return res.status(422).send('Unprocessable Entity');
         }
-    } catch(err){
+    } catch (err) {
+        console.log(err);
         return res.status(500).send('Internal Server Error');
     }
 });
@@ -91,28 +125,53 @@ const createInternalOrder = ((req, res) => {
     if(!true){
         return res.status(401).send('Unauthorized');
     }
-    try{
-        if(
+    try {
+        if (
             dayjs(req.body.issueDate, 'YYYY/MM/DD HH:mm', true).isValid()
             && dayjs() >= dayjs(req.body.issueDate, 'YYYY/MM/DD HH:mm')
-            && req.body.products && !isNaN(req.body.customerId)){
-            // to do add sqlite3 query to check get last id
-            const id = DbManagerInstance.getNextAvailableIOId();
-            const internalOrder = new InternalOrder(
-                id,
-                dayjs(req.body.issueDate).format('YYYY/MM/DD HH:mm'),
-                req.body.products,
-                req.body.customerId
-            );
-            if(internalOrder){
-                newLength = DbManagerInstance.storeInternalOrder(internalOrder);
-                if (newLength+1 > id) return res.status(201).send('Created');
+            && req.body.products.length > 0
+            && !isNaN(req.body.customerId)
+        ) {
+
+            const products = req.body.products.map((p) => {
+                if (!isNaN(p.SKUId) && !isNaN(p.qty) && !isNaN(p.price)
+                    && p.qty > 0 && p.description && p.price > 0
+                ) {
+                    return {
+                        SKUId: p.SKUId,
+                        description: p.description,
+                        price: p.price,
+                        quantity: p.qty,
+                    };
+                } else return res.status(422).send('Unprocessable Entity');
+            });
+
+            DbManagerInstance.getNextAvailableId('internalOrder').then((id) => {
+
+
+                const io = new InternalOrder(
+                    dayjs(req.body.issueDate).format('YYYY/MM/DD HH:mm'),
+                    products,
+                    req.body.customerId,
+                    state = 'ISSUED',
+                    id
+                );
+                DbManagerInstance.storeInternalOrder(io.toJSON()).then((x) => {
+                    if (x > 0) {
+                        return res.status(201).send('Created');
+                    } else {
+                        return res.status(503).send('Service Unavailable');
+                    }
+                })
+            }).catch((err) => {
+                console.log(err);
                 return res.status(503).send('Service Unavailable');
-            }
-        }else{
+            });
+        } else {
             return res.status(422).send('Unprocessable Entity');
         }
-    }catch(err){
+    } catch (err) {
+        console.log(err);
         return res.status(503).send('Service Unavailable');
     }
 });
@@ -124,25 +183,35 @@ const updateInternalOrder = ((req, res) => {
     }
     try{
         if(!isNaN(req.params.id) && internalOrderStates.includes(req.body.newState)){
-            // todo add sqlite3 query
-            const internalOrder = DbManagerInstance.getInternalOrder(parseInt(req.params.id));
-            if(internalOrder.length > 0){
-                internalOrder[0].setState(req.body.newState);
-                if (req.body.newState === 'COMPLETED') {
-                    if(req.body.products){
-                        internalOrder[0].setProducts(req.body.products);
-                    }else {
-                        return res.status(422).send('Unprocessable Entity');
+            DbManagerInstance.getInternalOrder(parseInt(req.params.id)).then((io) => {
+                DbManagerInstance.updateInternalOrder({id: io.getId(), state: req.body.newState}).then((x) => {
+                    if(x > 0){
+                        let returnValues = {status:200, message: 'OK'};
+                        if(req.body.newState === 'COMPLETED'){
+                            for(const product of req.body.products){
+                                if(!product.SkuID ||!product.RFID || isNaN(product.SkuID) || isNaN(product.RFID) ){
+                                    return res.status(422).send('Unprocessable Entity');
+                                }
+                            }
+                            DbManagerInstance.storeInternalOrderSkuItems(io.getId(), req.body.products).then((x) => {
+                                if(x <= 0){
+                                    returnValues = {status:503, message: 'Service Unavailable'};
+                                }
+                            }).catch((err) => {
+                                console.log(err);
+                                returnValues = {status:503, message: 'Service Unavailable'};
+                            });
+                        }
+                        return res.status(returnValues.status).send(returnValues.message);
                     }
-                }else {
-                    return res.status(422).send('Unprocessable Entity');
-                }
-                // todo add sqlite3 query to push updated internal order
-                DbManagerInstance.updateInternalOrder(internalOrder[0]);
-                return res.status(200).send('OK');
-            }else {
+                }).catch((err) => {
+                    console.log(err);
+                    return res.status(503).send('Service Unavailable');
+                });
+            }).catch((err) => {
+                console.log(err);
                 return res.status(404).send('Not Found');
-            }
+            });
         }else{
             return res.status(422).send('Unprocessable Entity');
         }
@@ -157,17 +226,27 @@ const deleteInternalOrder = ((req, res) => {
     if(!true){
         return res.status(401).send('Unauthorized');
     }
-    try{
-        if(!isNaN(req.params.id)){
-            // todo add sqlite3 query
-            const internalOrder = DbManagerInstance.getInternalOrder(parseInt(req.params.id));
-            // todo add sqlite3 query to delete internal order
-            DbManagerInstance.deleteInternalOrder(internalOrder[0].getId());
-            return res.status(204).send('No Content');
-        } else{
+    try {
+        if (isNaN(req.params.id)) {
             return res.status(422).send('Unprocessable Entity');
         }
-    }catch(err){
+        DbManagerInstance.deleteInternalOrder(parseInt(req.params.id)).then((x) => {
+            if (x > 0) {
+                DbManagerInstance.deleteInternalOrderSkuItems(parseInt(req.params.id)).then((y) => {}).catch((err) => {
+                    console.log(err);
+                    return res.status(503).send('Service Unavailable');
+                });
+                return res.status(200).send('OK');
+            } else {
+                return res.status(503).send('Service Unavailable');
+            }
+        }).catch((err) => {
+            console.log(err);
+            return res.status(503).send('Service Unavailable');
+        });
+
+    } catch (err) {
+        console.log(err);
         return res.status(503).send('Service Unavailable');
     }
 });
