@@ -1,11 +1,11 @@
-class Item{
+class Item {
     #id;
     #description;
     #price;
     #skuId;
     #supplierId;
 
-    constructor(id, description, price, skuId, supplierId){
+    constructor(id, description, price, skuId, supplierId) {
         this.#id = id;
         this.#description = description;
         this.#price = price;

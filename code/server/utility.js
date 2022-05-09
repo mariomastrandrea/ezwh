@@ -1,7 +1,7 @@
 const dayjs = require('dayjs');
-const InternalOrder = require('../models/internalOrder');
-const ReturnOrder = require('../models/returnOrder');
-const RestockOrder = require('../models/restockOrder');
+const InternalOrder = require('./models/internalOrder');
+const ReturnOrder = require('./models/returnOrder');
+const RestockOrder = require('./models/restockOrder');
 
 const generateInternalOrders = function () {
     const io0 = new InternalOrder(0, dayjs(), [1, 2, 3], 1);
@@ -37,7 +37,7 @@ const generateRestockOrders = function () {
 
 
 module.exports = {
-    generateInternalOrders, 
-    generateReturnOrders, 
+    generateInternalOrders,
+    generateReturnOrders,
     generateRestockOrders
 }

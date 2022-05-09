@@ -1,21 +1,17 @@
-Number.prototype.pad = function(size) {
-    return new Array(size).join('0').slice((size || 2)*-1) + this;
-}
 
 class Sku {
-    // variables
     #id;
     #description;
-    #weight;
+    #weight;    
     #volume;
     #notes;
-    #position;
+    #position;  // Position ID
     #availableQuantity;
     #price;
     #testDescriptors;
 
-    constructor(description, weight, volume, notes, price, availableQuantity, position="", testDescriptors=[], id=null) {
-        this.#id = id.pad(12);
+    constructor(description, weight, volume, notes, price, availableQuantity, position = "", testDescriptors = [], id = null) {
+        this.#id = id?.pad(12);
         this.#description = description;
         this.#weight = weight;
         this.#volume = volume;
@@ -47,7 +43,7 @@ class Sku {
     setPrice = (price) => this.#price = price;
     setTestDescriptors = (testDescriptors) => this.#testDescriptors.push(testDescriptors);
 
-    // toJSON
+    // to serialize object in JSON format
     toJSON = () => ({
         id: this.getId(),
         description: this.getDescription(),
@@ -59,6 +55,10 @@ class Sku {
         price: this.getPrice(),
         testDescriptors: this.getTestDescriptors()
     });
+}
+
+Number.prototype.pad = function (size) {
+    return new Array(size).join('0').slice((size || 2) * -1) + this;
 }
 
 module.exports = Sku;

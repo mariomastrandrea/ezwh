@@ -227,7 +227,7 @@ const deleteRestockOrder = ((req, res) => {
         }
         DbManagerInstance.deleteRestockOrder(parseInt(req.params.id)).then((x) => {
             if (x > 0) {
-                DbManagerInstance.deleteRestockOrderSkuItems(parseInt(req.params.id)).then((y) => {}).catch((err) => {
+                DbManagerInstance.deleteRestockOrderSkuItems(parseInt(req.params.id)).then((y) => { }).catch((err) => {
                     console.log(err);
                     return res.status(503).send('Service Unavailable');
                 });

@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+
 const Sku = require('../models/sku');
 const SkuItem = require('../models/skuItem');
 const Item = require('../models/item');
@@ -7,117 +7,14 @@ const RestockOrder = require('../models/restockOrder');
 const InternalOrder = require('../models/internalOrder');
 const ReturnOrder = require('../models/returnOrder');
 
-const DBSOURCE = './db/ezwh.sqlite';
 
+const {
+    generateInternalOrders,
+    generateReturnOrders,
+    generateRestockOrders
+} = require('../utility');
 
-const tables = [
-    'sku',
-    'skuitem',
-    'item',
-    'restockOrder',
-    'restockOrderSkuItem',
-    'returnOrder',
-    'internalOrder',
-    'internalOrderSkuItem',
-]
-
-const params = {
-    sku: [
-        'id INTEGER PRIMARY KEY AUTOINCREMENT',
-        'description text',
-        'weight numeric',
-        'volume numeric',
-        'notes text',
-        'position text',
-        'availableQuantity numeric',
-        'price numeric',
-        'testDescriptor text'
-    ],
-    skuitem: [
-        'RFID text PRIMARY KEY',
-        'SKUId numeric',
-        'Available numeric',
-        'DateOfStock text',
-        'TestResults text',
-        'FOREIGN KEY(SKUId) REFERENCES sku(id)'
-    ],
-    item: [
-        'id INTEGER PRIMARY KEY AUTOINCREMENT',
-        'description text',
-        'price numeric',
-        'skuId numeric',
-        'supplierId numeric ',
-        'FOREIGN KEY(skuId) REFERENCES sku(id)',
-    ],
-    restockOrder: [
-        'id INTEGER',
-        'issueDate text',
-        'state text',
-        'skuId numeric',
-        'description text',
-        'price numeric',
-        'supplierId numeric',
-        'transportNote text',
-        'quantity numeric',
-        'PRIMARY KEY(id, skuId)',
-        'FOREIGN KEY(skuId) REFERENCES sku(id)'
-    ],
-    restockOrderSkuItem: [
-        'restockOrderId numeric',
-        'skuId numeric',
-        'RFID text',
-        'PRIMARY KEY(restockOrderId, skuId, RFID)',
-        'FOREIGN KEY(restockOrderId) REFERENCES restockOrder(id)',
-        'FOREIGN KEY(skuId) REFERENCES sku(id)',
-        'FOREIGN KEY(RFID) REFERENCES skuitem(RFID)'
-    ],
-    returnOrder: [
-        'id INTEGER',
-        'returnDate text',
-        'skuId numeric',
-        'description text',
-        'price numeric',
-        'rfid text',
-        'restockOrderId numeric',
-        'PRIMARY KEY(id, rfid)',
-        'FOREIGN KEY(restockOrderId) REFERENCES restockOrder(id)',
-        'FOREIGN KEY(skuId) REFERENCES sku(id)',
-        'FOREIGN KEY(rfid) REFERENCES skuitem(RFID)'
-    ],
-    internalOrder: [
-        'id INTEGER',
-        'issueDate text',
-        'state text',
-        'skuId text',
-        'description text',
-        'price numeric',
-        'quantity numeric',
-        'customerId numeric',
-        'PRIMARY KEY(id, SKUId)',
-        'FOREIGN KEY(SKUId) REFERENCES sku(id)',
-        'FOREIGN KEY(customerId) REFERENCES customer(id)'
-    ],
-    internalOrderSkuItem: [
-        'internalOrderId numeric',
-        'skuId numeric',
-        'RFID text',
-        'PRIMARY KEY(internalOrderId, skuId, RFID)',
-    ],
-
-}
-
-const db = new sqlite3.Database(DBSOURCE, (err) => {
-    if (err) {
-        // Cannot open database
-        console.error(err.message)
-        throw err
-    } else {
-        console.log('Connected to the SQLite database.');
-        for (let table of tables) {
-            db.run(`CREATE TABLE IF NOT EXISTS ${table} (${params[table].join(', ')})`);
-        }
-    }
-});
+const { db } = require("./dbUtilities.js");
 
 const dbManagerFactory = (function () {
 
@@ -373,7 +270,6 @@ const dbManagerFactory = (function () {
             });
         };
 
-
         // internal orders functions
         this.getAllInternalOrders = () => {
             return new Promise((resolve, reject) => {
@@ -426,6 +322,7 @@ const dbManagerFactory = (function () {
                 })
             });
         };
+
         this.getInternalOrderInState = (state) => {
             return new Promise((resolve, reject) => {
                 const sql = `SELECT * FROM internalOrder WHERE state LIKE ?`;
@@ -473,6 +370,7 @@ const dbManagerFactory = (function () {
                 })
             });
         };
+
         this.getInternalOrder = (id) => {
             return new Promise((resolve, reject) => {
                 const sql = `SELECT id, issueDate, state, io.skuId, description, quantity, customerId, RFID FROM internalOrder as io LEFT JOIN  internalOrderSkuItem si ON io.id = si.internalOrderId and io.skuId = si.skuId WHERE id = ${id}`;
@@ -503,6 +401,7 @@ const dbManagerFactory = (function () {
                 })
             });
         };
+
         this.storeInternalOrder = (io) => {
             let sql = `INSERT INTO internalOrder (id, issueDate, state, skuId, description, price, quantity, customerId) VALUES (?,?,?,?,?,?,?,?)`;
             const params = [];
@@ -517,8 +416,8 @@ const dbManagerFactory = (function () {
                 statement.finalize();
                 resolve(1);
             });
-
         };
+
         this.updateInternalOrder = (io) => {
             const sql = `UPDATE internalOrder SET state = ? WHERE id = ?`;
             const params = [io.state, io.id];
@@ -572,6 +471,7 @@ const dbManagerFactory = (function () {
                 resolve(1);
             });
         }
+
         this.deleteInternalOrderSkuItems = (id) => {
             const sql = `DELETE FROM internalOrderSkuItem WHERE internalOrderId = ?`;
             const params = [id];
@@ -585,6 +485,7 @@ const dbManagerFactory = (function () {
                 })
             });
         }
+
         this.deleteInternalOrder = (id) => {
             const sql = `DELETE FROM internalOrder WHERE id = ?`;
             const params = [id];
@@ -645,6 +546,7 @@ const dbManagerFactory = (function () {
                 })
             });
         };
+
         this.getReturnOrder = (id) => {
             return new Promise((resolve, reject) => {
                 const sql = `SELECT * FROM returnOrder WHERE id = ${id}`;
@@ -669,6 +571,7 @@ const dbManagerFactory = (function () {
                 })
             });
         };
+
         this.storeReturnOrder = (ro) => {
             let sql = `INSERT INTO returnOrder (id, returnDate, skuId, description, price, rfid, restockOrderId) VALUES (?,?,?,?,?,?,?)`;
             const params = [];
@@ -684,6 +587,7 @@ const dbManagerFactory = (function () {
                 resolve(1);
             });
         };
+
         this.deleteReturnOrder = function (id) {
             const sql = `DELETE FROM returnOrder WHERE id = ?`;
             const params = [id];
@@ -696,7 +600,7 @@ const dbManagerFactory = (function () {
                     resolve(1);
                 })
             });
-        }
+        };
 
         // restock orders functions
         this.getAllRestockOrders = () => {
@@ -751,6 +655,7 @@ const dbManagerFactory = (function () {
                 })
             });
         };
+
         this.getRestockOrdersInState = (state) => {
             return new Promise((resolve, reject) => {
                 const sql = `SELECT * FROM restockOrder WHERE state LIKE ?`;
@@ -800,6 +705,7 @@ const dbManagerFactory = (function () {
                 })
             });
         };
+
         this.getRestockOrder = (id) => {
             return new Promise((resolve, reject) => {
                 const sql = `SELECT * FROM restockOrder WHERE id = ${id}`;
@@ -825,6 +731,7 @@ const dbManagerFactory = (function () {
                 })
             });
         };
+
         // todo this.getSkuItemsToBeReturned
         this.updateRestockOrder = (ro) => {
             // const sql = `UPDATE restockOrder SET id = ?, issueDate = ?, state = ?, skuId = ?, description = ?, price = ?, supplierId = ?, transportNote = ?, quantity = ? WHERE id = ? and skuId = ?`;
@@ -879,7 +786,7 @@ const dbManagerFactory = (function () {
                     }
                 });
             });
-        }
+        };
 
         this.storeRestockOrderSkuItems = (id, skuItems) => {
             let sql = `INSERT INTO restockOrderSkuItem (restockOrderId, skuId, RFID) VALUES (?,?,?)`;
@@ -895,7 +802,8 @@ const dbManagerFactory = (function () {
                 statement.finalize();
                 resolve(1);
             });
-        }
+        };
+
         this.deleteRestockOrderSkuItems = (id) => {
             const sql = `DELETE FROM restockOrderSkuItem WHERE id = ?`;
             const params = [id];
@@ -908,7 +816,7 @@ const dbManagerFactory = (function () {
                     resolve(1);
                 })
             });
-        }
+        };
 
         this.storeRestockOrder = (ro) => {
             let sql = `INSERT INTO restockOrder (id, issueDate, state, skuId, description, price, supplierId, transportNote, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -925,6 +833,7 @@ const dbManagerFactory = (function () {
                 resolve(1);
             });
         };
+
         this.deleteRestockOrder = (id) => {
             const sql = `DELETE FROM restockOrder WHERE id = ?`;
             const params = [id];
@@ -937,7 +846,8 @@ const dbManagerFactory = (function () {
                     resolve(1);
                 })
             });
-        }
+        };
+
         this.getNextAvailableId = (table) => {
             return new Promise((resolve, reject) => {
                 const sql = `SELECT MAX(id) AS MAX FROM ${table}`;
@@ -953,8 +863,7 @@ const dbManagerFactory = (function () {
                     }
                 })
             });
-        }
-
+        };
     }
 
     let instance;
