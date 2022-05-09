@@ -32,6 +32,5 @@ app.use('/api',testResultRouter);
 app.use('/api',userRouter);
 app.use('/api',orders_router)
 app.use('/api',items_router)
-app.use('/api',testDescriptorRouter)
 
 module.exports = app;

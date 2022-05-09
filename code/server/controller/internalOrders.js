@@ -16,19 +16,6 @@ const getAllInternalOrders = ((req, res) => {
     try {
         DbManagerInstance.getAllInternalOrders().then((ios) => {
             if (ios.length > 0) {
-                ios.forEach(io => {
-                    if(io.getState() === 'COMPLETED'){
-                        let iosToReturn = [];
-                        DbManagerInstance.getInternalOrderSkuItems(io.getId()).then((skuItems) => {
-                            io.setSkuItems(skuItems);
-                            ios.push(io);
-                            
-                        }).catch((err) => {
-                            console.log(err);
-                        });
-                    }
-                });
-
                 return res.status(200).json(ios);
             } else {
                 return res.status(500).send('Internal Server Error');
@@ -189,6 +176,7 @@ const updateInternalOrder = ((req, res) => {
                         let returnValues = {status:200, message: 'OK'};
                         if(req.body.newState === 'COMPLETED'){
                             for(const product of req.body.products){
+                                console.log(product)
                                 if(!product.SkuID ||!product.RFID || isNaN(product.SkuID) || isNaN(product.RFID) ){
                                     return res.status(422).send('Unprocessable Entity');
                                 }

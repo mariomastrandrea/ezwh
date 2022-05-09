@@ -377,7 +377,7 @@ const dbManagerFactory = (function () {
         // internal orders functions
         this.getAllInternalOrders = () => {
             return new Promise((resolve, reject) => {
-                const sql = `SELECT * FROM internalOrder`;
+                const sql = `SELECT id, issueDate, state, io.skuId, description, quantity, customerId, RFID FROM internalOrder as io LEFT JOIN  internalOrderSkuItem si ON io.id = si.internalOrderId and io.skuId = si.skuId`;
                 db.all(sql, (err, rows) => {
                     if (err) {
                         console.error(err.message);
@@ -388,12 +388,17 @@ const dbManagerFactory = (function () {
                         let orders = [];
                         let products = [];
                         for (const row of rows) {
+                            console.log(row)
                             let rowProducts = {
                                 SKUId: row.skuId,
                                 description: row.description,
-                                price: row.price,
-                                qty: row.quantity
+                                price: row.price
                             };
+                            if (row.RFID){
+                                rowProducts.RFID = row.RFID;
+                            }else{
+                                rowProducts.qty = row.quantity;
+                            }
                             if (!listOfIds.includes(row.id)) {
                                 listOfIds.push(row.id);
                                 orders.push(
@@ -470,7 +475,7 @@ const dbManagerFactory = (function () {
         };
         this.getInternalOrder = (id) => {
             return new Promise((resolve, reject) => {
-                const sql = `SELECT * FROM internalOrder WHERE id = ${id}`;
+                const sql = `SELECT id, issueDate, state, io.skuId, description, quantity, customerId, RFID FROM internalOrder as io LEFT JOIN  internalOrderSkuItem si ON io.id = si.internalOrderId and io.skuId = si.skuId WHERE id = ${id}`;
                 db.all(sql, (err, rows) => {
                     if (err) {
                         console.error(err.message);
@@ -479,12 +484,17 @@ const dbManagerFactory = (function () {
                     if (rows.length > 0) {
                         let products = [];
                         for (const row of rows) {
-                            products.push({
+                            let rowProducts = {
                                 SKUId: row.skuId,
                                 description: row.description,
-                                price: row.price,
-                                qty: row.quantity
-                            });
+                                price: row.price
+                            };
+                            if (row.RFID){
+                                rowProducts.RFID = row.RFID;
+                            }else{
+                                rowProducts.qty = row.quantity;
+                            }
+                            products.push(rowProducts);
                         }
                         resolve(new InternalOrder(rows[0].issueDate, products, rows[0].customerId, rows[0].state, rows[0].id));
                     } else {
@@ -533,7 +543,6 @@ const dbManagerFactory = (function () {
                         reject(err);
                     } else {
                         if (rows.length > 0) {
-                            console.log(rows);
                             resolve(rows.map(row => {
                                 return {
                                     SKUId: row.skuId,
@@ -661,11 +670,9 @@ const dbManagerFactory = (function () {
             });
         };
         this.storeReturnOrder = (ro) => {
-            console.log(ro);
             let sql = `INSERT INTO returnOrder (id, returnDate, skuId, description, price, rfid, restockOrderId) VALUES (?,?,?,?,?,?,?)`;
             const params = [];
             for (const skuItem of ro.products) {
-                console.log(skuItem)
                 params.push([ro.id, ro.returnDate, skuItem.SKUId, skuItem.description, skuItem.price, skuItem.RFID, ro.restockOrderId]);
             }
             return new Promise((resolve, reject) => {
@@ -694,7 +701,7 @@ const dbManagerFactory = (function () {
         // restock orders functions
         this.getAllRestockOrders = () => {
             return new Promise((resolve, reject) => {
-                const sql = `SELECT * FROM restockOrder`;
+                const sql = `select id, issueDate, state, ro.skuId, description, price, supplierId, transportNote, quantity, si.skuId, RFID from restockOrder as ro LEFT JOIN restockOrderSkuItem as si ON ro.id = si.restockOrderId`;
                 db.all(sql, (err, rows) => {
                     if (err) {
                         console.error(err.message);
@@ -704,6 +711,7 @@ const dbManagerFactory = (function () {
                         let listOfIds = [];
                         let orders = [];
                         let products = [];
+                        let skuItems = [];
                         for (const row of rows) {
                             let rowProducts = {
                                 SKUId: row.skuId,
@@ -711,6 +719,9 @@ const dbManagerFactory = (function () {
                                 price: row.price,
                                 qty: row.quantity
                             };
+                            let rowSkuItems = {
+                                //todo add row Sku items
+                            }
                             if (!listOfIds.includes(row.id)) {
                                 listOfIds.push(row.id);
                                 orders.push(
