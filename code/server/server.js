@@ -24,8 +24,6 @@ app.use('/api', ordersRouter);
 app.use('/api', itemsRouter);
 app.use('/api', testsRouter);
 app.use('/api', usersRouter);
-app.use('/api',testDescriptorRouter);
-app.use('/api',testResultRouter);
 
 // GET /api/test  -  * used for test only *
 app.get('/api/hello', (req, res) => {
