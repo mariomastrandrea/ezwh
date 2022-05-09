@@ -17,7 +17,6 @@ async function getAllTestDescriptors(req, res) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-
 };
 
 async function getTestDescriptor(req, res) {
@@ -75,7 +74,7 @@ async function createTestDescriptor(req, res) {
 };
 
 async function updateTestDescriptor(req, res) {
-    
+
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
@@ -99,11 +98,11 @@ async function updateTestDescriptor(req, res) {
         if (!td)
             return res.status(404).send('Test descriptor not found');
         //404 no sku
-        
+
         const count = await DbManagerInstance.updateTestDescriptor(new TestDescriptor(parseInt(req.params.id), req.body.newName, req.body.newProcedureDescription, parseInt(req.body.newIdSKU)));
-        if (count===0)
+        if (count === 0)
             return res.status(500).send('Could not update test descriptor');
-        
+
         return res.status(200).send('Ok');
     } catch (err) {
         console.log(err);
@@ -123,7 +122,7 @@ async function deleteTestDescriptor(req, res) {
             return res.status(422).send('Invalid test descriptor id')
 
         const count = await DbManagerInstance.deleteTestDescriptor(parseInt(req.params.id));
-        if (count===0)
+        if (count === 0)
             return res.status(500).send('Could not delete test descriptor');
 
         return res.status(204).send('Deleted');

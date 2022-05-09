@@ -6,20 +6,21 @@ const DbManagerInstance = DbManager.getInstance();
 
 const getAllSkuItems = ((req, res) => {
     // todo add login check
-    if(!true){
+    if (!true) {
         return res.status(401).send('Unauthorized');
     }
-    try{
+    try {
         DbManagerInstance.getAllSkuItems().then((skuItems) => {
             if (skuItems.length > 0) {
                 return res.status(200).json(skuItems);
-            }else{
+            } else {
                 return res.status(500).send('Internal Server Error');
             }
         }).catch((err) => {
             console.log(err);
-            return res.status(500).send('Internal Server Error')});
-    }catch(err){
+            return res.status(500).send('Internal Server Error')
+        });
+    } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
@@ -27,24 +28,25 @@ const getAllSkuItems = ((req, res) => {
 
 const getAvailableSkuItems = ((req, res) => {
     // todo add login check
-    if(!true){
+    if (!true) {
         return res.status(401).send('Unauthorized');
     }
-    try{
-        if(isNaN(req.params.id)){
+    try {
+        if (isNaN(req.params.id)) {
             return res.status(422).send('Unprocessable Entity');
         }
         DbManagerInstance.getAvailableSkuItems(parseInt(req.params.id)).then((skuItems) => {
             if (skuItems.length > 0) {
                 return res.status(200).json(skuItems);
-            }else{
+            } else {
                 return res.status(404).send('Not Found');
             }
         }).catch((err) => {
             console.log(err);
-            return res.status(500).send('Internal Server Error')}
+            return res.status(500).send('Internal Server Error')
+        }
         );
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
@@ -52,12 +54,12 @@ const getAvailableSkuItems = ((req, res) => {
 
 const getSkuItem = ((req, res) => {
     // todo add login check
-    if(!true){
+    if (!true) {
         return res.status(401).send('Unauthorized');
     }
-    try{
+    try {
         console.log(typeof req.params.rfid);
-        if(isNaN(req.params.rfid)){
+        if (isNaN(req.params.rfid)) {
             return res.status(422).send('Unprocessable Entity');
         }
         DbManagerInstance.getSkuItem(req.params.rfid).then((skuItem) => {
@@ -67,9 +69,10 @@ const getSkuItem = ((req, res) => {
             return res.status(404).send('Not Found');
         }).catch((err) => {
             console.log(err);
-            return res.status(404).send('Not Found')}
+            return res.status(404).send('Not Found')
+        }
         );
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
@@ -77,17 +80,17 @@ const getSkuItem = ((req, res) => {
 
 const createSkuItem = ((req, res) => {
     // todo add login check
-    if(!true){
+    if (!true) {
         return res.status(401).send('Unauthorized');
     }
-    try{
-        if(
+    try {
+        if (
             !isNaN(req.body.RFID)
             && req.body.RFID.length === 32
             && !isNaN(req.body.SKUId)
             && dayjs(req.body.DateOfStock).isValid()
             && dayjs() >= dayjs(req.body.DateOfStock)
-        ){
+        ) {
             const skuItem = new SkuItem(
                 req.body.RFID,
                 parseInt(req.body.SKUId),
@@ -98,13 +101,14 @@ const createSkuItem = ((req, res) => {
             }
             ).catch((err) => {
                 console.log(err);
-                return res.status(503).send('Service Unavailable')}
+                return res.status(503).send('Service Unavailable')
+            }
             );
-        }else{
+        } else {
             console.log();
             return res.status(422).send('Unprocessable Entity');
         }
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
@@ -112,49 +116,49 @@ const createSkuItem = ((req, res) => {
 
 const updateSkuItem = ((req, res) => {
     // todo update 
-    if(!true){
+    if (!true) {
         return res.status(401).send('Unauthorized');
     }
-    try{
-        if(isNaN(req.params.rfid)){
+    try {
+        if (isNaN(req.params.rfid)) {
             return res.status(422).send('Unprocessable Entity');
         }
-        DbManagerInstance.getSkuItem(req.params.rfid).then( (skuItem) => {
-            if(req.body.newRFID){
+        DbManagerInstance.getSkuItem(req.params.rfid).then((skuItem) => {
+            if (req.body.newRFID) {
                 skuItem.setRfid(req.body.newRFID);
             }
-            if(req.body.newAvailable){
-                if(
+            if (req.body.newAvailable) {
+                if (
                     !isNaN(req.body.newAvailable)
-                    && parseInt(req.body.newAvailable) >= 0 
+                    && parseInt(req.body.newAvailable) >= 0
                     && parseInt(req.body.newAvailable) <= 1
-                    ) skuItem.setAvailable(parseInt(req.body.newAvailable));
+                ) skuItem.setAvailable(parseInt(req.body.newAvailable));
                 else return res.status(422).send('Unprocessable Entity');
             }
-            if(req.body.newDateOfStock){
-                if(
+            if (req.body.newDateOfStock) {
+                if (
                     dayjs(req.body.newDateOfStock).isValid()
                     && dayjs() >= dayjs(req.body.newDateOfStock)
                 ) skuItem.setDateOfStock(dayjs(req.body.newDateOfStock).format('YYYY/MM/DD HH:mm'));
                 else return res.status(422).send('Unprocessable Entity');
             }
-            DbManagerInstance.updateSkuItem(skuItem.toJSON()).then( (x) => {
-                if(x>0){
+            DbManagerInstance.updateSkuItem(skuItem.toJSON()).then((x) => {
+                if (x > 0) {
                     return res.status(200).send('OK');
-                }else {
+                } else {
                     return res.status(503).send('Service Unavailable');
                 }
-            }).catch( (err) => {
+            }).catch((err) => {
                 console.log(err);
                 return res.status(503).send('Service Unavailable');
             });
 
-        }).catch( (err) => {
+        }).catch((err) => {
             console.log(err);
             return res.status(404).send('Not Found');
         });
 
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
@@ -162,34 +166,34 @@ const updateSkuItem = ((req, res) => {
 
 const deleteSkuItem = ((req, res) => {
     // todo update
-    if(!true){
+    if (!true) {
         return res.status(401).send('Unauthorized');
     }
-    try{
-        if(isNaN(req.params.rfid)){
+    try {
+        if (isNaN(req.params.rfid)) {
             return res.status(422).send('Unprocessable Entity');
         }
-        DbManagerInstance.getSkuItem(req.params.rfid).then( (skuItem) => {
-            if(skuItem){
-                DbManagerInstance.deleteSkuItem(skuItem.getRfid()).then( (x) => {
-                    if(x>0){
+        DbManagerInstance.getSkuItem(req.params.rfid).then((skuItem) => {
+            if (skuItem) {
+                DbManagerInstance.deleteSkuItem(skuItem.getRfid()).then((x) => {
+                    if (x > 0) {
                         return res.status(200).send('OK');
                     }
                     return res.status(503).send('Service Unavailable');
-                }).catch( (err) => {
+                }).catch((err) => {
                     console.log(err);
                     return res.status(503).send('Service Unavailable');
                 }
                 );
-            }else{
+            } else {
                 return res.status(404).send('Not Found');
             }
-        }).catch( (err) => {
+        }).catch((err) => {
             console.log(err);
             return res.status(503).send('Service Unavailable');
         }
         );
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }

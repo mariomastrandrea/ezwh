@@ -5,7 +5,7 @@ class SkuItem {
     #dateOfStock;
     #testResults;
 
-    constructor(rfid, skuId, dateOfStock, available=0, testResults=[] ) {
+    constructor(rfid, skuId, dateOfStock, available = 0, testResults = []) {
         this.#rfid = rfid;
         this.#skuId = skuId;
         this.#available = available;
@@ -22,12 +22,11 @@ class SkuItem {
 
     // setters
     setRfid = (rfid) => this.#rfid = rfid;
-    setAvailable = (available) => this.#available == 1 ? this.#available = 0 : this.#available = 1;
+    setAvailable = (available) => this.#available == available;
     setDateOfStock = (dateOfStock) => this.#dateOfStock = dateOfStock;
     setTestResults = (testResults) => this.#testResults.push(testResults);
 
-
-    // toJSON
+    // to serialize object in JSON format
     toJSON = () => ({
         RFID: this.getRfid(),
         SKUId: this.getSkuId(),

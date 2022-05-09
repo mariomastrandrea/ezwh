@@ -1,12 +1,11 @@
-class ReturnOrder{
-    // variables
+class ReturnOrder {
     #id;
     #returnDate;
     #products;
     #restockOrderId;
 
     // constructor
-    constructor(returnDate, products, restockOrderId, id=null){
+    constructor(returnDate, products, restockOrderId, id = null) {
         this.#id = id;
         this.#returnDate = returnDate;
         this.#products = products;
@@ -19,7 +18,7 @@ class ReturnOrder{
     getProducts = () => this.#products;
     getRestockOrderId = () => this.#restockOrderId;
 
-    // toJSON
+    // to serialize object in JSON format
     toJSON = () => ({
         id: this.getId(),
         returnDate: this.getReturnDate(),

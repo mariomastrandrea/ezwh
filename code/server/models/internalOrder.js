@@ -1,10 +1,10 @@
 class InternalOrder {
-    // variables
     #id;
     #issueDate;
     #state;
     #products;
     #customerId;
+    
     constructor(issueDate, products, customerId, state = 'ISSUED', id = null) {
         this.#id = id;
         this.#issueDate = issueDate;
@@ -25,11 +25,19 @@ class InternalOrder {
     setProducts = (products) => this.#products = products;
     setSkuItems = (skuItems) => {
         let products = [];
+
         this.#products.forEach(product => {
-            skuItems.filter(skuItem => skuItem.SKUId === product.SKUId).forEach(skuItem => {
-                products.push([product.SKUId, product.description, product.price, skuItem.RFID]);
+            skuItems.filter(skuItem => skuItem.SKUId === product.SKUId)
+                    .forEach(skuItem => {
+                        products.push([
+                            product.SKUId, 
+                            product.description, 
+                            product.price, 
+                            skuItem.RFID
+                        ]);
             })
         });
+        
         this.#products = products;
     };
 

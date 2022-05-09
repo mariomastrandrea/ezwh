@@ -141,8 +141,8 @@ async function updateTestResult(req, res) {
         const td = await DbManagerInstance.getTestDescriptor(parseInt(req.body.newIdTestDescriptor));
         if (!td)
             return res.status(404).send('Test descriptor not found');
-        
-        const tr = await DbManagerInstance.getTestResult(parseInt(req.params.id),req.params.rfid);
+
+        const tr = await DbManagerInstance.getTestResult(parseInt(req.params.id), req.params.rfid);
         if (!tr)
             return res.status(404).send('Test result not found for rfid');
         //404 no sku

@@ -11,14 +11,14 @@ async function getUserInfo(req, res) {
 
     try {
         //todo for current user
-        const us = await DbManagerInstance.getUser('e1@gmail.com','pass1');
+        const us = await DbManagerInstance.getUser('e1@gmail.com', 'pass1');
         return res.status(200).send({
-            id:us.getId(),
-            username:us.getEmail(),
-            name:us.getName(),
-            surname:us.getSurname(),
-            type:us.getType()
-        })        
+            id: us.getId(),
+            username: us.getEmail(),
+            name: us.getName(),
+            surname: us.getSurname(),
+            type: us.getType()
+        })
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
@@ -33,15 +33,15 @@ async function getAllSuppliers(req, res) {
     try {
         const users = [];
         const us = await DbManagerInstance.getAllUsersOfType('SUPPLIER');
-        for(let u of us){
+        for (let u of us) {
             users.push({
-                id:u.getId(),
-                name:u.getName(),
-                surname:u.getSurname(),
-                email:u.getEmail()
+                id: u.getId(),
+                name: u.getName(),
+                surname: u.getSurname(),
+                email: u.getEmail()
             })
         }
-        return res.status(200).send(users);       
+        return res.status(200).send(users);
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
@@ -56,16 +56,16 @@ async function getAllUsers(req, res) {
     try {
         const users = [];
         const us = await DbManagerInstance.getAllUsers();
-        for(let u of us){
+        for (let u of us) {
             users.push({
-                id:u.getId(),
-                name:u.getName(),
-                surname:u.getSurname(),
-                email:u.getEmail(),
-                type:u.getType()
+                id: u.getId(),
+                name: u.getName(),
+                surname: u.getSurname(),
+                email: u.getEmail(),
+                type: u.getType()
             })
         }
-        return res.status(200).send(users);       
+        return res.status(200).send(users);
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
@@ -93,12 +93,12 @@ async function createNewUser(req, res) {
         }
 
         const users = await DbManagerInstance.getAllUsers();
-        for(let u of users){
-            if(u.getEmail()===req.body.username && u.getType()===req.body.type)
+        for (let u of users) {
+            if (u.getEmail() === req.body.username && u.getType() === req.body.type)
                 return res.status(409).send('User already exists');
         }
 
-        const us = await DbManagerInstance.storeNewUser(new User(null, req.body.name, req.body.surname, req.body.username, req.body.type, req.body.password));
+        const us = await DbManagerInstance.storeNewUser(new User(req.body.name, req.body.surname, req.body.username, req.body.type, req.body.password));
         if (!us)
             return res.status(500).send('Could not store user');
 
@@ -106,7 +106,7 @@ async function createNewUser(req, res) {
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
-    }      
+    }
 };
 
 async function updateUserRights(req, res) {
@@ -115,8 +115,8 @@ async function updateUserRights(req, res) {
     }
 
     try {
-        
-        if(Joi.string().email().required().validate(req.params.username).error){
+
+        if (Joi.string().email().required().validate(req.params.username).error) {
             return res.status(422).send('Invalid username')
         }
 
@@ -132,23 +132,23 @@ async function updateUserRights(req, res) {
 
         const users = await DbManagerInstance.getAllUsers();
         var userToUpd = undefined;
-        for(let u of users){
-            if(u.getEmail()===req.params.username && u.getType()===req.body.oldType)
+        for (let u of users) {
+            if (u.getEmail() === req.params.username && u.getType() === req.body.oldType)
                 userToUpd = u;
         }
-        if(!userToUpd){
+        if (!userToUpd) {
             return res.status(404).send('User not found');
         }
-        
-        const count = await DbManagerInstance.updateUser(new User(userToUpd.getId(), userToUpd.getName(), userToUpd.getSurname(), userToUpd.getEmail(), req.body.newType, userToUpd.getPassword()));
-        if (count===0)
+
+        const count = await DbManagerInstance.updateUser(new User(userToUpd.getName(), userToUpd.getSurname(), userToUpd.getEmail(), req.body.newType, userToUpd.getPassword(), userToUpd.getId()));
+        if (count === 0)
             return res.status(500).send('Could not update user');
 
         return res.status(200).send('Updated');
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
-    }      
+    }
 };
 
 async function deleteUser(req, res) {
@@ -158,21 +158,21 @@ async function deleteUser(req, res) {
 
     try {
 
-        if(Joi.string().email().required().validate(req.params.username).error){
+        if (Joi.string().email().required().validate(req.params.username).error) {
             return res.status(422).send('Invalid username')
         }
 
-        if(Joi.string().valid('customer', 'qualityEmployee', 'clerk', 'deliveryEmployee', 'supplier').required().validate(req.params.type).error){
+        if (Joi.string().valid('customer', 'qualityEmployee', 'clerk', 'deliveryEmployee', 'supplier').required().validate(req.params.type).error) {
             return res.status(422).send('Invalid type')
         }
-        
+
         const users = await DbManagerInstance.getAllUsers();
         var id = undefined;
-        for(let u of users){
-            if(u.getEmail()===req.params.username && u.getType()===req.params.type)
+        for (let u of users) {
+            if (u.getEmail() === req.params.username && u.getType() === req.params.type)
                 id = u.getId();
         }
-        if(!id){
+        if (!id) {
             return res.status(404).send('User not found');
         }
 

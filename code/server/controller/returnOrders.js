@@ -6,7 +6,7 @@ const DbManagerInstance = DbManager.getInstance();
 
 const getAllReturnOrders = ((req, res) => {
     // todo add login check
-    if(!true){
+    if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {
@@ -28,28 +28,28 @@ const getAllReturnOrders = ((req, res) => {
 
 const getReturnOrderById = ((req, res) => {
     // todo add login check
-    if(!true){
+    if (!true) {
         return res.status(401).send('Unauthorized');
     }
-    try{
-        if(!isNaN(req.params.id)){
+    try {
+        if (!isNaN(req.params.id)) {
             DbManagerInstance.getReturnOrder(parseInt(req.params.id)).then((ro) => {
                 return res.status(200).json(ro);
             }).catch((err) => {
                 console.log(err);
                 return res.status(404).send('Not Found');
             });
-        }else {
+        } else {
             return res.status(422).send('Unprocessable Entity');
         }
-    } catch(err){
+    } catch (err) {
         return res.status(500).send('Internal Server Error');
     }
 });
 
 const createReturnOrder = ((req, res) => {
     // todo add login check
-    if(!true){
+    if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {
@@ -102,7 +102,7 @@ const createReturnOrder = ((req, res) => {
 
 const deleteReturnOrder = ((req, res) => {
     // todo add login check
-    if(!true){
+    if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {

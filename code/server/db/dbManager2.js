@@ -15,7 +15,7 @@ class DbManager2 {
         });
     }
 
-    closeDb(){
+    closeDb() {
         this.#db.close();
     }
 
@@ -57,11 +57,11 @@ class DbManager2 {
     async storeTestDescriptor(td) {
         let sql = 'INSERT INTO TestDescriptor (Name, ProcedureDescription, SkuId) VALUES (?,?,?)';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [td.getName(), td.getProcedureDescription(), td.getSkuId()], function(err){
+            this.#db.run(sql, [td.getName(), td.getProcedureDescription(), td.getSkuId()], function (err) {
                 if (err)
                     reject(err);
 
-                resolve(new TestDescriptor(this.lastID,td.getName(),td.getProcedureDescription(),td.getSkuId()));
+                resolve(new TestDescriptor(this.lastID, td.getName(), td.getProcedureDescription(), td.getSkuId()));
             });
         })
     };
@@ -69,7 +69,7 @@ class DbManager2 {
     async updateTestDescriptor(td) {
         let sql = 'UPDATE TestDescriptor SET Name=?, ProcedureDescription=?, SkuId=? WHERE ID=?';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [td.getName(), td.getProcedureDescription(), td.getSkuId(), td.getId()], function(err){
+            this.#db.run(sql, [td.getName(), td.getProcedureDescription(), td.getSkuId(), td.getId()], function (err) {
                 if (err)
                     reject(err);
 
@@ -81,7 +81,7 @@ class DbManager2 {
     async deleteTestDescriptor(id) {
         let sql = 'DELETE FROM TestDescriptor WHERE ID=?';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [id], function(err){
+            this.#db.run(sql, [id], function (err) {
                 if (err)
                     reject(err);
 
@@ -109,11 +109,11 @@ class DbManager2 {
         })
     };
 
-    async getTestResult(id,rfid) {
+    async getTestResult(id, rfid) {
         let testResult;
         let sql = 'SELECT * FROM TestResult WHERE ID=? AND RFID=?';
         return new Promise((resolve, reject) => {
-            this.#db.all(sql, [id,rfid], (err, rows) => {
+            this.#db.all(sql, [id, rfid], (err, rows) => {
                 if (err)
                     reject(err);
 
@@ -126,10 +126,10 @@ class DbManager2 {
         })
     }
 
-    async storeTestResult(tr){
+    async storeTestResult(tr) {
         let sql = 'INSERT INTO TestResult(RFID, TestDescriptorId, Date, Result) VALUES (?,?,?,?)';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()], function(err){
+            this.#db.run(sql, [tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()], function (err) {
                 if (err)
                     reject(err);
 
@@ -138,10 +138,10 @@ class DbManager2 {
         })
     }
 
-    async updateTestResult(tr){
+    async updateTestResult(tr) {
         let sql = 'UPDATE TestResult SET TestDescriptorId=?, Date=?, Result=? WHERE ID=? AND RFID=?';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [tr.getTestDescriptorId(), tr.getDate(), tr.getResult(), tr.getId(), tr.getRfid()], function(err){
+            this.#db.run(sql, [tr.getTestDescriptorId(), tr.getDate(), tr.getResult(), tr.getId(), tr.getRfid()], function (err) {
                 if (err)
                     reject(err);
 
@@ -150,10 +150,10 @@ class DbManager2 {
         })
     }
 
-    async deleteTestResult(id,rfid){
+    async deleteTestResult(id, rfid) {
         let sql = 'DELETE FROM TestResult WHERE ID=? AND RFID=?';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [id,rfid], function(err){
+            this.#db.run(sql, [id, rfid], function (err) {
                 if (err)
                     reject(err);
 
@@ -165,16 +165,16 @@ class DbManager2 {
     //#endregion
 
     //#region User
-    async getUser(username,password){
+    async getUser(username, password) {
         let user;
         let sql = 'SELECT * FROM User WHERE Email=? AND Password=?';
         return new Promise((resolve, reject) => {
-            this.#db.all(sql, [username,password], (err, rows) => {
+            this.#db.all(sql, [username, password], (err, rows) => {
                 if (err)
                     reject(err);
 
                 for (let row of rows) {
-                    user=new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password);
+                    user = new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password);
                 }
 
                 resolve(user);
@@ -182,7 +182,7 @@ class DbManager2 {
         })
     }
 
-    async getAllUsersOfType(type){
+    async getAllUsersOfType(type) {
         let users = [];
         let sql = 'SELECT * FROM User WHERE Type=?';
         return new Promise((resolve, reject) => {
@@ -199,7 +199,7 @@ class DbManager2 {
         })
     }
 
-    async getAllUsers(){
+    async getAllUsers() {
         let users = [];
         let sql = "SELECT * FROM User WHERE Type!='MANAGER'";
         return new Promise((resolve, reject) => {
@@ -216,22 +216,22 @@ class DbManager2 {
         })
     }
 
-    async storeNewUser(us){
+    async storeNewUser(us) {
         let sql = 'INSERT INTO User(Name, Surname, Email, Type, Password) VALUES (?,?,?,?,?)';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [us.getName(),us.getSurname(),us.getEmail(),us.getType(),us.getPassword()], function(err){
+            this.#db.run(sql, [us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()], function (err) {
                 if (err)
                     reject(err);
 
-                resolve(new User(this.lastID, us.getName(),us.getSurname(),us.getEmail(),us.getType(),us.getPassword()));
+                resolve(new User(this.lastID, us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()));
             });
         })
     }
 
-    async updateUser(us){
+    async updateUser(us) {
         let sql = 'UPDATE User SET Name=?,Surname=?,Email=?,Type=?,Password=? WHERE ID=?';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [us.getName(),us.getSurname(),us.getEmail(),us.getType(),us.getPassword(),us.getId()], function(err){
+            this.#db.run(sql, [us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword(), us.getId()], function (err) {
                 if (err)
                     reject(err);
 
@@ -240,10 +240,10 @@ class DbManager2 {
         })
     }
 
-    async deleteUser(id){
+    async deleteUser(id) {
         let sql = 'DELETE FROM User WHERE ID=?';
         return new Promise((resolve, reject) => {
-            this.#db.run(sql, [id], function(err){
+            this.#db.run(sql, [id], function (err) {
                 if (err)
                     reject(err);
 

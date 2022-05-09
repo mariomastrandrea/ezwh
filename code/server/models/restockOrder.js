@@ -1,5 +1,5 @@
-class RestockOrder{
-// variables
+class RestockOrder {
+    // variables
     #id;
     #issueDate;
     #state;
@@ -8,7 +8,7 @@ class RestockOrder{
     #transportNote;
     #skuItems;
     // constructor
-    constructor(issueDate, products, supplierId, transportNote = "", id=null, skuItems = [], state = 'ISSUED'){
+    constructor(issueDate, products, supplierId, transportNote = "", id = null, skuItems = [], state = 'ISSUED') {
         this.#id = id;
         this.#issueDate = issueDate;
         this.#products = products;
@@ -34,10 +34,10 @@ class RestockOrder{
     setTransportNote = (transportNote) => this.#transportNote = transportNote;
     setSkuItems = (skuItems) => {
         let array = [];
-        array.push(...this.#skuItems,...skuItems);
+        array.push(...this.#skuItems, ...skuItems);
         this.#skuItems = array;
     };
-    
+
     toDatabase = () => ({
         id: this.getId(),
         issueDate: this.getIssueDate(),
@@ -48,7 +48,7 @@ class RestockOrder{
         skuItems: this.getSkuItems()
     });
 
-    toJSON = function() {
+    toJSON = function () {
         let map = [];
         map.push({
             id: this.getId(),
@@ -57,22 +57,23 @@ class RestockOrder{
             products: this.getProducts(),
             supplierId: this.getSupplierId(),
         });
-        if(this.getState() !== 'ISSUED'){
+        if (this.getState() !== 'ISSUED') {
             map.push({
                 transportNote: this.getTransportNote(),
             });
         }
-        if(this.getState() === 'DELIVERY' || this.getState() === 'ISSUED'){
+        if (this.getState() === 'DELIVERY' || this.getState() === 'ISSUED') {
             map.push({
                 skuItems: []
             });
-        }else{
+        } else {
             map.push({
                 skuItems: this.getSkuItems()
-        })};
+            })
+        };
         return map;
     }
-        
+
 
 
 }
