@@ -1,9 +1,10 @@
 const { db } = require("./dbUtilities");
 const Position = require("../models/position");
 
+let instance;  // singleton instance
+
 class DbManager3 {
     #db;
-    instance;  // singleton instance
 
     constructor() {
         this.#db = db;
@@ -54,8 +55,14 @@ class DbManager3 {
 
     // returns the new created position
     storePosition(newPosition) {
-        const { positionId, aisle, row, col, maxWeight, maxVolume, 
-            occupiedWeight, occupiedVolume } = newPosition;
+        const positionId = newPosition.getPositionId();
+        const aisle = newPosition.getAisle();
+        const row = newPosition.getRow();
+        const col = newPosition.getCol();
+        const maxWeight = newPosition.getMaxWeight();
+        const maxVolume = newPosition.getMaxVolume();
+        const occupiedWeight = newPosition.getOccupiedWeight();
+        const occupiedVolume = newPosition.getOccupiedVolume();
 
         return new Promise((resolve, reject) => {
             const sqlStatement = 
@@ -73,10 +80,16 @@ class DbManager3 {
         });
     }
 
-    // returns the new updated position, or 'null' if the position is not found
+    // returns 'true' if the position was successfully updated; 'false' otherwise
     updatePosition(oldPositionId, newPosition) {
-        const { positionId, aisle, row, col, maxWeight, maxVolume, 
-            occupiedWeight, occupiedVolume } = newPosition;
+        const positionId = newPosition.getPositionId();
+        const aisle = newPosition.getAisle();
+        const row = newPosition.getRow();
+        const col = newPosition.getCol();
+        const maxWeight = newPosition.getMaxWeight();
+        const maxVolume = newPosition.getMaxVolume();
+        const occupiedWeight = newPosition.getOccupiedWeight();
+        const occupiedVolume = newPosition.getOccupiedVolume();
             
         return new Promise((resolve, reject) => {
             const sqlStatement = `UPDATE position
@@ -88,11 +101,8 @@ class DbManager3 {
                     occupiedWeight, occupiedVolume, oldPositionId], function (err) {
                 if (err) 
                     reject(err);
-                else if (!this.changes)   // positionId not found
-                    resolve(null);
-                else
-                    resolve(new Position(this.lastID, aisle, row, col, maxWeight, maxVolume, 
-                        occupiedWeight, occupiedVolume));
+                else 
+                    resolve(this.changes > 0);
             });
         });
     }
@@ -107,7 +117,7 @@ class DbManager3 {
                 if(err)
                     reject(err);
                 else 
-                    resolve(!!this.changes)
+                    resolve(this.changes > 0)
             })
         });
     }

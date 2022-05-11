@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const dbSource = './ezwh.sqlite';
+const dbSource = './db/ezwh.sqlite';
 
 // tables' names
 const tables = [
@@ -14,6 +14,7 @@ const tables = [
     'internalOrder',
     'internalOrderSku',
     'internalOrderSkuItem',
+    'position'
 ];
 
 // tables' parameters
@@ -27,7 +28,8 @@ const params = {
         'position text',
         'availableQuantity numeric',
         'price numeric',
-        'testDescriptor text'
+        'testDescriptor text',
+        'FOREIGN KEY (position) REFERENCES position(id)'
     ],
     skuitem: [
         'RFID text PRIMARY KEY',
@@ -42,7 +44,7 @@ const params = {
         'description text',
         'price numeric',
         'skuId numeric',
-        'supplierId numeric ',
+        'supplierId numeric',
         'FOREIGN KEY(skuId) REFERENCES sku(id)',
     ],
     restockOrder: [
@@ -105,7 +107,6 @@ const params = {
         'PRIMARY KEY(internalOrderId, skuId)',
         'FOREIGN KEY(internalOrderId) REFERENCES internalOrder(id)',
         'FOREIGN KEY(skuId) REFERENCES sku(id)'
-
     ],
     internalOrderSkuItem: [
         'internalOrderId numeric',
@@ -116,6 +117,17 @@ const params = {
         'FOREIGN KEY(skuId) REFERENCES sku(id)',
         'FOREIGN KEY(RFID) REFERENCES skuitem(RFID)'
     ],
+    position: [
+        'id text',
+        'aisle text',
+        'row text',
+        'col text',
+        'maxWeight numeric',
+        'maxVolume numeric',
+        'occupiedWeight numeric',
+        'occupiedVolume numeric',
+        'PRIMARY KEY(id)'
+    ]
 }
 
 // db connection 

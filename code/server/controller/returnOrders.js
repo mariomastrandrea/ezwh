@@ -89,7 +89,7 @@ async function createReturnOrder(req, res) {
     }
 };
 
-const deleteReturnOrder = ((req, res) => {
+async function deleteReturnOrder(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -105,7 +105,7 @@ const deleteReturnOrder = ((req, res) => {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
-});
+};
 
 module.exports = {
     getAllReturnOrders,

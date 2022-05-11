@@ -39,6 +39,17 @@ class Position {
     setMaxVolume = (maxVolume) => this.#maxVolume = maxVolume;
     setOccupiedWeight = (occupiedWeight) => this.#occupiedWeight = occupiedWeight;
     setOccupiedVolume = (occupiedVolume) => this.#occupiedVolume = occupiedVolume;
+
+    toJSON = () => ({
+        positionID: this.#positionId,
+        aisleID: this.#aisle, 
+        row: this.#row,
+        col: this.#col,
+        maxWeight: this.#maxWeight,
+        maxVolume: this.#maxVolume,
+        occupiedWeight: this.#occupiedWeight,
+        occupiedVolume: this.#occupiedVolume
+    });
 }
 
 module.exports = Position;
