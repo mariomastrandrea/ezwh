@@ -16,6 +16,7 @@ class DbManager3 {
         return instance;
     }
 
+    // returns the required position, or 'null' if it is not found
     getPosition(positionId) {
         return new Promise((resolve, reject) => {
             const sqlQuery = `SELECT *
@@ -34,6 +35,7 @@ class DbManager3 {
         });
     }
 
+    // returns an array containing all the existing positions
     getAllPositions() {
         return new Promise((resolve, reject) => {
             const sqlQuery = `SELECT *
@@ -50,6 +52,7 @@ class DbManager3 {
         });
     }
 
+    // returns the new created position
     storePosition(newPosition) {
         const { positionId, aisle, row, col, maxWeight, maxVolume, 
             occupiedWeight, occupiedVolume } = newPosition;
@@ -70,6 +73,7 @@ class DbManager3 {
         });
     }
 
+    // returns the new updated position, or 'null' if the position is not found
     updatePosition(oldPositionId, newPosition) {
         const { positionId, aisle, row, col, maxWeight, maxVolume, 
             occupiedWeight, occupiedVolume } = newPosition;
@@ -93,6 +97,7 @@ class DbManager3 {
         });
     }
 
+    // returns 'true' if the position has been deleted, 'false' otherwise
     deletePosition(positionId) {
         return new Promise((resolve, reject) => {
             const sqlStatement = `DELETE FROM position
