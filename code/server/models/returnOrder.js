@@ -18,6 +18,9 @@ class ReturnOrder {
     getProducts = () => this.#products;
     getRestockOrderId = () => this.#restockOrderId;
 
+    // setters
+    setProducts = (products) => this.#products = products;
+    
     // to serialize object in JSON format
     toJSON = () => ({
         id: this.getId(),

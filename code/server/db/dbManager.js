@@ -8,14 +8,6 @@ const InternalOrder = require('../models/internalOrder');
 const ReturnOrder = require('../models/returnOrder');
 
 
-const {
-    generateInternalOrders,
-    generateReturnOrders,
-    generateRestockOrders
-} = require('../utility');
-
-const { db } = require("./dbUtilities.js");
-
 const dbManagerFactory = (function () {
 
     function DbManager() {

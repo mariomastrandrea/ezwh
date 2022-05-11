@@ -4,50 +4,45 @@ const ReturnOrder = require('../models/returnOrder');
 const DbManager = require('../db/dbManager');
 const DbManagerInstance = DbManager.getInstance();
 
-const getAllReturnOrders = ((req, res) => {
+async function getAllReturnOrders(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {
-        DbManagerInstance.getAllReturnOrders().then((ros) => {
-            if (ros.length > 0) {
-                return res.status(200).json(ros);
-            } else {
-                return res.status(500).send('Internal Server Error');
-            }
-        }).catch((err) => {
-            console.log(err);
-            return res.status(500).send('Internal Server Error')
-        });
+        const ros = await DbManagerInstance.getAllReturnOrders();
+        for (let ro of ros) {
+            const products = await DbManagerInstance.getReturnOrderProducts(ro.getId());
+            ro.setProducts(products);
+        }
+        res.status(200).send(ros);
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-});
+};
 
-const getReturnOrderById = ((req, res) => {
+async function getReturnOrderById(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {
         if (!isNaN(req.params.id)) {
-            DbManagerInstance.getReturnOrder(parseInt(req.params.id)).then((ro) => {
-                return res.status(200).json(ro);
-            }).catch((err) => {
-                console.log(err);
-                return res.status(404).send('Not Found');
-            });
+            const ro = await DbManagerInstance.getReturnOrderById(parseInt(req.params.id));
+            if (!ro) return res.status(404).send('Not Found');
+            const products = await DbManagerInstance.getReturnOrderProducts(ro.getId());
+            ro.setProducts(products);
+            res.status(200).send(ro);
         } else {
             return res.status(422).send('Unprocessable Entity');
         }
     } catch (err) {
         return res.status(500).send('Internal Server Error');
     }
-});
+};
 
-const createReturnOrder = ((req, res) => {
+async function createReturnOrder(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -73,24 +68,18 @@ const createReturnOrder = ((req, res) => {
                 } else return res.status(422).send('Unprocessable Entity');
             });
 
-            DbManagerInstance.getNextAvailableId('returnOrder').then((id) => {
-                const ro = new ReturnOrder(
-                    dayjs(req.body.returnDate).format('YYYY/MM/DD HH:mm'),
-                    products,
-                    req.body.restockOrderId,
-                    id
-                );
-                DbManagerInstance.storeReturnOrder(ro.toJSON()).then((x) => {
-                    if (x > 0) {
-                        return res.status(201).send('Created');
-                    } else {
-                        return res.status(404).send('Not Found');
-                    }
-                })
-            }).catch((err) => {
-                console.log(err);
-                return res.status(503).send('Service Unavailable');
-            });
+            const ro = new ReturnOrder(
+                dayjs(req.body.returnDate).format('YYYY/MM/DD HH:mm'),
+                products,
+                req.body.restockOrderId
+            );
+
+            const roFromDb = await DbManagerInstance.createReturnOrder(ro);
+            // TODO write correct error code
+            if (!roFromDb) return res.status(404).send('Not Found');
+            const productsAdded = await DbManagerInstance.storeReturnOrderSkuItems(roFromDb.getId(), roFromDb.getProducts());
+            if (!productsAdded) return res.status(404).send('Not Found');
+            res.status(201).send('Created');
         } else {
             return res.status(422).send('Unprocessable Entity');
         }
@@ -98,7 +87,7 @@ const createReturnOrder = ((req, res) => {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
-});
+};
 
 const deleteReturnOrder = ((req, res) => {
     // todo add login check
@@ -109,16 +98,8 @@ const deleteReturnOrder = ((req, res) => {
         if (isNaN(req.params.id)) {
             return res.status(422).send('Unprocessable Entity');
         }
-        DbManagerInstance.deleteReturnOrder(parseInt(req.params.id)).then((x) => {
-            if (x > 0) {
-                return res.status(200).send('OK');
-            } else {
-                return res.status(503).send('Service Unavailable');
-            }
-        }).catch((err) => {
-            console.log(err);
-            return res.status(503).send('Service Unavailable');
-        });
+        const deleted = await DbManagerInstance.deleteReturnOrder(ro.getId());
+        if (deleted) return res.status(204).send('No Content');
 
     } catch (err) {
         console.log(err);
