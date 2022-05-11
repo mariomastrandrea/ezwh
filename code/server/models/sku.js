@@ -58,7 +58,12 @@ class Sku {
 }
 
 Number.prototype.pad = function (size) {
-    return new Array(size).join('0').slice((size || 2) * -1) + this;
+    const actualSize = String(this).length;
+
+    if(!(size > 0 && actualSize < size)) 
+        return String(this);    // return the same Number
+
+    return "0".repeat(size - actualSize) + String(this);
 }
 
 module.exports = Sku;

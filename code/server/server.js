@@ -1,5 +1,4 @@
 'use strict';
-const { application } = require('express');
 const express = require('express');
 
 /**
@@ -8,10 +7,11 @@ const express = require('express');
  *   and defines the mappings between the exposed REST APIs and the related
  *   controllers' methods implementing the main functionalities of the application
  */
-const ordersRouter = require('./api/ordersRouter');
-const itemsRouter  = require('./api/itemsRouter');
-const testsRouter  = require('./api/testsRouter');
-const usersRouter  = require('./api/usersRouter');
+const ordersRouter    = require('./api/ordersRouter');
+const itemsRouter     = require('./api/itemsRouter');
+const testsRouter     = require('./api/testsRouter');
+const usersRouter     = require('./api/usersRouter');
+const positionsRouter = require('./api/positionsRouter');
 
 // init express
 const app = new express();
@@ -24,6 +24,7 @@ app.use('/api', ordersRouter);
 app.use('/api', itemsRouter);
 app.use('/api', testsRouter);
 app.use('/api', usersRouter);
+app.use('/api', positionsRouter);
 
 // GET /api/test  -  * used for test only *
 app.get('/api/hello', (req, res) => {
