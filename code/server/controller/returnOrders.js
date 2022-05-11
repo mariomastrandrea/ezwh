@@ -76,10 +76,14 @@ async function createReturnOrder(req, res) {
 
             const roFromDb = await DbManagerInstance.createReturnOrder(ro);
             // TODO write correct error code
-            if (!roFromDb) return res.status(404).send('Not Found');
+            if (!roFromDb) {
+                return res.status(404).send('Not Found');
+            }
             const productsAdded = await DbManagerInstance.storeReturnOrderSkuItems(roFromDb.getId(), roFromDb.getProducts());
-            if (!productsAdded) return res.status(404).send('Not Found');
-            res.status(201).send('Created');
+            
+            if (!productsAdded)
+                return res.status(404).send('Not Found');
+            return res.status(201).send('Created');
         } else {
             return res.status(422).send('Unprocessable Entity');
         }
@@ -100,7 +104,7 @@ async function deleteReturnOrder(req, res) {
         }
         const deleted = await DbManagerInstance.deleteReturnOrder(ro.getId());
         if (deleted) return res.status(204).send('No Content');
-
+        return res.status(404).send('Not Found');
     } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');

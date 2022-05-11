@@ -5,69 +5,65 @@ const DbManager = require('../db/dbManager');
 const DbManagerInstance = DbManager.getInstance();
 const restockOrderStates = ['ISSUED', 'DELIVERY', 'DELIVERED', 'TESTED', 'COMPLETED', 'COMPLETEDRETURN'];
 
-const getAllRestockOrders = ((req, res) => {
+async function getAllRestockOrders(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {
-        DbManagerInstance.getAllRestockOrders().then((ros) => {
-            if (ros.length > 0) {
-                return res.status(200).json(ros);
-            } else {
-                return res.status(500).send('Internal Server Error');
+        const ros = await DbManagerInstance.getAllRestockOrders();
+        for (let ro of ros) {
+            const products = await DbManagerInstance.getRestockOrderSku(ro.getId());
+            ro.setProducts(products);
+
+            if (ro.getState() != 'ISSUED' || ro.getState() != 'DELIVERY') {
+                const skuItems = await DbManagerInstance.getRestockOrderSkuItems(ro.getId());
+                ro.setSkuItems(skuItems);
             }
-        }).catch((err) => {
-            console.log(err);
-            return res.status(500).send('Internal Server Error')
-        });
+        }
+        res.status(200).json(ros);
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-});
+};
 
-const getIssuedRestockOrders = ((req, res) => {
+async function getIssuedRestockOrders(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {
-        DbManagerInstance.getRestockOrdersInState('ISSUED').then((ros) => {
-            if (ros.length > 0) {
-                return res.status(200).json(ros);
-            } else {
-                return res.status(500).send('Internal Server Error');
-            }
-        }).catch((err) => {
-            console.log(err);
-            return res.status(500).send('Internal Server Error')
-        });
+        const ros = await DbManagerInstance.getRestockOrdersInState('ISSUED');
+        for (let ro of ros) {
+            const products = await DbManagerInstance.getRestockOrderSku(ro.getId());
+            ro.setProducts(products);
+        }
+        res.status(200).json(ros);
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-});
+};
 
-const getRestockOrderById = ((req, res) => {
+async function getRestockOrderById(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {
         if (!isNaN(req.params.id)) {
-            DbManagerInstance.getRestockOrder(parseInt(req.params.id)).then((ro) => {
-                DbManagerInstance.getRestockOrderSkuItems(ro.getId()).then((ros) => {
-                    ro.setSkuItems(ros);
-                    return res.status(200).json(ro);
-                }).catch((err) => {
-                    console.log(err);
-                    return res.status(500).send('Internal Server Error')
-                });
-            }).catch((err) => {
-                console.log(err);
-                return res.status(404).send('Not Found');
-            });
+            const ro = await DbManagerInstance.getRestockOrder(parseInt(req.params.id));
+            if (ro) {
+                const products = await DbManagerInstance.getRestockOrderSku(ro.getId());
+                ro.setProducts(products);
+                if (ro.getState() != 'ISSUED' || ro.getState() != 'DELIVERY') {
+                    const skuItems = await DbManagerInstance.getRestockOrderSkuItems(ro.getId());
+                    ro.setSkuItems(skuItems);
+                }
+                return res.status(200).json(ro);
+            }
+            return res.status(404).send('Not Found');
         } else {
             return res.status(422).send('Unprocessable Entity');
         }
@@ -75,43 +71,44 @@ const getRestockOrderById = ((req, res) => {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-});
+};
 
-// const getReturnItemsByRestockOrderId = ((req, res) => {
-//     // todo add login check
-//     if(!true){
-//         return res.status(401).send('Unauthorized');
-//     }
-//     try{
-//         if(!isNaN(req.params.id)){
-//             const ro = DbManagerInstance.getReturnItemsByRestockOrderId(parseInt(req.params.id));
-//             if (ro.length > 0) {
-//                 return res.status(200).json(ro);
-//                 // todo check order status
-//             }else{
-//                 return res.status(404).send('Not Found');
-//             }
-//         }else{
-//             return res.status(422).send('Unprocessable Entity');
-//         }
-//     }catch(err){
-//         return res.status(500).send('Internal Server Error');
-//     }
-// });
+async function getReturnItemsByRestockOrderId(req, res) {
+    // todo add login check
+    if (!true) {
+        return res.status(401).send('Unauthorized');
+    }
+    try {
+        if (!isNaN(req.params.id)) {
+            const ro = await DbManagerInstance.getRestockOrder(parseInt(req.params.id));
+            if (!ro)
+                return res.status(404).send('Not Found');
+            if (ro.getState() != 'COMPLETEDRETURN')
+                return res.status(422).send('Unprocessable Entity');
+            const ris = await DbManagerInstance.getReturnItemsByRestockOrderId(req.params.id);
+            return res.status(200).json(ris);
+        } else {
+            return res.status(422).send('Unprocessable Entity');
+        }
+    } catch (err) {
+        return res.status(500).send('Internal Server Error');
+    }
+};
 
-const createRestockOrder = ((req, res) => {
+async function createRestockOrder(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {
         if (
+            // first validate the request body
             dayjs(req.body.issueDate, 'YYYY/MM/DD HH:mm', true).isValid()
             && dayjs() >= dayjs(req.body.issueDate, 'YYYY/MM/DD HH:mm')
             && req.body.products.length > 0
             && !isNaN(req.body.supplierId)
         ) {
-
+            // then validate request body products
             const products = req.body.products.map((p) => {
                 if (!isNaN(p.SKUId) && !isNaN(p.qty) && !isNaN(p.price)
                     && p.qty > 0 && p.description && p.price > 0
@@ -125,27 +122,17 @@ const createRestockOrder = ((req, res) => {
                 } else return res.status(422).send('Unprocessable Entity');
             });
 
-            DbManagerInstance.getNextAvailableId('restockOrder').then((id) => {
-
-
-                const ro = new RestockOrder(
-                    dayjs(req.body.issueDate).format('YYYY/MM/DD HH:mm'),
-                    products,
-                    req.body.supplierId,
-                    "",
-                    id
-                );
-                DbManagerInstance.storeRestockOrder(ro.toDatabase()).then((x) => {
-                    if (x > 0) {
-                        return res.status(201).send('Created');
-                    } else {
-                        return res.status(503).send('Service Unavailable');
-                    }
-                })
-            }).catch((err) => {
-                console.log(err);
-                return res.status(503).send('Service Unavailable');
-            });
+            const ro = new RestockOrder(
+                dayjs(req.body.issueDate).format('YYYY/MM/DD HH:mm'),
+                products,
+                req.body.supplierId
+            );
+            // first create the restock order in the table of restock orders
+            const roFromDb = await DbManagerInstance.storeRestockOrder(ro);
+            // then create the restock order skus in the table of restock order skus
+            const result = await DbManagerInstance.storeRestockOrderSku(roFromDb.getId(), products);
+            if (result) return res.status(201).send('Created');
+            // todo if result = false ?
         } else {
             return res.status(422).send('Unprocessable Entity');
         }
@@ -153,13 +140,17 @@ const createRestockOrder = ((req, res) => {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
-});
+};
 
-const updateRestockOrder = ((req, res) => {
+async function updateRestockOrder(req, res) {
+    // manage different api calls
+    // type is an api identifier
     let type;
-    let skuItemsBool = false;
-    if (req.route.path.includes('skuItems')) type = 'skuItems';
-    else if (req.route.path.includes('transportNote')) type = 'transportNote';
+
+    if (req.route.path.includes('skuItems'))
+        type = 'skuItems';
+    else if (req.route.path.includes('transportNote'))
+        type = 'transportNote';
     else type = 'state';
     // todo add login check
     if (!true) {
@@ -169,54 +160,60 @@ const updateRestockOrder = ((req, res) => {
         if (isNaN(req.params.id)) {
             return res.status(422).send('Unprocessable Entity');
         }
-        DbManagerInstance.getRestockOrder(parseInt(req.params.id)).then((ro) => {
-            if (type === 'skuItems' && req.body.skuItems && req.body.skuItems.length > 0 && ro.getState() === 'DELIVERED') {
-                skuItemsBool = true;
-            } else if (type === 'state' && req.body.newState && restockOrderStates.includes(req.body.newState)) {
-                ro.setState(req.body.newState);
-            } else if (type === 'transportNote' && req.body.transportNote
-                && req.body.transportNote.deliveryDate && dayjs(req.body.transportNote.deliveryDate, 'YYYY/MM/DD HH:mm', true).isValid()
-                && req.body.transportNote.deliveryDate >= dayjs(ro.getIssueDate()).format('YYYY/MM/DD HH:mm')
-                && ro.getState() === 'DELIVERY'
-            ) {
-                ro.setTransportNote("Delivery Date: " + dayjs(req.body.transportNote.deliveryDate).format('YYYY/MM/DD'));
-            } else {
-                return res.status(422).send('Unprocessable Entity');
-            }
-            if (skuItemsBool) {
-                DbManagerInstance.storeRestockOrderSkuItems(ro.getId(), req.body.skuItems).then((x) => {
-                    if (x > 0) {
-                        return res.status(200).send('OK');
-                    }
-                }).catch((err) => {
-                    console.log(err);
-                    return res.status(503).send('Service Unavailable');
-                });
-            } else {
-                DbManagerInstance.updateRestockOrder(ro.toDatabase()).then((x) => {
-                    if (x > 0) {
-                        return res.status(200).send('OK');
-                    } else {
-                        return res.status(503).send('Service Unavailable');
-                    }
-                }).catch((err) => {
-                    console.log(err);
-                    return res.status(503).send('Service Unavailable');
-                });
-            }
+        const ro = await DbManagerInstance.getRestockOrder(parseInt(req.params.id));
+        if (!ro) return res.status(404).send('Not Found');
 
-        }).catch((err) => {
-            console.log(err);
-            return res.status(404).send('Not Found');
-        });
-
+        let result = 0;
+        switch (type) {
+            case 'skuItems':
+                if (
+                    // todo validator
+                    req.body.skuItems &&
+                    req.body.skuItems.length > 0
+                    && ro.getState() != 'DELIVERED'
+                ) {
+                    result = await DbManagerInstance.storeRestockOrderSkuItems(ro.getId(), req.body.skuItems);
+                } else {
+                    return res.status(422).send('Unprocessable Entity');
+                }
+                break;
+            case 'state':
+                if (
+                    // todo validator
+                    req.body.newState &&
+                    restockOrderStates.includes(req.body.newState)
+                ) {
+                    ro.setState(req.body.newState);
+                    result = await DbManagerInstance.updateRestockOrder(ro);
+                } else {
+                    return res.status(422).send('Unprocessable Entity');
+                }
+                break;
+            case 'transportNote':
+                if (
+                    // todo validator
+                    req.body.transportNote &&
+                    req.body.transportNote.length > 0
+                    && req.body.transportNote.deliveryDate
+                    && dayjs(req.body.transportNote.deliveryDate, 'YYYY/MM/DD HH:mm', true).isValid()
+                    && dayjs(ro.getIssueDate()) <= dayjs(req.body.transportNote.deliveryDate, 'YYYY/MM/DD HH:mm')
+                    && ro.getState() != 'DELIVERY'
+                ) {
+                    ro.setTransportNote(req.body.transportNote);
+                    result = await DbManagerInstance.updateRestockOrder(ro);
+                } else {
+                    return res.status(422).send('Unprocessable Entity');
+                }
+                break;
+        }
+        if (result) return res.status(200).send('OK');
     } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
-});
+};
 
-const deleteRestockOrder = ((req, res) => {
+async function deleteRestockOrder(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -225,32 +222,31 @@ const deleteRestockOrder = ((req, res) => {
         if (isNaN(req.params.id)) {
             return res.status(422).send('Unprocessable Entity');
         }
-        DbManagerInstance.deleteRestockOrder(parseInt(req.params.id)).then((x) => {
-            if (x > 0) {
-                DbManagerInstance.deleteRestockOrderSkuItems(parseInt(req.params.id)).then((y) => { }).catch((err) => {
-                    console.log(err);
-                    return res.status(503).send('Service Unavailable');
-                });
-                return res.status(200).send('OK');
-            } else {
-                return res.status(503).send('Service Unavailable');
-            }
-        }).catch((err) => {
-            console.log(err);
+        const ro = await DbManagerInstance.getRestockOrder(parseInt(req.params.id));
+        if (!ro) return res.status(404).send('Not Found');
+
+        const skuItems = await DbManagerInstance.getRestockOrderSkuItems(ro.getId());
+        const sku = await DbManagerInstance.getRestockOrderSku(ro.getId());
+        if ( skuItems || sku ) {
+            // there are sku items or sku with this ro id
+            // cannot delete
+            //return res.status(409).send('Conflict');
             return res.status(503).send('Service Unavailable');
-        });
+        }
+        const result = await DbManagerInstance.deleteRestockOrder(ro.getId());
+        if (result) return res.status(204).send('No Content');
 
     } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
-});
+};
 
 module.exports = {
     getAllRestockOrders,
     getIssuedRestockOrders,
     getRestockOrderById,
-    // getReturnItemsByRestockOrderId,
+    getReturnItemsByRestockOrderId,
     createRestockOrder,
     updateRestockOrder,
     deleteRestockOrder,
