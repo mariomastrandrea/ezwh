@@ -615,3 +615,9 @@ function deleteReturnOrderSkuItems(id) {
 }
 
 /* - END RETURN ORDER - */
+
+module.exports = {
+    getAllRestockOrders,
+    getRestockOrdersInState,
+    getRestockOrder,
+}

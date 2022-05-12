@@ -32,6 +32,7 @@ class RestockOrder {
     // setters
     setState = (state) => this.#state = state;
     setTransportNote = (transportNote) => this.#transportNote = transportNote;
+    setProducts = (products) => this.#products = products;
     setSkuItems = (skuItems) => {
         let array = [];
         array.push(...this.#skuItems, ...skuItems);
