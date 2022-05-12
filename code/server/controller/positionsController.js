@@ -2,6 +2,7 @@ const Position = require("../models/position");
 const DbManagerFactory = require('../db/dbManager3');
 const { isNum, isInt } = require("../utilities");
 const dao = DbManagerFactory();
+const Joi = require('joi');
 
 // GET /api/positions
 async function getAllPositions(req, res) {
@@ -29,24 +30,21 @@ async function createPosition(req, res) {
     }
 
     try {
-        if(!req.body) { // empty body
-            return res.status(422).send("Unprocessable Entity");
-        }
+        const schema = Joi.object({
+            positionID: Joi.string().min(12).max(12).required().valid(req.body.aisleID+req.body.row+req.body.col),
+            aisleID: Joi.string().min(4).max(4).required(),
+            row: Joi.string().min(4).max(4).required(),
+            col: Joi.string().min(4).max(4).required(),
+            maxWeight: Joi.number().required(),
+            maxVolume: Joi.number().required()
+        })
 
+        const result = schema.validate(req.body);
+        if (result.error) {
+            return res.status(422).send('Unprocessable Entity');
+        }
+        
         const {positionID, aisleID, row, col, maxWeight, maxVolume} = req.body;
-
-        if(!positionID || !aisleID || !row || !col || !maxWeight || !maxVolume ||
-            positionID.length != 12 || aisleID.length != 4 || row.length != 4 || col.length != 4 ||
-            !isInt(positionID) || !isInt(aisleID) || !isInt(row) || !isInt(col) || 
-            !isNum(maxWeight) || !isNum(maxVolume)) {
-            // TODO: better validation (for you Kristi <3)
-            return res.status(422).send("Unprocessable Entity");
-        }
-
-        // check consistency between positionID and (aisleID, row, col)
-        if(positionID !== `${aisleID}${row}${col}`) {
-            return res.status(422).send("Unprocessable Entity"); // ?
-        }
 
         // * Q: Has to be properly checked the case in which the new positionId already exists?
         //      (and it cannot be duplicated) *
@@ -78,22 +76,30 @@ async function updatePosition(req, res) {
     }
 
     try {
-        const { positionID } = req.params;
 
-        if(!req.body) { // empty body
-            return res.status(422).send("Unprocessable Entity");
+        if (Joi.string().min(12).max(12).required().validate(req.params.positionID).error) {
+            return res.status(422).send('Unprocessable Entity');
         }
 
+        const schema = Joi.object({
+            newAisleID: Joi.string().min(4).max(4).required(),
+            newRow: Joi.string().min(4).max(4).required(),
+            newCol: Joi.string().min(4).max(4).required(),
+            newMaxWeight: Joi.number().required(),
+            newMaxVolume: Joi.number().required(),
+            newOccupiedWeight: Joi.number().required(),
+            newOccupiedVolume: Joi.number().required()
+        })
+
+        const result = schema.validate(req.body);
+        if (result.error) {
+            return res.status(422).send('Unprocessable Entity');
+        }
+
+        const { positionID } = req.params;
         const { newAisleID, newRow, newCol, newMaxWeight, newMaxVolume, 
             newOccupiedWeight, newOccupiedVolume } = req.body;
-        
-        if(!newAisleID || !newRow || !newCol || !newMaxWeight || !newMaxVolume || !newOccupiedWeight || !newOccupiedVolume ||
-            positionID.length != 12 || newAisleID.length != 4 || newRow.length != 4 || newCol.length != 4 || 
-            !isInt(positionID) || !isInt(newAisleID) || !isInt(newRow) || !isInt(newCol) ||
-            !isNum(newMaxWeight) || !isNum(newMaxVolume) || !isNum(newOccupiedWeight) || !isNum(newOccupiedVolume)) {
-            // TODO: better validation (for you Kristi <3)
-            return res.status(422).send("Unprocessable Entity");
-        }
+
 
         // check if the required Position exists
         const oldPosition = await dao.getPosition(positionID);
@@ -138,18 +144,16 @@ async function updatePositionId(req, res) {
     }
 
     try {
+        if (Joi.string().min(12).max(12).required().validate(req.params.positionID).error) {
+            return res.status(422).send('Unprocessable Entity');
+        }
+
+        if (Joi.string().min(12).max(12).required().validate(req.body.newPositionID).error) {
+            return res.status(422).send('Unprocessable Entity');
+        }
+
         const { positionID } = req.params;
-
-        if(!req.body) { // empty body
-            return res.status(422).send("Unprocessable Entity");
-        }
-
         const { newPositionID } = req.body;
-        
-        if(!newPositionID || newPositionID.length != 12 || !isInt(newPositionID)) {
-            // TODO: better validation (for you Kristi <3)
-            return res.status(422).send("Unprocessable Entity");
-        }
 
         // check if already exist the specific position
         const oldPosition = await dao.getPosition(positionID);
@@ -196,12 +200,11 @@ async function deletePosition(req, res) {
     }
 
     try {
-        const { positionID } = req.params;
-        
-        if(!positionID || positionID.length != 12 || !isInt(positionID)) {
-            // TODO: better validation (for you Kristi <3)
-            return res.status(422).send("Unprocessable Entity");
+        if (Joi.string().min(12).max(12).required().validate(req.params.positionID).error) {
+            return res.status(422).send('Unprocessable Entity');
         }
+
+        const { positionID } = req.params;
 
         const positionWasDeleted = await dao.deletePosition(positionID);
 

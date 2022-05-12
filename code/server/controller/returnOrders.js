@@ -1,6 +1,6 @@
 const dayjs = require('dayjs');
 const ReturnOrder = require('../models/returnOrder');
-
+const Joi = require('joi');
 const DbManager = require('../db/dbManager');
 const DbManagerInstance = DbManager.getInstance();
 
@@ -28,15 +28,14 @@ async function getReturnOrderById(req, res) {
         return res.status(401).send('Unauthorized');
     }
     try {
-        if (!isNaN(req.params.id)) {
-            const ro = await DbManagerInstance.getReturnOrderById(parseInt(req.params.id));
-            if (!ro) return res.status(404).send('Not Found');
-            const products = await DbManagerInstance.getReturnOrderProducts(ro.getId());
-            ro.setProducts(products);
-            res.status(200).send(ro);
-        } else {
-            return res.status(422).send('Unprocessable Entity');
-        }
+        if (Joi.number().integer().required().validate(req.params.id).error)
+            return res.status(422).send('Unprocessable entity')
+
+        const ro = await DbManagerInstance.getReturnOrderById(parseInt(req.params.id));
+        if (!ro) return res.status(404).send('Not Found');
+        const products = await DbManagerInstance.getReturnOrderProducts(ro.getId());
+        ro.setProducts(products);
+        res.status(200).send(ro);
     } catch (err) {
         return res.status(500).send('Internal Server Error');
     }
@@ -48,41 +47,44 @@ async function createReturnOrder(req, res) {
         return res.status(401).send('Unauthorized');
     }
     try {
-        if (
-            dayjs(req.body.returnDate, 'YYYY/MM/DD HH:mm', true).isValid()
-            && dayjs() >= dayjs(req.body.returnDate, 'YYYY/MM/DD HH:mm')
-            && req.body.products.length > 0
-            && !isNaN(req.body.restockOrderId)
-        ) {
+        const subschema = Joi.object({
+            SKUId: Joi.number().integer().required(),
+            description: Joi.string().required(),
+            price: Joi.number().required(),
+            RFID: Joi.string().required()
+        })
+        const schema = Joi.object({
+            returnDate: Joi.date().required(),
+            products: Joi.array().items(subschema).required(),
+            restockOrderId: Joi.number().integer().required()
+        });
 
-            const products = req.body.products.map((p) => {
-                if (!isNaN(p.SKUId) && !isNaN(p.price)
-                    && p.description && p.price > 0
-                ) {
-                    return {
-                        SKUId: p.SKUId,
-                        description: p.description,
-                        price: p.price,
-                        RFID: p.RFID,
-                    };
-                } else return res.status(422).send('Unprocessable Entity');
-            });
-
-            const ro = new ReturnOrder(
-                dayjs(req.body.returnDate).format('YYYY/MM/DD HH:mm'),
-                products,
-                req.body.restockOrderId
-            );
-
-            const roFromDb = await DbManagerInstance.createReturnOrder(ro);
-            // TODO write correct error code
-            if (!roFromDb) return res.status(404).send('Not Found');
-            const productsAdded = await DbManagerInstance.storeReturnOrderSkuItems(roFromDb.getId(), roFromDb.getProducts());
-            if (!productsAdded) return res.status(404).send('Not Found');
-            res.status(201).send('Created');
-        } else {
-            return res.status(422).send('Unprocessable Entity');
+        const result = schema.validate(req.body);
+        if (result.error) {
+            return res.status(422).send('Unprocessable Entity')
         }
+
+        const products = req.body.products.map((p) => {
+            return {
+                SKUId: p.SKUId,
+                description: p.description,
+                price: p.price,
+                RFID: p.RFID,
+            };
+        });
+
+        const ro = new ReturnOrder(
+            dayjs(req.body.returnDate).format('YYYY/MM/DD HH:mm'),
+            products,
+            req.body.restockOrderId
+        );
+
+        const roFromDb = await DbManagerInstance.storeReturnOrder(ro);
+        // TODO write correct error code
+        if (!roFromDb) return res.status(404).send('Not Found');
+        const productsAdded = await DbManagerInstance.storeReturnOrderSkuItems(roFromDb.getId(), roFromDb.getProducts());
+        if (!productsAdded) return res.status(404).send('Not Found');
+        res.status(201).send('Created');
     } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
@@ -95,9 +97,9 @@ async function deleteReturnOrder(req, res) {
         return res.status(401).send('Unauthorized');
     }
     try {
-        if (isNaN(req.params.id)) {
-            return res.status(422).send('Unprocessable Entity');
-        }
+        if (Joi.number().integer().required().validate(req.params.id).error)
+            return res.status(422).send('Unprocessable entity')
+
         const deleted = await DbManagerInstance.deleteReturnOrder(ro.getId());
         if (deleted) return res.status(204).send('No Content');
 

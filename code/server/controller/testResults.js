@@ -12,7 +12,7 @@ async function getTestResultsBySkuItem(req, res) {
 
     try {
 
-        if (!req.params.rfid.match(/^[0-9a-zA-Z]+$/)) {
+        if (Joi.string().required().validate(req.params.rfid).error) {
             return res.status(422).send('Invalid rfid')
         }
 
@@ -44,11 +44,11 @@ async function getTestResult(req, res) {
 
     try {
 
-        if (!req.params.rfid.match(/^[0-9a-zA-Z]+$/)) {
+        if (Joi.string().required().validate(req.params.rfid).error) {
             return res.status(422).send('Invalid rfid')
         }
 
-        if (!Number.isInteger(Number(req.params.id))) {
+        if (Joi.number().integer().required().validate(req.params.id).error) {
             return res.status(422).send('Invalid test result id')
         }
 
@@ -80,15 +80,15 @@ async function createTestResult(req, res) {
 
     try {
 
-        if (!req.body.rfid.match(/^[0-9a-zA-Z]+$/)) {
+        if (Joi.string().required().validate(req.params.rfid).error) {
             return res.status(422).send('Invalid rfid')
         }
 
         const schema = Joi.object({
-            rfid: Joi.string(),
-            idTestDescriptor: Joi.number().integer(),
-            Date: Joi.date(),
-            Result: Joi.boolean()
+            rfid: Joi.string().required(),
+            idTestDescriptor: Joi.number().integer().required(),
+            Date: Joi.date().required(),
+            Result: Joi.boolean().required()
         });
 
         const result = schema.validate(req.body);
@@ -130,11 +130,11 @@ async function updateTestResult(req, res) {
             return res.status(422).send('Invalid request body')
         }
 
-        if (!req.params.rfid.match(/^[0-9a-zA-Z]+$/)) {
+        if (Joi.string().required().validate(req.params.rfid).error) {
             return res.status(422).send('Invalid rfid')
         }
 
-        if (!Number.isInteger(Number(req.params.id))) {
+        if (Joi.number().integer().required().validate(req.params.id).error) {
             return res.status(422).send('Invalid test result id')
         }
 
@@ -165,11 +165,11 @@ async function deleteTestResult(req, res) {
 
     try {
 
-        if (!req.params.rfid.match(/^[0-9a-zA-Z]+$/)) {
+        if (Joi.string().required().validate(req.params.rfid).error) {
             return res.status(422).send('Invalid rfid')
         }
 
-        if (!Number.isInteger(Number(req.params.id))) {
+        if (Joi.number().integer().required().validate(req.params.id).error) {
             return res.status(422).send('Invalid test result id')
         }
 

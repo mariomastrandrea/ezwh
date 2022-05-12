@@ -26,7 +26,7 @@ async function getTestDescriptor(req, res) {
     }
 
     try {
-        if (!Number.isInteger(Number(req.params.id)))
+        if (Joi.number().integer().required().validate(req.params.id).error)
             return res.status(422).send('Invalid test descriptor id')
 
         const td = await DbManagerInstance.getTestDescriptor(parseInt(req.params.id));
@@ -49,9 +49,9 @@ async function createTestDescriptor(req, res) {
 
     try {
         const schema = Joi.object({
-            name: Joi.string(),
-            procedureDescription: Joi.string(),
-            idSKU: Joi.number().integer()
+            name: Joi.string().required(),
+            procedureDescription: Joi.string().required(),
+            idSKU: Joi.number().integer().required()
         });
 
         const result = schema.validate(req.body);
@@ -91,12 +91,13 @@ async function updateTestDescriptor(req, res) {
             return res.status(422).send('Invalid request body')
         }
 
-        if (!Number.isInteger(Number(req.params.id)))
+        if (Joi.number().integer().required().validate(req.params.id).error)
             return res.status(422).send('Invalid test descriptor id')
 
         const td = await DbManagerInstance.getTestDescriptor(parseInt(req.params.id));
         if (!td)
             return res.status(404).send('Test descriptor not found');
+
         //404 no sku
 
         const count = await DbManagerInstance.updateTestDescriptor(new TestDescriptor(parseInt(req.params.id), req.body.newName, req.body.newProcedureDescription, parseInt(req.body.newIdSKU)));
@@ -118,7 +119,7 @@ async function deleteTestDescriptor(req, res) {
     }
 
     try {
-        if (!Number.isInteger(Number(req.params.id)))
+        if (Joi.number().integer().required().validate(req.params.id).error)
             return res.status(422).send('Invalid test descriptor id')
 
         const count = await DbManagerInstance.deleteTestDescriptor(parseInt(req.params.id));

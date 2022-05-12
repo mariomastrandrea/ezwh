@@ -1,6 +1,27 @@
 const User = require('../models/user');
 const DbManager = require('../db/dbManager2');
 const Joi = require('joi');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
+const hashPassword = async (password) => {
+    try {
+        return await bcrypt.hash(password, saltRounds);
+    } catch (error) {
+        console.log(error);
+    }
+    return null;
+};
+
+const comparePassword = async (password, hash) => {
+    try {
+        return await bcrypt.compare(password, hash);
+    } catch (error) {
+        console.log(error);
+    }
+    return false;
+};
+
 
 const DbManagerInstance = new DbManager();
 
@@ -11,6 +32,8 @@ async function getUserInfo(req, res) {
 
     try {
         //todo for current user
+        //console.log(await hashPassword('pass1'));
+        //console.log(await comparePassword('pass1',await hashPassword('pass1')));
         const us = await DbManagerInstance.getUser('e1@gmail.com', 'pass1');
         return res.status(200).send({
             id: us.getId(),
@@ -20,7 +43,7 @@ async function getUserInfo(req, res) {
             type: us.getType()
         })
     } catch (err) {
-        console.log(err);
+        //console.log(err);
         return res.status(500).send('Internal Server Error');
     }
 };
@@ -98,7 +121,8 @@ async function createNewUser(req, res) {
                 return res.status(409).send('User already exists');
         }
 
-        const us = await DbManagerInstance.storeNewUser(new User(req.body.name, req.body.surname, req.body.username, req.body.type, req.body.password));
+        const password = await hashPassword(req.body.password);
+        const us = await DbManagerInstance.storeNewUser(new User(req.body.name, req.body.surname, req.body.username, req.body.type, password));
         if (!us)
             return res.status(500).send('Could not store user');
 

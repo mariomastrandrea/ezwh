@@ -1,5 +1,5 @@
 const Item = require('../models/item');
-
+const Joi = require('joi');
 const DbManager = require('../db/dbManager');
 const DbManagerInstance = DbManager.getInstance();
 
@@ -30,7 +30,9 @@ const getItemById = ((req, res) => {
         return res.status(401).send('Unauthorized');
     }
     try {
-        if (isNaN(req.params.id)) return res.status(422).send('Unprocessable Entity');
+        if (Joi.number().integer().required().validate(req.params.id).error)
+            return res.status(422).send('Unprocessable entity');
+
         DbManagerInstance.getItem(parseInt(req.params.id)).then((item) => {
             return res.status(200).json(item);
         }).catch((err) => {
@@ -49,36 +51,41 @@ const createItem = ((req, res) => {
         return res.status(401).send('Unauthorized');
     }
     try {
-        if (
-            req.body.description && !isNaN(req.body.price)
-            && !isNaN(req.body.SKUId) && !isNaN(req.body.supplierId)
-            && !isNaN(req.body.id)
-        ) {
-            DbManagerInstance.getSku(parseInt(req.body.SKUId)).then((sku) => {
-                if (sku) {
-                    const item = new Item(
-                        parseInt(req.body.id),
-                        req.body.description,
-                        parseFloat(req.body.price),
-                        parseInt(req.body.SKUId),
-                        parseInt(req.body.supplierId)
-                    );
-                    DbManagerInstance.storeItem(item.toJSON()).then((item) => {
-                        return res.status(201).send('Created');
-                    }).catch((err) => {
-                        console.log(err);
-                        return res.status(503).send('Service Unavailable');
-                    });
-                } else {
-                    return res.status(404).send('Not Found');
-                }
-            }).catch((err) => {
-                console.log(err);
-                return res.status(500).send('Internal Server Error');
-            });
-        } else {
-            return res.status(422).send('Unprocessable Entity');
+        const schema = Joi.object({
+            id: Joi.number().integer().required(),
+            description: Joi.string().required(),
+            price: Joi.number().required(),
+            SKUId: Joi.number().integer().required(),
+            supplierId: Joi.number().integer().required()
+        });
+
+        const result = schema.validate(req.body);
+        if (result.error) {
+            return res.status(422).send('Unprocessable Entity')
         }
+
+        DbManagerInstance.getSku(parseInt(req.body.SKUId)).then((sku) => {
+            if (sku) {
+                const item = new Item(
+                    parseInt(req.body.id),
+                    req.body.description,
+                    parseFloat(req.body.price),
+                    parseInt(req.body.SKUId),
+                    parseInt(req.body.supplierId)
+                );
+                DbManagerInstance.storeItem(item.toJSON()).then((item) => {
+                    return res.status(201).send('Created');
+                }).catch((err) => {
+                    console.log(err);
+                    return res.status(503).send('Service Unavailable');
+                });
+            } else {
+                return res.status(404).send('Not Found');
+            }
+        }).catch((err) => {
+            console.log(err);
+            return res.status(500).send('Internal Server Error');
+        });
     } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
@@ -90,16 +97,24 @@ const updateItem = ((req, res) => {
         return res.status(401).send('Unauthorized');
     }
     try {
-        if (isNaN(req.params.id)) return res.status(422).send('Unprocessable Entity');
+        if (Joi.number().integer().required().validate(req.params.id).error)
+            return res.status(422).send('Unprocessable entity');
+
+        const schema = Joi.object({
+            newDescription: Joi.string().required(),
+            newPrice: Joi.number().required()
+        });
+
+        const result = schema.validate(req.body);
+        if (result.error) {
+            return res.status(422).send('Unprocessable Entity')
+        }
+
         DbManagerInstance.getItem(parseInt(req.params.id)).then((item) => {
             if (item) {
-                if (req.body.newDescription) {
-                    item.setDescription(req.body.newDescription);
-                }
-                if (req.body.newPrice) {
-                    if (isNaN(req.body.newPrice)) return res.status(422).send('Unprocessable Entity');
-                    item.setPrice(parseFloat(req.body.newPrice));
-                }
+                item.setDescription(req.body.newDescription);
+                item.setPrice(parseFloat(req.body.newPrice));
+
                 DbManagerInstance.updateItem(item.toJSON()).then((item) => {
                     return res.status(200).send('OK');
                 }).catch((err) => {
@@ -124,7 +139,9 @@ const deleteItem = ((req, res) => {
         return res.status(401).send('Unauthorized');
     }
     try {
-        if (isNaN(req.params.id)) return res.status(422).send('Unprocessable Entity');
+        if (Joi.number().integer().required().validate(req.params.id).error)
+            return res.status(422).send('Unprocessable entity');
+
         DbManagerInstance.deleteItem(parseInt(req.params.id)).then((item) => {
             return res.status(200).send('No Content');
         }).catch((err) => {
