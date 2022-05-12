@@ -5,51 +5,48 @@ const DbManager = require('../db/dbManager');
 const DbManagerInstance = DbManager.getInstance();
 const restockOrderStates = ['ISSUED', 'DELIVERY', 'DELIVERED', 'TESTED', 'COMPLETED', 'COMPLETEDRETURN'];
 
-const getAllRestockOrders = ((req, res) => {
+async function getAllRestockOrders(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {
-        DbManagerInstance.getAllRestockOrders().then((ros) => {
-            if (ros.length > 0) {
-                return res.status(200).json(ros);
-            } else {
-                return res.status(500).send('Internal Server Error');
+        const ros = await DbManagerInstance.getAllRestockOrders();
+        for (let ro of ros) {
+            const products = await DbManagerInstance.getRestockOrderSku(ro.getId());
+            ro.setProducts(products);
+
+            if (ro.getState() != 'ISSUED' || ro.getState() != 'DELIVERY') {
+                const skuItems = await DbManagerInstance.getRestockOrderSkuItems(ro.getId());
+                ro.setSkuItems(skuItems);
             }
-        }).catch((err) => {
-            console.log(err);
-            return res.status(500).send('Internal Server Error')
-        });
+        }
+        res.status(200).json(ros);
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-});
+};
 
-const getIssuedRestockOrders = ((req, res) => {
+async function getIssuedRestockOrders(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
     try {
-        DbManagerInstance.getRestockOrdersInState('ISSUED').then((ros) => {
-            if (ros.length > 0) {
-                return res.status(200).json(ros);
-            } else {
-                return res.status(500).send('Internal Server Error');
-            }
-        }).catch((err) => {
-            console.log(err);
-            return res.status(500).send('Internal Server Error')
-        });
+        const ros = await DbManagerInstance.getRestockOrdersInState('ISSUED');
+        for (let ro of ros) {
+            const products = await DbManagerInstance.getRestockOrderSku(ro.getId());
+            ro.setProducts(products);
+        }
+        res.status(200).json(ros);
     } catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-});
+};
 
-const getRestockOrderById = ((req, res) => {
+async function getRestockOrderById(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -74,7 +71,7 @@ const getRestockOrderById = ((req, res) => {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-});
+};
 
 // const getReturnItemsByRestockOrderId = ((req, res) => {
 //     // todo add login check
@@ -97,7 +94,7 @@ const getRestockOrderById = ((req, res) => {
 //     }
 // });
 
-const createRestockOrder = ((req, res) => {
+async function createRestockOrder(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -153,13 +150,17 @@ const createRestockOrder = ((req, res) => {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
-});
+};
 
-const updateRestockOrder = ((req, res) => {
+async function updateRestockOrder(req, res) {
+    // manage different api calls
+    // type is an api identifier
     let type;
-    let skuItemsBool = false;
-    if (req.route.path.includes('skuItems')) type = 'skuItems';
-    else if (req.route.path.includes('transportNote')) type = 'transportNote';
+
+    if (req.route.path.includes('skuItems'))
+        type = 'skuItems';
+    else if (req.route.path.includes('transportNote'))
+        type = 'transportNote';
     else type = 'state';
     // todo add login check
     if (!true) {
@@ -210,13 +211,57 @@ const updateRestockOrder = ((req, res) => {
             return res.status(404).send('Not Found');
         });
 
+        let result = 0;
+        switch (type) {
+            case 'skuItems':
+                if (
+                    // todo validator
+                    req.body.skuItems &&
+                    req.body.skuItems.length > 0
+                    && ro.getState() != 'DELIVERED'
+                ) {
+                    result = await DbManagerInstance.storeRestockOrderSkuItems(ro.getId(), req.body.skuItems);
+                } else {
+                    return res.status(422).send('Unprocessable Entity');
+                }
+                break;
+            case 'state':
+                if (
+                    // todo validator
+                    req.body.newState &&
+                    restockOrderStates.includes(req.body.newState)
+                ) {
+                    ro.setState(req.body.newState);
+                    result = await DbManagerInstance.updateRestockOrder(ro);
+                } else {
+                    return res.status(422).send('Unprocessable Entity');
+                }
+                break;
+            case 'transportNote':
+                if (
+                    // todo validator
+                    req.body.transportNote &&
+                    req.body.transportNote.length > 0
+                    && req.body.transportNote.deliveryDate
+                    && dayjs(req.body.transportNote.deliveryDate, 'YYYY/MM/DD HH:mm', true).isValid()
+                    && dayjs(ro.getIssueDate()) <= dayjs(req.body.transportNote.deliveryDate, 'YYYY/MM/DD HH:mm')
+                    && ro.getState() != 'DELIVERY'
+                ) {
+                    ro.setTransportNote(req.body.transportNote);
+                    result = await DbManagerInstance.updateRestockOrder(ro);
+                } else {
+                    return res.status(422).send('Unprocessable Entity');
+                }
+                break;
+        }
+        if (result) return res.status(200).send('OK');
     } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
-});
+};
 
-const deleteRestockOrder = ((req, res) => {
+async function deleteRestockOrder(req, res) {
     // todo add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -238,19 +283,21 @@ const deleteRestockOrder = ((req, res) => {
         }).catch((err) => {
             console.log(err);
             return res.status(503).send('Service Unavailable');
-        });
+        })
+        const result = await DbManagerInstance.deleteRestockOrder(ro.getId());
+        if (result) return res.status(204).send('No Content');
 
     } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
-});
+};
 
 module.exports = {
     getAllRestockOrders,
     getIssuedRestockOrders,
     getRestockOrderById,
-    // getReturnItemsByRestockOrderId,
+    getReturnItemsByRestockOrderId,
     createRestockOrder,
     updateRestockOrder,
     deleteRestockOrder,

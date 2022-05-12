@@ -102,7 +102,7 @@ async function deleteReturnOrder(req, res) {
 
         const deleted = await DbManagerInstance.deleteReturnOrder(ro.getId());
         if (deleted) return res.status(204).send('No Content');
-
+        return res.status(404).send('Not Found');
     } catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
