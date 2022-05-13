@@ -1,6 +1,5 @@
 const Position = require("../models/position");
 const DbManagerFactory = require('../db/dbManager3');
-const { isNum, isInt } = require("../utilities");
 const dao = DbManagerFactory();
 const Joi = require('joi');
 

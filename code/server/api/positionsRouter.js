@@ -1,33 +1,34 @@
 const express = require('express');
-const Joi = require('joi');
 const router = express.Router();
 
-/**
- * Position
- */
+// validation
+const { isInt } = require("../utilities");
+const Joi = require('joi');
 
-const {
-    getAllPositions,
-    createPosition,
-    updatePosition,
-    updatePositionId,
-    deletePosition
-} = require("../services/positionsService.js");
+// DbManager / DAO
+const DbManagerFactory = require('../db/dbManager3');
+const dao = DbManagerFactory();
 
-router.get("/positions", (req, res) => {
+// import Service class and inject dao
+const PositionService = require("../services/positionsService.js");
+const positionService = new PositionService(dao);
+
+/* API */
+
+router.get("/positions", async (req, res) => {
     // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
 
     try {
-        const {error, code} = await getAllPositions();
+        const {error, code, obj} = await positionService.getAllPositions();
         
         if(error) {
             return res.status(code).send(error);
         }
 
-        const allPositions = result.obj;
+        const allPositions = obj;
         return res.status(code).json(allPositions);
     }
     catch (err) {
@@ -36,13 +37,14 @@ router.get("/positions", (req, res) => {
     }
 });
 
-router.post("/position", (req, res) => {
+router.post("/position", async (req, res) => {
     // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
 
     try {
+        // validate request body
         const schema = Joi.object({
             positionID: Joi.string().min(12).max(12).required().valid(req.body.aisleID+req.body.row+req.body.col),
             aisleID: Joi.string().min(4).max(4).required(),
@@ -59,7 +61,7 @@ router.post("/position", (req, res) => {
         }
         
         const {positionID, aisleID, row, col, maxWeight, maxVolume} = req.body;
-        const {error, code} = await createPosition(positionID, aisleID, row, col, maxWeight, maxVolume);
+        const {error, code} = await positionService.createPosition(positionID, aisleID, row, col, maxWeight, maxVolume);
 
         if(error) {
             return res.status(code).send(error);
@@ -73,7 +75,7 @@ router.post("/position", (req, res) => {
     }
 });
 
-router.put("/position/:positionID", (req, res) => {
+router.put("/position/:positionID", async (req, res) => {
     // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -114,7 +116,11 @@ router.put("/position/:positionID", (req, res) => {
         const { newAisleID, newRow, newCol, newMaxWeight, newMaxVolume, 
             newOccupiedWeight, newOccupiedVolume } = req.body;
 
-        const {error, code} = await updatePosition(positionID, newAisleID, 
+        if(!isInt(newAisleID) || !isInt(newRow) || !isInt(newCol)) {
+            return res.status(422).send('Unprocessable Entity');
+        }
+
+        const {error, code} = await positionService.updatePosition(positionID, newAisleID, 
             newRow, newCol, newMaxWeight, newMaxVolume, newOccupiedWeight, newOccupiedVolume);
 
         if (error) {
@@ -129,7 +135,7 @@ router.put("/position/:positionID", (req, res) => {
     }
 });
 
-router.put("/position/:positionID/changeID", (req, res) => {
+router.put("/position/:positionID/changeID", async (req, res) => {
     // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -167,7 +173,7 @@ router.put("/position/:positionID/changeID", (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const {error, code} = await updatePositionId(positionID, newPositionID, newAisleID, newRow, newCol);
+        const {error, code} = await positionService.updatePositionId(positionID, newPositionID, newAisleID, newRow, newCol);
 
         if (error) {
             return res.status(code).send(error);
@@ -181,7 +187,7 @@ router.put("/position/:positionID/changeID", (req, res) => {
     }
 });
 
-router.delete("/position/:positionID", (req, res) => {
+router.delete("/position/:positionID", async (req, res) => {
     // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -203,7 +209,7 @@ router.delete("/position/:positionID", (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const {error, code} = await deletePosition(positionID);
+        const {error, code} = await positionService.deletePosition(positionID);
 
         return error ? 
             res.status(code).send(error) :
@@ -217,4 +223,3 @@ router.delete("/position/:positionID", (req, res) => {
 
 // module export
 module.exports = router;
-

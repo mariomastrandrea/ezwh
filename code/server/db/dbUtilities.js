@@ -1,7 +1,17 @@
 const sqlite = require('sqlite3').verbose();
-const dbSource = './db/ezwh.sqlite';
+const dbSource = './db/EZWHDB.sqlite';
 
-// tables' names
+// db connection 
+const dbConnection = new sqlite.Database(dbSource, (err) => {
+    if (err) {
+        // Cannot open database
+        console.error(err.message);
+        throw err;
+    }
+    console.log('Connected to the SQLite database.');
+});
+
+/* tables' names
 const tables = [
     'sku',
     'skuitem',
@@ -128,23 +138,13 @@ const params = {
         'occupiedVolume numeric',
         'PRIMARY KEY(id)'
     ]
-}
+} */
 
-// db connection 
-const db = new sqlite.Database(dbSource, (err) => {
-    if (err) {
-        // Cannot open database
-        console.error(err.message);
-        throw err;
-    }
-    console.log('Connected to the SQLite database.');
-});
-
-// tables creation
+/* tables creation
 tables.forEach(table => {
     db.run(`CREATE TABLE IF NOT EXISTS ${table} 
             (${params[table].join(', ')})`);
-})
+}) */
 
 // module export
-module.exports = { db };
+module.exports = { dbConnection };

@@ -297,7 +297,7 @@ module.exports = {
     getAllRestockOrders,
     getIssuedRestockOrders,
     getRestockOrderById,
-    getReturnItemsByRestockOrderId,
+    //getReturnItemsByRestockOrderId,
     createRestockOrder,
     updateRestockOrder,
     deleteRestockOrder,
