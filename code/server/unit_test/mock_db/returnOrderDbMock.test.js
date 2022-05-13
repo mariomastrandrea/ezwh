@@ -1,7 +1,7 @@
-const ReturnOrderService = require('../services/returnOrderService');
-const dao = require('../db/mock/mockOrders');
-const RestockOrder = require('../models/restockOrder');
-const ReturnOrder = require('../models/returnOrder');
+const ReturnOrderService = require('../../services/returnOrderService');
+const dao = require('../../db/mock/mockOrders');
+const RestockOrder = require('../../models/restockOrder');
+const ReturnOrder = require('../../models/returnOrder');
 
 const returnOrderService = new ReturnOrderService(dao);
 

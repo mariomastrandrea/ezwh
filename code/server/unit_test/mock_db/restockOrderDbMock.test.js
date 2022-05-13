@@ -1,6 +1,6 @@
-const RestockOrderService = require('../services/restockOrderService');
-const dao = require('../db/mock/mockOrders');
-const RestockOrder = require('../models/restockOrder');
+const RestockOrderService = require('../../services/restockOrderService');
+const dao = require('../../db/mock/mockOrders');
+const RestockOrder = require('../../models/restockOrder');
 
 const restockOrderService = new RestockOrderService(dao);
 const fakeRestockOrder = new RestockOrder(
@@ -33,6 +33,24 @@ const fakeRestockOrder = new RestockOrder(
         }
     ],
     "DELIVERED"
+);
+const fakeIssuedRestockOrder = new RestockOrder(
+    "2021/11/29 09:33",
+    [
+        {
+            SKUId: 1,
+            description: "description",
+            price: 10.99,
+            quantity: 2,
+        },
+        {
+            SKUId: 2,
+            description: "description 2",
+            price: 10.99,
+            quantity: 2,
+        },
+    ],
+    1,
 );
 
 // test case definition
@@ -379,7 +397,6 @@ describe("update restock order", () => {
         res = await restockOrderService.updateRestockOrder(
             "state", id + 1, body
         );
-        expect(res.error).toEqual('Restock order not found');
         expect(res.code).toEqual(404);
 
         // expected 503
@@ -407,7 +424,6 @@ describe("update restock order", () => {
         res = await restockOrderService.updateRestockOrder(
             "transportNote", id + 1, body
         );
-        expect(res.error).toEqual('Restock order not found');
         expect(res.code).toEqual(404);
 
         // expected 503
@@ -435,7 +451,6 @@ describe("update restock order", () => {
         res = await restockOrderService.updateRestockOrder(
             "skuItems", id + 2, body
         );
-        expect(res.error).toEqual('Restock order not found');
         expect(res.code).toEqual(404);
 
         // expected 503
@@ -452,7 +467,7 @@ describe("delete restock order", () => {
         dao.getRestockOrder.mockReset();
         dao.getRestockOrderSkuItems.mockReset();
 
-        dao.getRestockOrder.mockReturnValueOnce(fakeRestockOrder)
+        dao.getRestockOrder.mockReturnValueOnce(fakeIssuedRestockOrder)
             .mockReturnValueOnce().mockReturnValue(fakeRestockOrder);
 
         dao.getRestockOrderSkuItems.mockReturnValueOnce([])
@@ -474,12 +489,11 @@ describe("delete restock order", () => {
 
         // expected 404
         res = await restockOrderService.deleteRestockOrder(id + 1);
-        expect(res.error).toEqual('Restock order not found');
         expect(res.code).toEqual(404);
 
-        // expected 409
+        // expected 503
         res = await restockOrderService.deleteRestockOrder(id + 2);
-        expect(res.code).toEqual(409);
+        expect(res.code).toEqual(503);
 
         // expected 503
         res = await restockOrderService.deleteRestockOrder(id + 3);
