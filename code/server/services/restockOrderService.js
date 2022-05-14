@@ -8,8 +8,8 @@ class RestockOrderService {
     }
 
     getAllRestockOrders = async () => {
-        const ros = await this.dao.getAllRestockOrders();
         try {
+            const ros = await this.dao.getAllRestockOrders();
             if (ros && ros.length > 0) {
                 for (let ro of ros) {
                     const products = await this.dao.getRestockOrderSku(ro.getId());
