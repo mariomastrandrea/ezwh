@@ -2,6 +2,7 @@
 // It parses an integer >= 0 from a string. Otherwise, it returns null if the 
 // argument is not a String, or NaN if the string does not represent an integer >= 0
 function int(string) {
+    if (isNum(string)) return string;
     if (typeof string !== 'string') return null;
     
     // * here 'string' is of type String *
@@ -22,6 +23,14 @@ function isNum(num) {
     return typeof num === 'number';
 }
 
+function float(string) {
+    if (isNum(string)) return string;
+    if (typeof string !== 'string') return null;
+
+    // * here 'string' is of type String *
+    return /^[\d]+(\.[\d]+)?$/.test(string) ? Number(string) : NaN;
+}
+
 module.exports = {
-    int, isInt, isNum
+    int, isInt, isNum, float
 }

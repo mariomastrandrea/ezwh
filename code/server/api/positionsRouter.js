@@ -10,8 +10,8 @@ const DbManagerFactory = require('../db/dbManager3');
 const dao = DbManagerFactory();
 
 // import Service class and inject dao
-const PositionService = require("../services/positionsService.js");
-const positionService = new PositionService(dao);
+const PositionsService = require("../services/positionsService.js");
+const positionsService = new PositionsService(dao);
 
 /* API */
 
@@ -22,7 +22,7 @@ router.get("/positions", async (req, res) => {
     }
 
     try {
-        const {error, code, obj} = await positionService.getAllPositions();
+        const {error, code, obj} = await positionsService.getAllPositions();
         
         if(error) {
             return res.status(code).send(error);
@@ -61,7 +61,7 @@ router.post("/position", async (req, res) => {
         }
         
         const {positionID, aisleID, row, col, maxWeight, maxVolume} = req.body;
-        const {error, code} = await positionService.createPosition(positionID, aisleID, row, col, maxWeight, maxVolume);
+        const {error, code} = await positionsService.createPosition(positionID, aisleID, row, col, maxWeight, maxVolume);
 
         if(error) {
             return res.status(code).send(error);
@@ -120,7 +120,7 @@ router.put("/position/:positionID", async (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const {error, code} = await positionService.updatePosition(positionID, newAisleID, 
+        const {error, code} = await positionsService.updatePosition(positionID, newAisleID, 
             newRow, newCol, newMaxWeight, newMaxVolume, newOccupiedWeight, newOccupiedVolume);
 
         if (error) {
@@ -173,7 +173,7 @@ router.put("/position/:positionID/changeID", async (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const {error, code} = await positionService.updatePositionId(positionID, newPositionID, newAisleID, newRow, newCol);
+        const {error, code} = await positionsService.updatePositionId(positionID, newPositionID, newAisleID, newRow, newCol);
 
         if (error) {
             return res.status(code).send(error);
@@ -209,7 +209,7 @@ router.delete("/position/:positionID", async (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const {error, code} = await positionService.deletePosition(positionID);
+        const {error, code} = await positionsService.deletePosition(positionID);
 
         return error ? 
             res.status(code).send(error) :

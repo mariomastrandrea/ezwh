@@ -1,4 +1,4 @@
-const { db } = require("./dbUtilities");
+const { dbConnection } = require("./dbUtilities");
 
 const Sku = require('../models/sku');
 const SkuItem = require('../models/skuItem');
@@ -12,7 +12,7 @@ const ReturnOrder = require('../models/returnOrder');
 const dbManagerFactory = (function () {
 
     function DbManager() {
-        this.db = db;
+        this.db = dbConnection;
 
         // SKU
         this.getSku = (skuId) => {
@@ -30,7 +30,6 @@ const dbManagerFactory = (function () {
                     }
                 })
             });
-
         }
 
         this.getAllSkus = () => {
