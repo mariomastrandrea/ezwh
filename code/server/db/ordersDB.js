@@ -15,7 +15,10 @@ function getAllInternalOrders() {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(rows.map(order => new InternalOrder(order.issueDate, [], order.customerId, order.state, order.id)));
+            if (rows.length === 0) {
+                resolve([]);
+            } else
+                resolve(rows.map(order => new InternalOrder(order.issueDate, [], order.customerId, order.state, order.id)));
         })
     });
 };
@@ -32,7 +35,10 @@ function getInternalOrdersInState(state) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(rows.map(order => new InternalOrder(order.issueDate, [], order.customerId, order.state, order.id)));
+            if (rows.length === 0) {
+                resolve([]);
+            } else
+                resolve(rows.map(order => new InternalOrder(order.issueDate, [], order.customerId, order.state, order.id)));
         })
     });
 }
@@ -49,7 +55,10 @@ function getInternalOrder(id) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(new InternalOrder(row.issueDate, [], row.customerId, row.state, row.id));
+            if (row === undefined) {
+                resolve(undefined);
+            } else
+                resolve(new InternalOrder(row.issueDate, [], row.customerId, row.state, row.id));
         })
     });
 };
@@ -66,14 +75,17 @@ function getInternalOrderSku(id) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(rows.map(row => {
-                return {
-                    SKUId: row.skuId,
-                    description: row.description,
-                    price: row.price,
-                    quantity: row.quantity,
-                }
-            }));
+            if (rows.length === 0) {
+                resolve([]);
+            } else
+                resolve(rows.map(row => {
+                    return {
+                        SKUId: row.skuId,
+                        description: row.description,
+                        price: row.price,
+                        quantity: row.quantity,
+                    }
+                }));
 
         });
     });
@@ -91,12 +103,15 @@ function getInternalOrderSkuItems(id) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(rows.map(row => {
-                return {
-                    SKUId: row.skuId,
-                    RFID: row.RFID,
-                }
-            }));
+            if (rows.length === 0) {
+                resolve([]);
+            } else
+                resolve(rows.map(row => {
+                    return {
+                        SKUId: row.skuId,
+                        RFID: row.RFID,
+                    }
+                }));
         });
     });
 }
@@ -108,12 +123,12 @@ function storeInternalOrder(io) {
     const sql = `INSERT INTO internalOrder (issueDate, customerId, state) VALUES (?,?,?)`;
     const params = [io.getIssueDate(), io.getCustomerId(), io.getState()];
     return new Promise((resolve, reject) => {
-        db.run(sql, params, (err) => {
+        db.run(sql, params, function (err) {
             if (err) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(new InternalOrder(io.getIssueDate(), io.getProducts(), io.getCustomerId(), io.getState(), db.lastID));
+            resolve(new InternalOrder(io.getIssueDate(), io.getProducts(), io.getCustomerId(), io.getState(), this.lastID));
         });
     });
 };
@@ -131,13 +146,13 @@ function storeInternalOrderSku(id, products) {
         let statement = db.prepare(sql);
         let changes = 0;
         for (let i = 0; i < params.length; i++) {
-            statement.run(params[i], function (err) { 
+            statement.run(params[i], function (err) {
                 if (err) reject(err);
                 changes += this.changes;
             });
         }
         statement.finalize();
-        resolve(changes > 0 ? true : false);
+        resolve(changes > 0);
     });
 }
 
@@ -154,13 +169,13 @@ function storeInternalOrderSkuItems(id, skuItems) {
         let statement = db.prepare(sql);
         let changes = 0;
         for (let i = 0; i < params.length; i++) {
-            statement.run(params[i], function (err) { 
+            statement.run(params[i], function (err) {
                 if (err) reject(err);
                 changes += this.changes;
             });
         }
         statement.finalize();
-        resolve(changes > 0 ? true : false);
+        resolve(changes > 0);
     });
 }
 
@@ -171,12 +186,12 @@ function updateInternalOrder(io) {
     const sql = `UPDATE internalOrder SET state = ? WHERE id = ?`;
     const params = [io.getState(), id = io.getId()];
     return new Promise((resolve, reject) => {
-        db.run(sql, params, (err) => {
+        db.run(sql, params, function (err) {
             if (err) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(this.changes > 0 ? true : false);
+            resolve(this.changes > 0);
         });
     });
 };
@@ -187,12 +202,12 @@ function deleteInternalOrder(id) {
     const sql = `DELETE FROM internalOrder WHERE id = ?`;
     const params = [id];
     return new Promise((resolve, reject) => {
-        db.run(sql, params, (err) => {
+        db.run(sql, params, function (err) {
             if (err) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(this.changes > 0 ? true : false);
+            resolve(this.changes > 0);
         })
     });
 };
@@ -204,12 +219,12 @@ function deleteInternalOrderSku(id) {
     const sql = `DELETE FROM internalOrderSku WHERE internalOrderId = ?`;
     const params = [id];
     return new Promise((resolve, reject) => {
-        db.run(sql, params, (err) => {
+        db.run(sql, params, function (err) {
             if (err) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(this.changes > 0 ? true : false);
+            resolve(this.changes > 0);
         })
     });
 };
@@ -221,18 +236,18 @@ function deleteInternalOrderSkuItems(id) {
     const sql = `DELETE FROM internalOrderSkuItem WHERE internalOrderId = ?`;
     const params = [id];
     return new Promise((resolve, reject) => {
-        db.run(sql, params, (err) => {
+        db.run(sql, params, function (err) {
             if (err) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(this.changes > 0 ? true : false);
+            resolve(this.changes > 0);
         })
     });
 }
 /* - END INTERNAL ORDER - */
 
-/* --- RESTOCK ORDER --- */
+/* --- [DEPRECATED] RESTOCK ORDER --- */
 
 // Function to get all restock orders
 // OUTPUT - array of restock orders
@@ -381,7 +396,7 @@ function storeRestockOrderSku(id, products) {
         let statement = db.prepare(sql);
         let changes = 0;
         for (let i = 0; i < params.length; i++) {
-            statement.run(params[i], function (err) { 
+            statement.run(params[i], function (err) {
                 if (err) reject(err);
                 changes += this.changes;
             });
@@ -402,7 +417,7 @@ function storeRestockOrderSkuItems(id, skuItems) {
         let statement = db.prepare(sql);
         let changes = 0;
         for (let i = 0; i < params.length; i++) {
-            statement.run(params[i], function (err) { 
+            statement.run(params[i], function (err) {
                 if (err) reject(err);
                 changes += this.changes;
             });
@@ -494,7 +509,10 @@ function getAllReturnOrders() {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(rows.map(order => new ReturnOrder(order.returnDate, [], order.restockOrderId, order.id)));
+            if (rows.length === 0) {
+                resolve([]);
+            } else
+                resolve(rows.map(order => new ReturnOrder(order.returnDate, [], order.restockOrderId, order.id)));
         })
     });
 };
@@ -510,6 +528,9 @@ function getReturnOrder(id) {
             if (err) {
                 console.error(err.message);
                 reject(err);
+            }
+            if (row === undefined) {
+                resolve(undefined);
             }
             resolve(new ReturnOrder(row.returnDate, [], row.restockOrderId, row.id));
         })
@@ -528,14 +549,17 @@ function getReturnOrderSkuItems(id) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(rows.map(row => {
-                return {
-                    SKUId: row.skuId,
-                    description: row.description,
-                    price: row.price,
-                    RFID: row.RFID,
-                }
-            }));
+            if (rows.length === 0) {
+                resolve([]);
+            } else
+                resolve(rows.map(row => {
+                    return {
+                        SKUId: row.skuId,
+                        description: row.description,
+                        price: row.price,
+                        RFID: row.RFID,
+                    }
+                }));
         });
     });
 }
@@ -547,7 +571,7 @@ function storeReturnOrder(ro) {
     let sql = `INSERT INTO returnOrder (returnDate, restockOrderId) VALUES (?,?)`;
     const params = [ro.getReturnDate(), ro.getRestockOrderId()];
     return new Promise((resolve, reject) => {
-        db.run(sql, params, (err) => {
+        db.run(sql, params, function (err) {
             if (err) {
                 console.error(err.message);
                 reject(err);
@@ -570,13 +594,13 @@ function storeReturnOrderSkuItems(id, skuItems) {
         let statement = db.prepare(sql);
         let changes = 0;
         for (let i = 0; i < params.length; i++) {
-            statement.run(params[i], function (err) { 
+            statement.run(params[i], function (err) {
                 if (err) reject(err);
                 changes += this.changes;
             });
         }
         statement.finalize();
-        resolve(changes > 0 ? true : false);
+        resolve(changes > 0);
     });
 }
 
@@ -587,12 +611,12 @@ function deleteReturnOrder(id) {
     const sql = `DELETE FROM returnOrder WHERE id = ?`;
     const params = [id];
     return new Promise((resolve, reject) => {
-        db.run(sql, params, (err) => {
+        db.run(sql, params, function (err) {
             if (err) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(this.changes > 0 ? true : false);
+            resolve(this.changes > 0);
         })
     });
 };
@@ -604,12 +628,12 @@ function deleteReturnOrderSkuItems(id) {
     const sql = `DELETE FROM returnOrderSkuItem WHERE returnOrderId = ?`;
     const params = [id];
     return new Promise((resolve, reject) => {
-        db.run(sql, params, (err) => {
+        db.run(sql, params, function (err) {
             if (err) {
                 console.error(err.message);
                 reject(err);
             }
-            resolve(this.changes > 0 ? true : false);
+            resolve(this.changes > 0);
         })
     });
 }
