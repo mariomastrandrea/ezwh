@@ -40,6 +40,13 @@ class Position {
     setOccupiedWeight = (occupiedWeight) => this.#occupiedWeight = occupiedWeight;
     setOccupiedVolume = (occupiedVolume) => this.#occupiedVolume = occupiedVolume;
 
+    canHold = (newAvailableQuantity, newWeight, newVolume) => {
+        const newOccupiedWeight = newAvailableQuantity * newWeight;
+        const newOccupiedVolume = newAvailableQuantity * newVolume;
+
+        return newOccupiedWeight <= this.#maxWeight && newOccupiedVolume <= this.#maxVolume;
+    }
+
     toJSON = () => ({
         positionID: this.#positionId,
         aisleID: this.#aisle, 

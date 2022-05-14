@@ -24,7 +24,7 @@ class SkuItem {
     setRfid = (rfid) => this.#rfid = rfid;
     setAvailable = (available) => this.#available == available;
     setDateOfStock = (dateOfStock) => this.#dateOfStock = dateOfStock;
-    setTestResults = (testResults) => this.#testResults.push(testResults);
+    setTestResults = (testResults) => this.#testResults = testResults;
 
     // to serialize object in JSON format
     toJSON = () => ({

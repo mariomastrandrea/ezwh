@@ -1,6 +1,7 @@
 const { dbConnection } = require("./dbUtilities");
 const Position = require("../models/position");
 const Sku = require("../models/sku");
+const SkuItem = require("../models/SkuItem");
 const RestockOrder = require("../models/restockOrder");
 const ReturnOrder = require("../models/returnOrder");
 const InternalOrder = require("../models/internalOrder");
@@ -148,6 +149,99 @@ class DbManager3 {
         })
     }
 
+    /**
+     * Sku
+     */
+
+    // returns the sku object corresponding to the provided skuId; 
+    // or 'null' if there is no corresponding sku
+    getSkuById(skuId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT * 
+                              FROM Sku 
+                              WHERE id=?`;
+
+            this.#db.get(sqlQuery, [skuId], (err, row) => {
+                if (err)
+                    reject(err);
+                else if (!row)
+                    resolve(null);
+                else
+                    resolve(new Sku(row.Description, row.Weight, row.Volume, row.Notes,
+                        row.Price, row.AvailableQuantity, row.Position, [], row.ID));
+            })
+        });
+    }
+
+    // returns an array containing all the existing Skus
+    getAllSkus() {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT * 
+                              FROM Sku`;
+
+            this.#db.all(sqlQuery, (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row => new Sku(row.Description, row.Weight, row.Volume,
+                        row.Notes, row.Price, row.AvailableQuantity, row.Position, [], row.ID)));
+            })
+        });
+    }
+
+    storeSku(sku) {
+        const description = sku.getDescription();
+        const weight = sku.getWeight();
+        const volume = sku.getVolume();
+        const notes = sku.getNotes();
+        const position = sku.getPosition();
+        const availableQuantity = sku.getAvailableQuantity();
+        const price = sku.getPrice();
+
+        return new Promise((resolve, reject) => {
+            const sqlQuery =
+                `INSERT INTO Sku (Description, Weight, Volume, Notes, Position, AvailableQuantity, Price) 
+                 VALUES (?,?,?,?,?,?,?)`;
+
+            const params = [description, weight, volume, notes, position, availableQuantity, price];
+
+            this.#db.run(sqlQuery, params, function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(new Sku(description, weight, volume, notes, price, 
+                        availableQuantity, position, [], this.lastID));
+            })
+        });
+    }
+
+    // returns 'true' if the sku was successfully updated; 'false' otherwise
+    updateSku(sku) {
+        const description = sku.getDescription();
+        const weight = sku.getWeight();
+        const volume = sku.getVolume();
+        const notes = sku.getNotes();
+        const position = sku.getPosition();
+        const availableQuantity = sku.getAvailableQuantity();
+        const price = sku.getPrice();
+        const id = sku.getId();
+
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `UPDATE Sku
+                              SET Description=?, Weight=?, Volume=?, Notes=?, Position=?, AvailableQuantity=?, Price=?
+                              WHERE ID=?`;
+            
+            const params = [description, weight, volume, notes, position, availableQuantity, price, id];
+
+            this.#db.run(sqlQuery, params, function (err) {
+                if (err) 
+                    reject(err);
+                else
+                    resolve(this.changes > 0);
+            });
+        });
+    }
+
     // return 'true' if the positionID is successfully updated; 'false' otherwise
     updateSkuPosition(oldPositionID, newPositionID) {
         return new Promise((resolve, reject) => {
@@ -164,6 +258,7 @@ class DbManager3 {
         })
     }
 
+    // return sku corresponding to the specified position
     getSkuOfPosition(positionID) {
         return new Promise((resolve, reject) => {
             const sqlQuery = `SELECT *
@@ -185,6 +280,64 @@ class DbManager3 {
 
     /* Start of Restock Order */
 
+    deleteSku(id) {
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `DELETE FROM Sku
+                                  WHERE ID=?`;
+
+            this.#db.run(sqlStatement, [id], function (err) {
+                if (err) 
+                    reject(err);
+                else 
+                    resolve(this.changes > 0);
+            });
+        });
+    }
+
+    /**
+     * SkuItem
+     */
+
+    getSkuItemsOf(skuId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM SkuItem
+                              WHERE SkuId=?`;
+            
+            this.#db.all(sqlQuery, [skuId], (err, rows) => {
+                if(err)
+                    reject(err);
+                else
+                    resolve(rows.map(row => 
+                        new SkuItem(row.RFID, row.SkuId, row.DateOfStock, row.Available, [])));
+            });
+        });
+    }
+
+    /**
+     * TestDescriptor
+     */
+
+    // returns an array containing the test descriptors' IDs of the specified sku
+    getTestDescriptorsOf(skuId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT ID
+                              FROM TestDescriptor
+                              WHERE SkuId=?`;
+
+            this.#db.all(sqlQuery, [skuId], (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row => row.ID));
+            });
+        });
+    }
+
+    /**
+     * RestockOrder
+     */
+
     // Function to get all restock orders
     // OUTPUT - array of restock orders
     getAllRestockOrders() {
@@ -195,7 +348,8 @@ class DbManager3 {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(order => new RestockOrder(order.IssueDate, [], order.SupplierId, order.TransportNote, order.ID, [], order.State)));
+                else resolve(rows.map(order => new RestockOrder(order.IssueDate, [], order.SupplierId,
+                    order.TransportNote, order.ID, [], order.State)));
             })
         });
     };
@@ -212,7 +366,8 @@ class DbManager3 {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(order => new RestockOrder(order.IssueDate, [], order.SupplierId, order.TransportNote, order.ID, [], order.State)));
+                else resolve(rows.map(order => new RestockOrder(order.IssueDate, [], order.SupplierId,
+                    order.TransportNote, order.ID, [], order.State)));
             })
         });
     };
@@ -229,10 +384,12 @@ class DbManager3 {
                     console.error(err.message);
                     reject(err);
                 }
-                if (row === undefined) {
+                else if (!row) {
                     resolve(undefined);
-                } else
-                    resolve(new RestockOrder(row.IssueDate, [], row.SupplierId, row.TransportNote, row.ID, [], row.State));
+                } 
+                else
+                    resolve(new RestockOrder(row.IssueDate, [], row.SupplierId, 
+                        row.TransportNote, row.ID, [], row.State));
             })
         });
     };
@@ -242,21 +399,24 @@ class DbManager3 {
     // OUTPUT - array of map{skuId, description, price, quantity}
     getRestockOrderSku(id) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM RestockOrderSKU WHERE RestockOrderId = ?`;
+            const sql = `SELECT * 
+                         FROM RestockOrderSKU 
+                         WHERE RestockOrderId = ?`;
             const params = [id];
             this.#db.all(sql, params, (err, rows) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(row => {
-                    return {
-                        SKUId: row.SkuId,
-                        description: row.Description,
-                        price: row.Price,
-                        quantity: row.Quantity,
-                    }
-                }));
+                else
+                    resolve(rows.map(row => {
+                        return {
+                            SKUId: row.SkuId,
+                            description: row.Description,
+                            price: row.Price,
+                            quantity: row.Quantity,
+                        }
+                    }));
 
             });
         });
@@ -267,19 +427,22 @@ class DbManager3 {
     // OUTPUT - array of map{skuId, RFID}
     getRestockOrderSkuItems(id) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM RestockOrderSkuItem WHERE RestockOrderId = ?`;
+            const sql = `SELECT * 
+                         FROM RestockOrderSkuItem 
+                        WHERE RestockOrderId = ?`;
             const params = [id];
             this.#db.all(sql, params, (err, rows) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(row => {
-                    return {
-                        SKUId: row.SkuId,
-                        RFID: row.RFID,
-                    }
-                }));
+                else
+                    resolve(rows.map(row => {
+                        return {
+                            SKUId: row.SkuId,
+                            RFID: row.RFID,
+                        }
+                    }));
             });
         });
     }
@@ -290,19 +453,24 @@ class DbManager3 {
     getReturnItemsByRestockOrderId(id) {
         return new Promise((resolve, reject) => {
             //const sql = `SELECT ros.skuId as skuId, ros.RFID as RFID FROM restockorderSkuItem as ros JOIN TestResult as tr ON ros.RFID = tr.RFID WHERE restockOrderId = ? and Result = 0`;
-            const sql = `SELECT * FROM RestockOrderSkuItem WHERE RFID NOT IN (SELECT DISTINCT RFID FROM TestResult WHERE Result = 1) AND RestockOrderId = ?`;
+            const sql = `SELECT * 
+                         FROM RestockOrderSkuItem 
+                         WHERE RFID NOT IN (SELECT DISTINCT RFID 
+                                            FROM TestResult 
+                                            WHERE Result = 1) AND RestockOrderId = ?`;
             const params = [id];
             this.#db.all(sql, params, (err, rows) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(row => {
-                    return {
-                        SKUId: row.SkuId,
-                        RFID: row.RFID,
-                    }
-                }));
+                else
+                    resolve(rows.map(row => {
+                        return {
+                            SKUId: row.SkuId,
+                            RFID: row.RFID,
+                        }
+                    }));
             });
         });
     }
@@ -310,7 +478,8 @@ class DbManager3 {
     // INPUT - restock order
     // OUTPUT - restock order
     storeRestockOrder(ro) {
-        const sql = `INSERT INTO RestockOrder (IssueDate, State, SupplierId, TransportNote) VALUES (?,?,?,?)`;
+        const sql = `INSERT INTO RestockOrder (IssueDate, State, SupplierId, TransportNote) 
+                     VALUES (?,?,?,?)`;
         const params = [ro.getIssueDate(), ro.getState(), ro.getSupplierId(), ro.getTransportNote()];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
@@ -318,7 +487,7 @@ class DbManager3 {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(new RestockOrder(ro.getIssueDate(), ro.getProducts(),
+                else resolve(new RestockOrder(ro.getIssueDate(), ro.getProducts(),
                     ro.getSupplierId(), ro.getTransportNote(), this.lastID,
                     ro.getSkuItems(), ro.getState()));
             });
@@ -368,15 +537,21 @@ class DbManager3 {
     // INPUT - restock order
     // OUTPUT - true if successful else false
     updateRestockOrder(ro) {
-        const sql = `UPDATE restockOrder SET state = ?, transportNote = ? WHERE id = ?`;
+        const sql = `UPDATE RestockOrder 
+                     SET state = ?, transportNote = ? 
+                     WHERE id = ?`;
+
         const params = [ro.getState(), ro.getTransportNote(), ro.getId()];
+        
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(this.changes > 0);
+                else {
+                    resolve(this.changes > 0);
+                }
             });
         });
     };
@@ -384,7 +559,9 @@ class DbManager3 {
     // INPUT - restock order id
     // OUTPUT - true if successful else false
     deleteRestockOrder(id) {
-        const sql = `DELETE FROM restockOrder WHERE id = ?`;
+        const sql = `DELETE FROM RestockOrder 
+                     WHERE id = ?`;
+                     
         const params = [id];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
@@ -392,7 +569,9 @@ class DbManager3 {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(this.changes > 0);
+                else {
+                    resolve(this.changes > 0);
+                } 
             })
         });
     };
@@ -403,13 +582,15 @@ class DbManager3 {
     deleteRestockOrderSku(id) {
         const sql = `DELETE FROM RestockOrderSku WHERE RestockOrderId = ?`;
         const params = [id];
+        
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(this.changes > 0);
+                else 
+                    resolve(this.changes > 0);
             })
         });
     };
@@ -420,12 +601,14 @@ class DbManager3 {
     deleteRestockOrderSkuItems(id) {
         const sql = `DELETE FROM RestockOrderSkuItem WHERE RestockOrderId = ?`;
         const params = [id];
+        
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
+                else
                 resolve(this.changes > 0);
             })
         });
