@@ -185,11 +185,11 @@ describe('get restock orders', () => {
         const id = 1;
         let res = await restockOrderService.getRestockOrderById(id);
         // expected 200
-        expect(res.success.toDatabase()).toEqual(fakeRestockOrder.toDatabase());
+        expect(res.obj.toDatabase()).toEqual(fakeRestockOrder.toDatabase());
         expect(res.code).toEqual(200);
 
         res = await restockOrderService.getRestockOrderById(id + 1);
-        expect(res.success.getState()).toEqual("COMPLETEDRETURN");
+        expect(res.obj.getState()).toEqual("COMPLETEDRETURN");
         expect(res.code).toEqual(200);
         // expected 404
         const notId = 2938329;
@@ -201,21 +201,21 @@ describe('get restock orders', () => {
     test('get all restock orders', async () => {
         let res = await restockOrderService.getAllRestockOrders();
         // expected 200
-        for (const item of res.success) {
+        for (const item of res.obj) {
             expect(item).toBeInstanceOf(RestockOrder);
         }
         expect(res.code).toEqual(200);
 
         // expected 200 but empty
         res = await restockOrderService.getAllRestockOrders();
-        expect(res.success).toEqual([]);
+        expect(res.obj).toEqual([]);
         expect(res.code).toEqual(200);
     });
 
     test('get issued restock orders', async () => {
         let res = await restockOrderService.getIssuedRestockOrders();
         // expected 200
-        for (const item of res.success) {
+        for (const item of res.obj) {
             expect(item).toBeInstanceOf(RestockOrder);
             expect(item.getState()).toEqual('ISSUED');
         }
@@ -223,7 +223,7 @@ describe('get restock orders', () => {
 
         // expected 200 but empty
         res = await restockOrderService.getIssuedRestockOrders();
-        expect(res.success).toEqual([]);
+        expect(res.obj).toEqual([]);
         expect(res.code).toEqual(200);
     });
 
@@ -236,7 +236,7 @@ describe('get restock orders', () => {
 
         // expected 200
         res = await restockOrderService.getReturnItemsByRestockOrderId(id + 1);
-        expect(res.success).toEqual([
+        expect(res.obj).toEqual([
             {
                 SKUId: 1,
                 RFID: "123456789",
@@ -316,7 +316,6 @@ describe("create restock order", () => {
             }
         ]);
 
-        expect(res.success).toEqual("Created");
         expect(res.code).toEqual(201);
 
         // expected 503
@@ -484,7 +483,6 @@ describe("delete restock order", () => {
         const id = 1;
         let res = await restockOrderService.deleteRestockOrder(id);
 
-        expect(res.success).toEqual("No Content");
         expect(res.code).toEqual(204);
 
         // expected 404

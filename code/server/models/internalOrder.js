@@ -29,12 +29,12 @@ class InternalOrder {
         this.#products.forEach(product => {
             skuItems.filter(skuItem => skuItem.SKUId === product.SKUId)
                     .forEach(skuItem => {
-                        products.push([
-                            product.SKUId, 
-                            product.description, 
-                            product.price, 
-                            skuItem.RFID
-                        ]);
+                        products.push({
+                            SKUId: product.SKUId, 
+                            description: product.description, 
+                            price: product.price, 
+                            RFID: skuItem.RFID
+                    });
             })
         });
         
