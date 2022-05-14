@@ -108,14 +108,14 @@ describe('get return orders', () => {
     test('get all return orders', async () => {
         // expect 200
         let res = await returnOrderService.getAllReturnOrders();
-        for (let ro of res.success) {
+        for (let ro of res.obj) {
             expect(ro).toBeInstanceOf(ReturnOrder);
         }
         expect(res.code).toEqual(200);
 
         // expect 200 but empty
         res = await returnOrderService.getAllReturnOrders();
-        expect(res.success).toEqual([]);
+        expect(res.obj).toEqual([]);
         expect(res.code).toEqual(200);
     });
 
@@ -123,7 +123,7 @@ describe('get return orders', () => {
         // expect 200
         const id = 1;
         let res = await returnOrderService.getReturnOrderById(id);
-        expect(res.success.toJSON()).toEqual(fakeReturn.toJSON());
+        expect(res.obj.toJSON()).toEqual(fakeReturn.toJSON());
         expect(res.code).toEqual(200);
 
         // expect 404

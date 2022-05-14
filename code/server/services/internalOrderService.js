@@ -1,4 +1,5 @@
 const InternalOrder = require('../models/internalOrder');
+const statusCodes = require('../statusCodes');
 
 class InternalOrderService {
     dao;
@@ -21,43 +22,43 @@ class InternalOrderService {
                     }
                 }
             }
-            return { success: ios, code: 200 };
+            return statusCodes.OK(ios);
         } catch (err) {
             console.log(err);
-            return { error: "Internal Server Error", code: 500 };
+            return statusCodes.INTERNAL_SERVER_ERROR();
         }
     };
 
 
-    getIssuedInternalOrder = async () => {
+    getIssuedInternalOrders = async () => {
         try {
-            const ios = await this.dao.getInternalOrderInState('ISSUED');
+            const ios = await this.dao.getInternalOrdersInState('ISSUED');
             if (ios && ios.length > 0) {
                 for (let io of ios) {
                     const products = await this.dao.getInternalOrderSku(io.getId());
                     io.setProducts(products);
                 }
             }
-            return { success: ios, code: 200 };
+            return statusCodes.OK(ios);
         } catch (err) {
             console.log(err);
-            return { error: "Internal Server Error", code: 500 };
+            return statusCodes.INTERNAL_SERVER_ERROR;
         }
     };
 
-    getAcceptedInternalOrder = async () => {
+    getAcceptedInternalOrders = async () => {
         try {
-            const ios = await this.dao.getInternalOrderInState('ACCEPTED');
+            const ios = await this.dao.getInternalOrdersInState('ACCEPTED');
             if (ios && ios.length > 0) {
                 for (let io of ios) {
                     const products = await this.dao.getInternalOrderSku(io.getId());
                     io.setProducts(products);
                 }
             }
-            return { success: ios, code: 200 };
+            return statusCodes.OK(ios);
         } catch (err) {
             console.log(err);
-            return { error: "Internal Server Error", code: 500 };
+            return statusCodes.INTERNAL_SERVER_ERROR();
         }
     };
 
@@ -65,18 +66,18 @@ class InternalOrderService {
         try {
             const parsedId = typeof id === 'number' ? id : parseInt(id);
             const io = await this.dao.getInternalOrder(parsedId);
-            if (!io) return { error: 'Not Found', code: 404 };
+            if (!io) return statusCodes.NOT_FOUND();
 
             const products = await this.dao.getInternalOrderSku(io.getId());
-            ro.setProducts(products);
+            io.setProducts(products);
             if (io.getState() === 'COMPLETED') {
-                const skuItems = await this.dao.getInternalOrderSkuItems(ro.getId());
+                const skuItems = await this.dao.getInternalOrderSkuItems(io.getId());
                 io.setSkuItems(skuItems);
             }
-            return { success: io, code: 200 };
+            return statusCodes.OK(io);
         } catch (err) {
             console.log(err);
-            return { error: "Internal Server Error", code: 500 };
+            return statusCodes.INTERNAL_SERVER_ERROR();
         }
     };
 
@@ -91,8 +92,8 @@ class InternalOrderService {
             const ioFromDb = await this.dao.storeInternalOrder(io);
             // then create the internal order skus in the table of internal order skus
             const result = await this.dao.storeInternalOrderSku(ioFromDb.getId(), products);
-            if (result) return { success: 'Created', code: 201 };
-            return { error: "Service Unavailable", code: 503 };
+            if (result) return statusCodes.CREATED();
+            return statusCodes.SERVICE_UNAVAILABLE();
         } catch (err) {
             console.log(err);
             return { error: "Service Unavailable", code: 503 };
@@ -104,7 +105,7 @@ class InternalOrderService {
             const parsedId = typeof id === 'number' ? id : parseInt(id);
             const io = await this.dao.getInternalOrder(parsedId);
             if (!io)
-                return { error: 'Not Found', code: 404 };
+                return statusCodes.NOT_FOUND();
 
             let result = 0;
             switch (body.newState) {
@@ -115,11 +116,11 @@ class InternalOrderService {
                     result = await this.dao.updateInternalOrder(ro);
                     break;
             }
-            if (result) return { success: true, code: 200 };
-            return { error: "Service Unavailable", code: 503 };
+            if (result) return statusCodes.OK(true);
+            return statusCodes.SERVICE_UNAVAILABLE();
         } catch (err) {
             console.log(err);
-            return { error: "Service Unavailable", code: 503 };
+            return statusCodes.SERVICE_UNAVAILABLE();
         }
     };
 
@@ -128,24 +129,24 @@ class InternalOrderService {
             const parsedId = typeof id === 'number' ? id : parseInt(id);
 
             const io = await this.dao.getInternalOrder(parsedId);
-            if (!io) return { error: 'Not Found', code: 404 };
+            if (!io) return statusCodes.NOT_FOUND();
 
             if (io.getState() !== 'ISSUED')
-                return { error: 'Service Unavailable', code: 503 };
+                return statusCodes.SERVICE_UNAVAILABLE();
 
             const skuItems = await this.dao.getInternalOrderSkuItems(io.getId());
             if (skuItems && skuItems.length > 0) {
                 // there are sku items with this io id
                 // cannot delete
-                return { error: 'Service Unavailable', code: 503 };
+                return statusCodes.SERVICE_UNAVAILABLE();
             }
             let result = await this.dao.deleteInternalOrderSku(io.getId());
             result += await this.dao.deleteInternalOrder(io.getId());
-            if (result > 0) return { success: "No Content", code: 204 };
-            return { error: 'Service Unavailable', code: 503 };
+            if (result > 0) return statusCodes.NO_CONTENT();
+            return statusCodes.SERVICE_UNAVAILABLE();
         } catch (err) {
             console.log(err);
-            return { error: 'Service Unavailable', code: 503 };
+            return statusCodes.SERVICE_UNAVAILABLE();
         }
     };
 

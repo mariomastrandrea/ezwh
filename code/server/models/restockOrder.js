@@ -50,27 +50,22 @@ class RestockOrder {
     });
 
     toJSON = function () {
-        let map = [];
-        map.push({
+        let map = {
             id: this.getId(),
             issueDate: this.getIssueDate(),
             state: this.getState(),
             products: this.getProducts(),
             supplierId: this.getSupplierId(),
-        });
+        };
         if (this.getState() !== 'ISSUED') {
-            map.push({
-                transportNote: this.getTransportNote(),
-            });
+            map["transportNote"] = this.getTransportNote();
         }
         if (this.getState() === 'DELIVERY' || this.getState() === 'ISSUED') {
-            map.push({
-                skuItems: []
-            });
+            map["skuItems"] = []
+
         } else {
-            map.push({
-                skuItems: this.getSkuItems()
-            })
+            map["skuItems"] = this.getSkuItems()
+
         };
         return map;
     }

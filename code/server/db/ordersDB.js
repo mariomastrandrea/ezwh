@@ -1,3 +1,8 @@
+/* DEPRECATED
+* ALL THESE FUNCTION HAS BEEN MOVED ON dbManager3.js
+* THEY ARE STILL HERE FOR REFERENCE
+*/
+
 const RestockOrder = require('../models/restockOrder');
 const InternalOrder = require('../models/internalOrder');
 const ReturnOrder = require('../models/returnOrder');
@@ -247,7 +252,7 @@ function deleteInternalOrderSkuItems(id) {
 }
 /* - END INTERNAL ORDER - */
 
-/* --- [DEPRECATED] RESTOCK ORDER --- */
+/* --- RESTOCK ORDER --- */
 
 // Function to get all restock orders
 // OUTPUT - array of restock orders
