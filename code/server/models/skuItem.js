@@ -31,7 +31,13 @@ class SkuItem {
         RFID: this.getRfid(),
         SKUId: this.getSkuId(),
         Available: this.getAvailable(),
-        DateOfStock: this.getDateOfStock(),
+        DateOfStock: this.getDateOfStock()
+    });
+
+    toObjWithoutAvailable = () => ({
+        RFID: this.getRfid(),
+        SKUId: this.getSkuId(),
+        DateOfStock: this.getDateOfStock()
     });
 }
 

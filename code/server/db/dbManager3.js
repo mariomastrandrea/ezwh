@@ -103,8 +103,10 @@ class DbManager3 {
                                          MaxVolume=?, OccupiedWeight=?, OccupiedVolume=?
                                   WHERE  ID=?`;
 
-            this.#db.run(sqlStatement, [positionId, aisle, row, col, maxWeight, maxVolume,
-                occupiedWeight, occupiedVolume, oldPositionId], function (err) {
+            const params = [positionId, aisle, row, col, maxWeight, maxVolume,
+                occupiedWeight, occupiedVolume, oldPositionId];
+            
+            this.#db.run(sqlStatement, params, function (err) {
                     if (err)
                         reject(err);
                     else
@@ -208,7 +210,7 @@ class DbManager3 {
                 if (err)
                     reject(err);
                 else
-                    resolve(new Sku(description, weight, volume, notes, price, 
+                    resolve(new Sku(description, weight, volume, notes, price,
                         availableQuantity, position, [], this.lastID));
             })
         });
@@ -229,11 +231,11 @@ class DbManager3 {
             const sqlQuery = `UPDATE Sku
                               SET Description=?, Weight=?, Volume=?, Notes=?, Position=?, AvailableQuantity=?, Price=?
                               WHERE ID=?`;
-            
+
             const params = [description, weight, volume, notes, position, availableQuantity, price, id];
 
             this.#db.run(sqlQuery, params, function (err) {
-                if (err) 
+                if (err)
                     reject(err);
                 else
                     resolve(this.changes > 0);
@@ -282,9 +284,9 @@ class DbManager3 {
                                   WHERE ID=?`;
 
             this.#db.run(sqlStatement, [id], function (err) {
-                if (err) 
+                if (err)
                     reject(err);
-                else 
+                else
                     resolve(this.changes > 0);
             });
         });
@@ -294,18 +296,122 @@ class DbManager3 {
      * SkuItem
      */
 
+    getAllSkuItems() {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT * 
+                              FROM SkuItem`;
+
+            this.#db.all(sqlQuery, (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row =>
+                        new SkuItem(row.RFID, row.SkuId, row.DateOfStock, row.Available)));
+            });
+
+        });
+    }
+
+    getSkuItemByRfid(rfid) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM SkuItem
+                              WHERE RFID=?`;
+
+            this.#db.get(sqlQuery, [rfid], (err, row) => {
+                if (err)
+                    reject(err);
+                else if (!row)
+                    resolve(null);
+                else
+                    resolve(new SkuItem(row.RFID, row.SkuId, row.DateOfStock, row.Available));
+            });
+        });
+    }
+
     getSkuItemsOf(skuId) {
         return new Promise((resolve, reject) => {
             const sqlQuery = `SELECT *
                               FROM SkuItem
                               WHERE SkuId=?`;
-            
+
             this.#db.all(sqlQuery, [skuId], (err, rows) => {
-                if(err)
+                if (err)
                     reject(err);
                 else
-                    resolve(rows.map(row => 
+                    resolve(rows.map(row =>
                         new SkuItem(row.RFID, row.SkuId, row.DateOfStock, row.Available, [])));
+            });
+        });
+    }
+
+    getAvailableSkuItemsOf(skuId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM SkuItem
+                              WHERE SkuId=? AND Available=1`;
+
+            this.#db.all(sqlQuery, [skuId], (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row =>
+                        new SkuItem(row.RFID, row.SkuId, row.DateOfStock, row.Available, [])));
+            });
+        });
+    }
+
+    createSkuItem(skuItem) {
+        const rfid = skuItem.getRfid();
+        const skuId = skuItem.getSkuId();
+        const available = skuItem.getAvailable();
+        const dateOfStock = skuItem.getDateOfStock();
+
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `INSERT INTO SkuItem (RFID, SkuId, Available, DateOfStock)
+                                  VALUES (?, ?, ?, ?)`;
+
+            this.#db.run(sqlStatement, [rfid, skuId, available, dateOfStock], function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(this.changes > 0);
+            });
+        });
+    }
+
+    updateSkuItem(oldRfid, newSkuItem) {
+        const newRfid = newSkuItem.getRfid();
+        const newSkuId = newSkuItem.getSkuId();
+        const newAvailable = newSkuItem.getAvailable();
+        const newDateOfStock = newSkuItem.getDateOfStock();
+
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `UPDATE SkuItem
+                                  SET RFID=?, SkuId=?, Available=?, DateOfStock=?
+                                  WHERE RFID=?`;
+
+            const params = [newRfid, newSkuId, newAvailable, newDateOfStock, oldRfid];
+
+            this.#db.run(sqlStatement, params, function(err) {
+                if (err)
+                    reject(err);
+                else 
+                    resolve(this.changes > 0);
+            });
+        });
+    }
+
+    deleteSkuItem(rfid) {
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `DELETE FROM SkuItem
+                                  WHERE RFID=?`;
+
+            this.#db.run(sqlStatement, [rfid], function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(this.changes > 0);
             });
         });
     }
@@ -382,9 +488,9 @@ class DbManager3 {
                 }
                 else if (!row) {
                     resolve(undefined);
-                } 
+                }
                 else
-                    resolve(new RestockOrder(row.IssueDate, [], row.SupplierId, 
+                    resolve(new RestockOrder(row.IssueDate, [], row.SupplierId,
                         row.TransportNote, row.ID, [], row.State));
             })
         });
@@ -552,7 +658,7 @@ class DbManager3 {
                      WHERE id = ?`;
 
         const params = [ro.getState(), ro.getTransportNote(), ro.getId()];
-        
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
                 if (err) {
@@ -572,7 +678,7 @@ class DbManager3 {
     deleteRestockOrder(id) {
         const sql = `DELETE FROM RestockOrder 
                      WHERE id = ?`;
-                     
+
         const params = [id];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
@@ -583,7 +689,7 @@ class DbManager3 {
                 else {
                     console.log(this);
                     resolve(this.changes > 0);
-                } 
+                }
             })
         });
     };
@@ -595,14 +701,14 @@ class DbManager3 {
         const sql = `DELETE FROM RestockOrderSku 
                      WHERE restockOrderId = ?`;
         const params = [id];
-        
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                else 
+                else
                     resolve(this.changes > 0);
             })
         });
@@ -615,14 +721,14 @@ class DbManager3 {
         const sql = `DELETE FROM RestockOrderSkuItem 
                      WHERE restockOrderId = ?`;
         const params = [id];
-        
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                else 
+                else
                     resolve(this.changes > 0);
             })
         });

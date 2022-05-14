@@ -20,43 +20,27 @@ class SkusService {
 
     // GET /api/skus
     async getAllSkus() {
-        let allSkus;
-
         // retrieve all Sku objects
-        try {
-            allSkus = await this.#dao.getAllSkus();
+        const allSkus = await this.#dao.getAllSkus();
 
-            // fill each of them with its test descriptors
-            for (let sku of allSkus) {
-                const testDescriptors = await this.#dao.getTestDescriptorsOf(sku.getId());
-                sku.setTestDescriptors(testDescriptors);
-            }
-        }
-        catch (err) {
-            console.log(err);
-            return INTERNAL_SERVER_ERROR();
+        // fill each of them with its test descriptors
+        for (let sku of allSkus) {
+            const testDescriptors = await this.#dao.getTestDescriptorsOf(sku.getId());
+            sku.setTestDescriptors(testDescriptors);
         }
 
         return OK(allSkus);
     };
 
     async getSkuById(skuId) {
-        let sku;
+        skuId = int(skuId);
+        const sku = await this.#dao.getSkuById(skuId);
 
-        try {
-            skuId = int(skuId);
-            sku = await this.#dao.getSkuById(skuId);
+        if (!sku) return NOT_FOUND();
 
-            if (!sku) return NOT_FOUND();
-
-            // fill sku's test descriptors
-            const testDescriptors = await this.#dao.getTestDescriptorsOf(skuId);
-            sku.setTestDescriptors(testDescriptors);
-        }
-        catch (err) {
-            console.log(err);
-            return INTERNAL_SERVER_ERROR();
-        }
+        // fill sku's test descriptors
+        const testDescriptors = await this.#dao.getTestDescriptorsOf(skuId);
+        sku.setTestDescriptors(testDescriptors);
 
         return OK(sku);
     };
@@ -82,9 +66,9 @@ class SkusService {
             const position = await this.#dao.getPosition(sku.getPosition());
 
             if (!position) return SERVICE_UNAVAILABLE(); // db inconsistency error
-               
+
             // check exceeding capacities
-            if (!position.canHold(newAvailableQuantity, newWeight, newVolume)) 
+            if (!position.canHold(newAvailableQuantity, newWeight, newVolume))
                 return UNPROCESSABLE_ENTITY("Exceeding capacities");
 
             position.setOccupiedWeight(newAvailableQuantity * newWeight);
@@ -92,7 +76,7 @@ class SkusService {
 
             const positionWasUpdated = await this.#dao.updatePosition(sku.getPosition(), position);
 
-            if (!positionWasUpdated) 
+            if (!positionWasUpdated)
                 return SERVICE_UNAVAILABLE(); // general error during update
         }
 
@@ -110,7 +94,7 @@ class SkusService {
         const sku = await this.#dao.getSkuById(skuId);
 
         if (!sku) // sku not found
-            return NOT_FOUND(`Sku ${skuId} not found`);   
+            return NOT_FOUND(`Sku ${skuId} not found`);
 
         // check position existence
         const position = await this.#dao.getPosition(newPositionId);
@@ -125,7 +109,7 @@ class SkusService {
             return UNPROCESSABLE_ENTITY(`Position ${newPositionId} is already occupied`);
 
         // check position capacities
-        if (!position.canHold(sku.getAvailableQuantity(), sku.getWeight(), sku.getVolume())) 
+        if (!position.canHold(sku.getAvailableQuantity(), sku.getWeight(), sku.getVolume()))
             return UNPROCESSABLE_ENTITY("Exceeding capacities for that Position");
 
         const oldPositionId = sku.getPosition();
@@ -134,7 +118,7 @@ class SkusService {
             // * empty old position *
             const oldPosition = await this.#dao.getPosition(oldPositionId);
 
-            if (!oldPosition) 
+            if (!oldPosition)
                 return SERVICE_UNAVAILABLE(); // db inconsistency error
 
             oldPosition.setOccupiedWeight(0);
@@ -171,22 +155,24 @@ class SkusService {
         // check related SkuItems existence
         const relatedSkuItems = await this.#dao.getSkuItemsOf(skuId);
 
-        if(relatedSkuItems?.length > 0) // there are still SkuItems
+        if (relatedSkuItems?.length > 0) // there are still SkuItems
             return UNPROCESSABLE_ENTITY("related SkuItems still present");
-            
+
         // * delete sku *
         const skuWasDeleted = await this.#dao.deleteSku(skuId);
+
+        // * cascading deletion of associated TestDescriptors made by sqlite *
 
         if (!skuWasDeleted)     // generic error during deletion
             return SERVICE_UNAVAILABLE();
 
         const oldPositionId = sku.getPosition();
-        
-        if(oldPositionId) {
+
+        if (oldPositionId) {
             // * empty associated Position *
             const oldPosition = await this.#dao.getPosition(oldPositionId);
 
-            if (!oldPosition) 
+            if (!oldPosition)
                 return SERVICE_UNAVAILABLE(); // db inconsistency error
 
             oldPosition.setOccupiedWeight(0);
