@@ -24,14 +24,20 @@ class SkuItem {
     setRfid = (rfid) => this.#rfid = rfid;
     setAvailable = (available) => this.#available == available;
     setDateOfStock = (dateOfStock) => this.#dateOfStock = dateOfStock;
-    setTestResults = (testResults) => this.#testResults.push(testResults);
+    setTestResults = (testResults) => this.#testResults = testResults;
 
     // to serialize object in JSON format
     toJSON = () => ({
         RFID: this.getRfid(),
         SKUId: this.getSkuId(),
         Available: this.getAvailable(),
-        DateOfStock: this.getDateOfStock(),
+        DateOfStock: this.getDateOfStock()
+    });
+
+    toObjWithoutAvailable = () => ({
+        RFID: this.getRfid(),
+        SKUId: this.getSkuId(),
+        DateOfStock: this.getDateOfStock()
     });
 }
 

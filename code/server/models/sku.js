@@ -11,7 +11,7 @@ class Sku {
     #testDescriptors;
 
     constructor(description, weight, volume, notes, price, availableQuantity, position = "", testDescriptors = [], id = null) {
-        this.#id = id?.pad(12);
+        this.#id = id;
         this.#description = description;
         this.#weight = weight;
         this.#volume = volume;
@@ -41,7 +41,7 @@ class Sku {
     setPosition = (position) => this.#position = position;
     setAvailableQuantity = (availableQuantity) => this.#availableQuantity = availableQuantity;
     setPrice = (price) => this.#price = price;
-    setTestDescriptors = (testDescriptors) => this.#testDescriptors.push(testDescriptors);
+    setTestDescriptors = (testDescriptors) => this.#testDescriptors = testDescriptors;
 
     // to serialize object in JSON format
     toJSON = () => ({

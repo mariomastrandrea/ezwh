@@ -1,6 +1,17 @@
 const Position = require("../models/position");
 
-class PositionService {
+const {
+    OK,
+    CREATED,
+    NO_CONTENT,
+    NOT_FOUND,
+    UNPROCESSABLE_ENTITY,
+    INTERNAL_SERVER_ERROR,
+    SERVICE_UNAVAILABLE
+} = require("../statusCodes");
+
+
+class PositionsService {
     #dao;
 
     constructor(dao) {
@@ -10,11 +21,7 @@ class PositionService {
     // GET /api/positions
     async getAllPositions() {
         const allPositions = await this.#dao.getAllPositions();
-
-        return {
-            obj: allPositions,
-            code: 200
-        };
+        return OK(allPositions);
     };
 
     // POST /api/position
@@ -23,23 +30,17 @@ class PositionService {
         //      (and it cannot be duplicated) *
         const tempPosition = await this.#dao.getPosition(positionID);
 
-        if (tempPosition) return {  // already exist a position with that ID
-            error: `Unprocessable Entity - ${positionID} already present`,
-            code: 422
-        };
+        if (tempPosition)   // already exist a position with that ID
+            return UNPROCESSABLE_ENTITY(`${positionID} already present`);
 
         // * store the new position *
         const newPosition = new Position(positionID, aisleID, row, col, maxWeight, maxVolume, 0, 0);
         const positionWasCreated = await this.#dao.storePosition(newPosition);
 
-        if (!positionWasCreated) return { // generic mistake during object creation
-            error: "Service Unavailable",
-            code: 503
-        }
+        if (!positionWasCreated)
+            return SERVICE_UNAVAILABLE();  // generic mistake during object creation
 
-        return {  // position successfully created
-            code: 201
-        }
+        return CREATED();  // position successfully created
     }
 
     // PUT /api/position/:positionID
@@ -49,10 +50,8 @@ class PositionService {
         // check if the required Position exists
         const oldPosition = await this.#dao.getPosition(oldPositionID);
 
-        if (!oldPosition) return { // positionId not found
-            error: "Position not found",
-            code: 404
-        }
+        if (!oldPosition)
+            return NOT_FOUND("Position not found");
 
         // this http method must update also the positionID, according to 
         // the new provided aisle, row and col (see API.md)
@@ -62,24 +61,18 @@ class PositionService {
         //      (and it cannot be duplicated) *
         const tempPosition = oldPositionID !== newPositionID && await this.#dao.getPosition(newPositionID);
 
-        if (tempPosition) return { // already exist a position with that ID
-            error: `Unprocessable Entity - ${newPositionID} already present`,
-            code: 422
-        }
+        if (tempPosition)   // already exist a position with that ID
+            return UNPROCESSABLE_ENTITY(`${newPositionID} already present`);
 
         // check weight and volume
-        if (newOccupiedWeight > newMaxWeight || newOccupiedVolume > newMaxVolume) return {
-            error: "Unprocessable Entity - no enough volume/weight",
-            code: 422
-        }
+        if (newOccupiedWeight > newMaxWeight || newOccupiedVolume > newMaxVolume)
+            return UNPROCESSABLE_ENTITY("no enough volume/weight");
 
         // check if the occupied weight and volume are consistent with the already present SkuItems (?)
         const { weight, volume } = await this.#dao.getOccupiedCapacitiesOf(oldPositionID);
 
-        if (weight !== newOccupiedWeight || volume !== newOccupiedVolume) return {
-            error: "Unprocessable Entity - new capacities are inconsistent with the existing SkuItems",
-            code: 422
-        }
+        if (weight !== newOccupiedWeight || volume !== newOccupiedVolume)
+            return UNPROCESSABLE_ENTITY("new capacities are inconsistent with the existing SkuItems");
 
         // * update the position *
         const newPosition = new Position(newPositionID, newAisleID, newRow, newCol,
@@ -87,18 +80,16 @@ class PositionService {
 
         const positionWasUpdated = await this.#dao.updatePosition(oldPositionID, newPosition);  // update Position table
 
-        if (!positionWasUpdated) return { // generic mistake during object update
-            error: "Service Unavailable",
-            code: 503
-        }
+        if (!positionWasUpdated)  // generic mistake during object update
+            return SERVICE_UNAVAILABLE();
 
-        if (oldPositionID !== newPositionID) { // cascading update on Sku(Position) ?
+        // * cascading updates on Sku(Position) made by sqlite *
+        
+        /* if (oldPositionID !== newPositionID) { 
             this.#dao.updateSkuPosition(oldPositionID, newPositionID); // update Sku table
-        }
-    
-        return { // position successfully updated
-            code: 200
-        }
+        } */
+
+        return OK(); // position successfully updated
     }
 
     // PUT /api/position/:positionID/changeID
@@ -107,19 +98,14 @@ class PositionService {
         // check if already exist the specific position
         const oldPosition = await this.#dao.getPosition(oldPositionID);
 
-        if (!oldPosition) return { // positionId not found
-            error: "Position not found",
-            code: 404
-        }
+        if (!oldPosition) return NOT_FOUND();
 
         // * Q: Has to be properly checked the case in which the new positionId already exists?
         //      (and it cannot be duplicated) *
         const tempPosition = oldPositionID !== newPositionID && await this.#dao.getPosition(newPositionID);
 
-        if (tempPosition) return { // already exist a position with that ID
-            error: `Unprocessable Entity - ${newPositionID} already present`,
-            code: 422
-        }
+        if (tempPosition)   // already exist a position with that ID
+            return UNPROCESSABLE_ENTITY(`${newPositionID} already present`);
 
         // * update the positionId *
 
@@ -127,55 +113,39 @@ class PositionService {
             oldPosition.getMaxVolume(), oldPosition.getOccupiedWeight(), oldPosition.getOccupiedVolume());
 
         // update Position table -> Sku(Position) cascading update?
-        const positionWasUpdated = await this.#dao.updatePosition(oldPositionID, newPosition);     
+        const positionWasUpdated = await this.#dao.updatePosition(oldPositionID, newPosition);
 
-        if (!positionWasUpdated) return { // generic mistake during object update
-            error: "Service Unavailable",
-            code: 503
-        }
+        if (!positionWasUpdated)  // generic mistake during object update
+            return SERVICE_UNAVAILABLE();
 
         await this.#dao.updateSkuPosition(oldPositionID, newPositionID); // update Sku table
-
-        return {  // positionId successfully updated
-            code: 200
-        }
+        return OK();  // positionId successfully updated
     }
 
     // DELETE /api/position/:positionID
     async deletePosition(positionID) {
         const position = await this.#dao.getPosition(positionID);
 
-        if (!position) return {
-            error: "Position not found",
-            code: 404
-        }
+        if (!position) return NOT_FOUND();
 
         // cannot delete a position that is not free
-        if (position.getOccupiedWeight() > 0 || position.getOccupiedVolume() > 0) return {
-            error: "Unprocessable Entity - Position is not free",
-            code: 422
-        }
+        if (position.getOccupiedWeight() > 0 || position.getOccupiedVolume() > 0)
+            return UNPROCESSABLE_ENTITY("Position is not free");
 
         // check if there is an existing Sku associated to that Position
         const tempSku = await this.#dao.getSkuOfPosition(positionID);
 
-        if (tempSku) return {
-            error: `Unprocessable Entity - Existing sku associated to ${positionID}`,
-            code: 422
-        }
+        if (tempSku)
+            return UNPROCESSABLE_ENTITY(`Existing sku associated to ${positionID}`);
 
         // * delete the Position *
         const positionWasDeleted = await this.#dao.deletePosition(positionID);
 
-        if (!positionWasDeleted) return {
-            error: "Service Unavailable",    // generic error during deletion
-            code: 503
-        }
+        if (!positionWasDeleted)  // generic error during deletion
+            return SERVICE_UNAVAILABLE();
 
-        return {
-            code: 204   // position successfully deleted
-        }
+        return NO_CONTENT(); // position successfully deleted
     }
 }
 
-module.exports = PositionService
+module.exports = PositionsService
