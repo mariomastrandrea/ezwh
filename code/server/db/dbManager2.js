@@ -12,12 +12,14 @@ class DbManager2 {
     #db;
 
     constructor() {
+        /*
         this.#db = new sqlite.Database(DBSOURCE, (err) => {
             if (err)
                 throw err;
         });
 
         this.#db.get("PRAGMA foreign_keys = ON");
+        */
     }
 
     closeDb() {

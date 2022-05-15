@@ -1,5 +1,4 @@
 const Item = require('../models/item');
-const { int } = require('../utilities');
 
 const {
     OK,
@@ -26,7 +25,7 @@ class ItemsService {
 
     async getItemById(itemId) {
         // check item existence
-        const item = await this.#dao.getItemById(skuId);
+        const item = await this.#dao.getItemById(itemId);
 
         if (!item)
             return NOT_FOUND(`item ${itemId} not found`);
@@ -38,7 +37,7 @@ class ItemsService {
         // check if id already present
         let tempItem = await this.#dao.getItemById(itemId);
 
-        if (tempItem) 
+        if (tempItem)
             return UNPROCESSABLE_ENTITY(`item ${itemId} already exists`);
 
         // check sku existence
@@ -50,13 +49,13 @@ class ItemsService {
         // check supplier existence
         const supplier = this.#dao.getUser(supplierId, 'SUPPLIER');
 
-        if (!supplier) 
+        if (!supplier)
             return NOT_FOUND(`supplier ${supplierId} not found`);
 
         // check if supplier already sells this sku
         tempItem = await this.#dao.getItemBySkuIdAndSupplier(skuId, supplierId);
 
-        if (tempItem) 
+        if (tempItem)
             return UNPROCESSABLE_ENTITY(`supplier ${supplierId} already sells sku ${skuId}`);
 
         // * create item *
@@ -69,70 +68,38 @@ class ItemsService {
         return CREATED();
     };
 
-    ////////////////////////////////////////////////////////////////
+    async updateItem(itemId, newDescription, newPrice) {
+        // check item existence
+        const item = await this.#dao.getItemById(itemId);
 
-    async updateItem() {
-        if (!true) {
-            return res.status(401).send('Unauthorized');
-        }
-        try {
-            if (Joi.number().integer().required().validate(req.params.id).error)
-                return res.status(422).send('Unprocessable entity');
+        if (!item)
+            return NOT_FOUND(`item ${itemId} not found`);
 
-            const schema = Joi.object({
-                newDescription: Joi.string().required(),
-                newPrice: Joi.number().required()
-            });
+        // * update item *
+        const newItem = new Item(itemId, newDescription, newPrice, item.getSkuId(), item.getSupplierId());
+        const itemWasUpdated = await this.#dao.updateItem(newItem);
 
-            const result = schema.validate(req.body);
-            if (result.error) {
-                return res.status(422).send('Unprocessable Entity')
-            }
+        if (!itemWasUpdated) // a generic error occurred during update
+            return SERVICE_UNAVAILABLE();
 
-            this.#dao.getItem(parseInt(req.params.id)).then((item) => {
-                if (item) {
-                    item.setDescription(req.body.newDescription);
-                    item.setPrice(parseFloat(req.body.newPrice));
-
-                    this.#dao.updateItem(item.toJSON()).then((item) => {
-                        return res.status(200).send('OK');
-                    }).catch((err) => {
-                        console.log(err);
-                        return res.status(503).send('Service Unavailable');
-                    });
-                } else {
-                    return res.status(404).send('Not Found');
-                }
-            }).catch((err) => {
-                console.log(err);
-                return res.status(404).send('Not Found');
-            });
-        } catch (err) {
-            console.log(err);
-            return res.status(503).send('Service Unavailable');
-        }
+        return OK();
     };
 
-    async deleteItem() {
-        if (!true) {
-            return res.status(401).send('Unauthorized');
-        }
-        try {
-            if (Joi.number().integer().required().validate(req.params.id).error)
-                return res.status(422).send('Unprocessable entity');
+    async deleteItem(itemId) {
+        // check item existence
+        const item = await this.#dao.getItemById(itemId);
 
-            this.#dao.deleteItem(parseInt(req.params.id)).then((item) => {
-                return res.status(200).send('No Content');
-            }).catch((err) => {
-                console.log(err);
-                return res.status(503).send('Service Unavailable');
-            }
-            );
-        } catch (err) {
-            console.log(err);
-            return res.status(503).send('Service Unavailable');
-        }
-    };
+        if (!item)
+            return NOT_FOUND(`item ${itemId} not found`);
+
+        // * delete item *
+        const itemWasDeleted = await this.#dao.deleteItem(itemId);
+
+        if (!itemWasDeleted) // a generic error occurred during delete
+            return SERVICE_UNAVAILABLE();
+        
+        return NO_CONTENT();
+    }
 }
 
 module.exports = ItemsService;
