@@ -36,7 +36,7 @@ describe('[DB] restock orders GET functions', () => {
                 SKUId: expect.any(Number),
                 description: expect.any(String),
                 price: expect.any(Number),
-                quantity: expect.any(Number),
+                qty: expect.any(Number),
             })
         }
         // id not in db
@@ -80,7 +80,7 @@ describe('[DB] restock orders CREATE UPDATE DELETE functions', () => {
         SKUId: 1,
         description: "description",
         price: 10.99,
-        quantity: 2,
+        qty: 2,
     }];
     let exSkuItem = [{
         SKUId: 1,
@@ -256,7 +256,7 @@ describe('[DB] internal orders GET functions', () => {
                 SKUId: expect.any(Number),
                 description: expect.any(String),
                 price: expect.any(Number),
-                quantity: expect.any(Number),
+                qty: expect.any(Number),
             });
         }
     })
@@ -280,14 +280,14 @@ describe('[DB] internal orders CREATE UPDATE DELETE functions', () => {
         SKUId: 1,
         description: "a product",
         price: 10.99,
-        quantity: 1,
+        qty: 1,
 
     },
     {
         SKUId: 2,
         description: "a product two",
         price: 13.99,
-        quantity: 2,
+        qty: 2,
     }
     ];
 

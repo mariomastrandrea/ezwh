@@ -1,5 +1,6 @@
 const ReturnOrder = require('../models/returnOrder');
 const statusCodes = require('../statusCodes');
+const dayjs = require('dayjs');
 
 class ReturnOrderService {
     dao;
@@ -54,6 +55,7 @@ class ReturnOrderService {
             const roFromDb = await this.dao.storeReturnOrder(ro);
 
             if (!roFromDb) return statusCodes.SERVICE_UNAVAILABLE();
+            if (dayjs(returnDate) >= dayjs(restockOrder.getIssueDate())) return statusCodes.UNPROCESSABLE_ENTITY();
 
             const productsAdded = await this.dao.storeReturnOrderSkuItems(roFromDb.getId(), roFromDb.getProducts());
             if (!productsAdded) return statusCodes.SERVICE_UNAVAILABLE();

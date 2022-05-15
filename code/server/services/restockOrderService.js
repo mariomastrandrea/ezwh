@@ -1,5 +1,6 @@
 const RestockOrder = require('../models/restockOrder');
 const statusCodes = require('../statusCodes');
+const dayjs = require('dayjs');
 
 class RestockOrderService {
     dao;
@@ -114,6 +115,7 @@ class RestockOrderService {
             let result = 0;
             switch (type) {
                 case 'skuItems':
+                    if (ro.getState() != 'DELIVERED') return statusCodes.UNPROCESSABLE_ENTITY();
                     result = await this.dao.storeRestockOrderSkuItems(ro.getId(), body.skuItems);
                     break;
                 case 'state':
@@ -121,6 +123,11 @@ class RestockOrderService {
                     result = await this.dao.updateRestockOrder(ro);
                     break;
                 case 'transportNote':
+                    if (
+                        ro.getState() != 'DELIVERY' ||
+                        dayjs(body.transportNote.deliveryDate) < dayjs(ro.getIssueDate())
+                    )
+                        return statusCodes.UNPROCESSABLE_ENTITY();
                     ro.setTransportNote(body.transportNote);
                     result = await this.dao.updateRestockOrder(ro);
                     break;
@@ -143,12 +150,6 @@ class RestockOrderService {
             if (ro.getState() !== 'ISSUED')
                 return statusCodes.SERVICE_UNAVAILABLE();
 
-            const skuItems = await this.dao.getRestockOrderSkuItems(ro.getId());
-            if (skuItems && skuItems.length > 0) {
-                // there are sku items with this ro id
-                // cannot delete
-                return statusCodes.SERVICE_UNAVAILABLE();
-            }
             let result = await this.dao.deleteRestockOrderSku(ro.getId());
             result += await this.dao.deleteRestockOrder(ro.getId());
             if (result > 0) return statusCodes.NO_CONTENT();

@@ -20,13 +20,13 @@ const fakeAcceptedInternalOrder = new InternalOrder(
             SKUId: 1,
             description: "description",
             price: 10.99,
-            quantity: 2,
+            qty: 2,
         },
         {
             SKUId: 2,
             description: "description 2",
             price: 10.99,
-            quantity: 2,
+            qty: 2,
         },
     ],
     1,
@@ -106,14 +106,14 @@ describe('get internal orders', () => {
                 SKUId: 1,
                 description: "row.description",
                 price: 20,
-                quantity: 1,
+                qty: 1,
             }
         ]).mockReturnValue([
             {
                 SKUId: 2,
                 description: "row.description 2",
                 price: 20,
-                quantity: 1,
+                qty: 1,
             }
         ]);
 
@@ -168,7 +168,7 @@ describe('get internal orders', () => {
                         SKUId: 2,
                         description: "row.description 2",
                         price: 20,
-                        quantity: 1,
+                        qty: 1,
                     }
                 ],
                 1,

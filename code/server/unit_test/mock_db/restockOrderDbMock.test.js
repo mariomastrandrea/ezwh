@@ -10,17 +10,17 @@ const fakeRestockOrder = new RestockOrder(
             SKUId: 1,
             description: "description",
             price: 10.99,
-            quantity: 2,
+            qty: 2,
         },
         {
             SKUId: 2,
             description: "description 2",
             price: 10.99,
-            quantity: 2,
+            qty: 2,
         },
     ],
     1,
-    "delivered on 2021/12/05",
+    {deliveryDate: "2021/11/30"},
     1,
     [
         {
@@ -32,7 +32,7 @@ const fakeRestockOrder = new RestockOrder(
             RFID: "123456709",
         }
     ],
-    "DELIVERED"
+    "DELIVERY"
 );
 const fakeIssuedRestockOrder = new RestockOrder(
     "2021/11/29 09:33",
@@ -41,13 +41,13 @@ const fakeIssuedRestockOrder = new RestockOrder(
             SKUId: 1,
             description: "description",
             price: 10.99,
-            quantity: 2,
+            qty: 2,
         },
         {
             SKUId: 2,
             description: "description 2",
             price: 10.99,
-            quantity: 2,
+            qty: 2,
         },
     ],
     1,
@@ -63,10 +63,10 @@ describe('get restock orders', () => {
                 "2021/11/29 09:33",
                 [],
                 1,
-                "delivered on 2021/12/05",
+                {deliveryDate: "2021/11/30"},
                 1,
                 [],
-                "DELIVERED"
+                "DELIVERY"
             )
         ).mockReturnValueOnce(
             new RestockOrder(
@@ -86,26 +86,26 @@ describe('get restock orders', () => {
                 SKUId: 1,
                 description: "description",
                 price: 10.99,
-                quantity: 2,
+                qty: 2,
             },
             {
                 SKUId: 2,
                 description: "description 2",
                 price: 10.99,
-                quantity: 2,
+                qty: 2,
             },
         ]).mockReturnValue([
             {
                 SKUId: 1,
                 description: "description",
                 price: 10.99,
-                quantity: 2,
+                qty: 2,
             },
             {
                 SKUId: 2,
                 description: "description 2",
                 price: 10.99,
-                quantity: 2,
+                qty: 2,
             },
         ]);
 
@@ -267,7 +267,7 @@ describe("create restock order", () => {
                     SKUId: 1,
                     description: "description",
                     price: 10.99,
-                    quantity: 2,
+                    qty: 2,
                 }],
                 1,
                 "",
@@ -288,7 +288,7 @@ describe("create restock order", () => {
                 SKUId: 1,
                 description: "description",
                 price: 10.99,
-                quantity: 2,
+                qty: 2,
             }],
             1
         );
@@ -300,7 +300,7 @@ describe("create restock order", () => {
                     SKUId: 1,
                     description: "description",
                     price: 10.99,
-                    quantity: 2,
+                    qty: 2,
                 }],
                 1
             ).toDatabase()
@@ -312,7 +312,7 @@ describe("create restock order", () => {
                 SKUId: 1,
                 description: "description",
                 price: 10.99,
-                quantity: 2,
+                qty: 2,
             }
         ]);
 
@@ -325,7 +325,7 @@ describe("create restock order", () => {
                 SKUId: 1,
                 description: "description",
                 price: 10.99,
-                quantity: 2,
+                qty: 2,
             }],
             1
         );
@@ -337,7 +337,7 @@ describe("create restock order", () => {
                     SKUId: 1,
                     description: "description",
                     price: 10.99,
-                    quantity: 2,
+                    qty: 2,
                 }],
                 1
             ).toDatabase()
@@ -349,7 +349,7 @@ describe("create restock order", () => {
                 SKUId: 1,
                 description: "description",
                 price: 10.99,
-                quantity: 2,
+                qty: 2,
             }
         ]);
 
@@ -410,10 +410,10 @@ describe("update restock order", () => {
         // expected 200
         const id = 1;
         const body = { transportNote: { "deliveryDate": "2021/12/29" } };
+        fakeRestockOrder.setState("DELIVERY");
         let res = await restockOrderService.updateRestockOrder(
             "transportNote", id, body
         );
-
         expect(dao.updateRestockOrder.mock.calls[0][0].toDatabase())
             .toEqual(fakeRestockOrder.toDatabase());
 
@@ -436,6 +436,7 @@ describe("update restock order", () => {
         // expected 200
         const id = 1;
         const body = { skuItems: [{ SKUId: 12, rfid: "1234" }] };
+        fakeRestockOrder.setState("DELIVERED");
         let res = await restockOrderService.updateRestockOrder(
             "skuItems", id + 2, body
         );

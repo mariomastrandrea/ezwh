@@ -651,7 +651,7 @@ class DbManager3 {
                             SKUId: row.SkuId,
                             description: row.Description,
                             price: row.Price,
-                            quantity: row.Quantity,
+                            qty: row.Quantity,
                         }
                     }));
 
@@ -718,7 +718,7 @@ class DbManager3 {
     storeRestockOrder(ro) {
         const sql = `INSERT INTO RestockOrder (IssueDate, State, SupplierId, TransportNote) 
                      VALUES (?,?,?,?)`;
-        const params = [ro.getIssueDate(), ro.getState(), ro.getSupplierId(), ro.getTransportNote()];
+        const params = [ro.getIssueDate(), ro.getState(), ro.getSupplierId(), ro.getTransportNoteString()];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
                 if (err) {
@@ -737,7 +737,7 @@ class DbManager3 {
     // OUTPUT - true if successful else false
     storeRestockOrderSku(id, products) {
         const sql = `INSERT INTO RestockOrderSku(RestockOrderId, SkuId, Description, Price, Quantity) VALUES (?,?,?,?,?)`;
-        let params = products.map(sku => [id, sku.SKUId, sku.description, sku.price, sku.quantity]);
+        let params = products.map(sku => [id, sku.SKUId, sku.description, sku.price, sku.qty]);
 
         return new Promise((resolve, reject) => {
             let statement = this.#db.prepare(sql);
@@ -779,7 +779,7 @@ class DbManager3 {
                      SET state = ?, transportNote = ? 
                      WHERE id = ?`;
 
-        const params = [ro.getState(), ro.getTransportNote(), ro.getId()];
+        const params = [ro.getState(), ro.getTransportNoteString(), ro.getId()];
 
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
@@ -1059,7 +1059,7 @@ class DbManager3 {
                         SKUId: row.SkuId,
                         description: row.Description,
                         price: row.Price,
-                        quantity: row.Quantity,
+                        qty: row.Quantity,
                     }
                 }));
 

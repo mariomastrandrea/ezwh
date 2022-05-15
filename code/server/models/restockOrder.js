@@ -13,7 +13,11 @@ class RestockOrder {
         this.#issueDate = issueDate;
         this.#products = products;
         this.#supplierId = supplierId;
-        this.#transportNote = transportNote;
+        if(typeof transportNote === 'string') {
+            this.#transportNote = {deliveryDate: transportNote.split(' ')[1]};
+        }else{
+            this.#transportNote = transportNote;
+        }
         this.#skuItems = skuItems;
         this.#state = state;
     };
@@ -24,6 +28,11 @@ class RestockOrder {
     getProducts = () => this.#products;
     getSupplierId = () => this.#supplierId;
     getTransportNote = () => this.#transportNote;
+    getTransportNoteString = () => {
+        if(this.#transportNote.deliveryDate) {
+            return `deliveryDate: ${this.#transportNote.deliveryDate}`;
+        }
+    };
     getSkuItems = () => {
         let array = [];
         array.push(...this.#skuItems);
