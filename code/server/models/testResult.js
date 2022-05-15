@@ -1,3 +1,4 @@
+const dayjs = require('dayjs');
 
 class TestResult {
     #id;
@@ -10,7 +11,7 @@ class TestResult {
         this.#id = id;
         this.#rfid = rfid;
         this.#testDescriptorId = testDescriptorId;
-        this.#date = date;
+        this.#date = dayjs(date).format('YYYY/MM/DD');
         this.#result = result;
     }
 
@@ -23,16 +24,16 @@ class TestResult {
 
     // setters
     setTestDescriptorId = (testDescriptorId) => this.#testDescriptorId = testDescriptorId;
-    setDate = (date) => this.#date = date;
+    setDate = (date) => this.#date = dayjs(date).format('YYYY/MM/DD');
     setResult = (result) => this.#result = result;
 
     // to serialize object in JSON format
     toJSON = () => ({
         id: this.getId(),
-        rfid: this.getRfid(),
-        testDescriptorId: this.getTestDescriptorId(),
-        date: this.getDate(),
-        result: this.getResult()
+        //rfid: this.getRfid(),
+        idTestDescriptor: this.getTestDescriptorId(),
+        Date: this.getDate(),
+        Result: this.getResult()
     });
 }
 

@@ -2,22 +2,63 @@ const sqlite = require('sqlite3');
 const TestDescriptor = require('../models/testDescriptor');
 const TestResult = require('../models/testResult');
 const User = require('../models/user');
-const DBSOURCE = 'C:/Users/User/Downloads/polito/Master/I.2/Software engineering/project/EzWhCoding/code/server/db/EZWHDB.sqlite';
+const Sku = require('../models/sku');
+const SkuItem = require('../models/skuItem');
+const DBSOURCE = './db/EZWHDB.sqlite';
+//'C:/Users/User/Downloads/polito/Master/I.2/Software engineering/project/EzWhCoding/code/server/db/EZWHDB.sqlite';
 
 class DbManager2 {
 
     #db;
 
     constructor() {
-        // this.#db = new sqlite.Database(DBSOURCE, (err) => {
-        //     if (err)
-        //         throw err;
-        // });
+        this.#db = new sqlite.Database(DBSOURCE, (err) => {
+            if (err)
+                throw err;
+        });
+
+        this.#db.get("PRAGMA foreign_keys = ON");
     }
 
     closeDb() {
         this.#db.close();
     }
+
+    //#region Sku/SkuItem (temporary)
+    async getSku(id) {
+        let sku;
+        let sql = 'SELECT * FROM Sku WHERE ID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.all(sql, [id], (err, rows) => {
+                if (err)
+                    return reject(err);
+
+                for (let row of rows) {
+                    sku = new Sku(row.Description, row.Weight, row.Volume, row.Notes, row.Price, row.AvailableQuantity, row.Position, row.TestDescriptor, row.ID);
+                }
+
+                return resolve(sku);
+            });
+        })
+    };
+
+    async getSkuItem(rfid) {
+        let skuItem;
+        let sql = 'SELECT * FROM SkuItem WHERE RFID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.all(sql, [rfid], (err, rows) => {
+                if (err)
+                    return reject(err);
+
+                for (let row of rows) {
+                    skuItem = new SkuItem(row.RFID, row.SkuId, row.DateOfStock, row.Available, row.TestResults);
+                }
+
+                return resolve(skuItem);
+            });
+        })
+    };
+    //#endregion
 
     //#region TestDescriptors
     async getAllTestDescriptors() {
@@ -26,13 +67,13 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.all(sql, (err, rows) => {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
                 for (let row of rows) {
                     testDescriptors.push(new TestDescriptor(row.ID, row.Name, row.ProcedureDescription, row.SkuId));
                 }
 
-                resolve(testDescriptors);
+                return resolve(testDescriptors);
             });
         })
     };
@@ -43,13 +84,13 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.all(sql, [id], (err, rows) => {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
                 for (let row of rows) {
                     testDescriptor = new TestDescriptor(row.ID, row.Name, row.ProcedureDescription, row.SkuId);
                 }
 
-                resolve(testDescriptor);
+                return resolve(testDescriptor);
             });
         })
     };
@@ -59,9 +100,9 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [td.getName(), td.getProcedureDescription(), td.getSkuId()], function (err) {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
-                resolve(new TestDescriptor(this.lastID, td.getName(), td.getProcedureDescription(), td.getSkuId()));
+                return resolve(new TestDescriptor(this.lastID, td.getName(), td.getProcedureDescription(), td.getSkuId()));
             });
         })
     };
@@ -71,9 +112,9 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [td.getName(), td.getProcedureDescription(), td.getSkuId(), td.getId()], function (err) {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
-                resolve(this.changes);
+                return resolve(this.changes);
             });
         })
     };
@@ -83,9 +124,9 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [id], function (err) {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
-                resolve(this.changes);
+                return resolve(this.changes);
             });
         })
     };
@@ -98,13 +139,13 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.all(sql, [rfid], (err, rows) => {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
                 for (let row of rows) {
                     testResults.push(new TestResult(row.ID, row.RFID, row.TestDescriptorId, row.Date, row.Result));
                 }
 
-                resolve(testResults);
+                return resolve(testResults);
             });
         })
     };
@@ -115,13 +156,13 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.all(sql, [id, rfid], (err, rows) => {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
                 for (let row of rows) {
                     testResult = new TestResult(row.ID, row.RFID, row.TestDescriptorId, row.Date, row.Result);
                 }
 
-                resolve(testResult);
+                return resolve(testResult);
             });
         })
     }
@@ -131,9 +172,9 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()], function (err) {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
-                resolve(new TestResult(this.lastID, tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()));
+                return resolve(new TestResult(this.lastID, tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()));
             });
         })
     }
@@ -143,9 +184,9 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [tr.getTestDescriptorId(), tr.getDate(), tr.getResult(), tr.getId(), tr.getRfid()], function (err) {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
-                resolve(this.changes);
+                return resolve(this.changes);
             });
         })
     }
@@ -155,9 +196,9 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [id, rfid], function (err) {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
-                resolve(this.changes);
+                return resolve(this.changes);
             });
         })
     }
@@ -165,19 +206,19 @@ class DbManager2 {
     //#endregion
 
     //#region User
-    async getUser(username, password) {
+    async getUser(username, type) {
         let user;
-        let sql = 'SELECT * FROM User WHERE Email=? AND Password=?';
+        let sql = 'SELECT * FROM User WHERE Email=? AND Type=?';
         return new Promise((resolve, reject) => {
-            this.#db.all(sql, [username, password], (err, rows) => {
+            this.#db.all(sql, [username, type], (err, rows) => {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
                 for (let row of rows) {
                     user = new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password);
                 }
 
-                resolve(user);
+                return resolve(user);
             });
         })
     }
@@ -188,30 +229,30 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.all(sql, [type], (err, rows) => {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
                 for (let row of rows) {
                     users.push(new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password));
                 }
 
-                resolve(users);
+                return resolve(users);
             });
         })
     }
 
     async getAllUsers() {
         let users = [];
-        let sql = "SELECT * FROM User WHERE Type!='MANAGER'";
+        let sql = "SELECT * FROM User WHERE Type!='manager'";
         return new Promise((resolve, reject) => {
             this.#db.all(sql, (err, rows) => {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
                 for (let row of rows) {
                     users.push(new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password));
                 }
 
-                resolve(users);
+                return resolve(users);
             });
         })
     }
@@ -221,9 +262,9 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()], function (err) {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
-                resolve(new User(this.lastID, us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()));
+                return resolve(new User(this.lastID, us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()));
             });
         })
     }
@@ -233,9 +274,9 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword(), us.getId()], function (err) {
                 if (err)
-                    reject(err);
+                    return reject(err);
 
-                resolve(this.changes);
+                return resolve(this.changes);
             });
         })
     }
@@ -245,13 +286,38 @@ class DbManager2 {
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [id], function (err) {
                 if (err)
+                    return reject(err);
+
+                return resolve(this.changes);
+            });
+        })
+    }
+    //#endregion
+    
+    /*
+    async deleteSkuItem(){
+        let sql = "DELETE FROM SkuItem WHERE RFID='12345678901234567890123456789011'";
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, function (err) {
+                if (err)
                     reject(err);
 
                 resolve(this.changes);
             });
         })
     }
-    //#endregion
+
+    async updateSkuItem() {
+        let sql = "UPDATE SkuItem SET RFID='12345678901234567890123456789011' WHERE RFID='12345678901234567890123456789018'";
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, function (err) {
+                if (err)
+                    reject(err);
+
+                resolve(this.changes);
+            });
+        })
+    }*/
 }
 
 //#region Test
@@ -262,7 +328,7 @@ async function main() {
     //const a = await db2.getAllTestDescriptors();
     //console.log(a[1]);
 
-    console.log(await db2.getTestDescriptor(12));
+    //console.log(await db2.getTestDescriptor(2));
 
     //console.log(await db2.storeTestDescriptor(new TestDescriptor(null,'test16','desc16',6)));
 
@@ -294,6 +360,9 @@ async function main() {
     //console.log(await db2.deleteUser('e4@gmail.com'));
 
     //db2.closeDb();
+
+    //console.log(await db2.deleteSkuItem().catch(err => err));
+    //console.log(await db2.updateSkuItem());
 }
 
 main();

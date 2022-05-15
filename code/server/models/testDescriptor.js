@@ -28,7 +28,7 @@ class TestDescriptor {
         id: this.getId(),
         name: this.getName(),
         procedureDescription: this.getProcedureDescription(),
-        skuId: this.getSkuId()
+        idSKU: this.getSkuId()
     });
 }
 

@@ -7,7 +7,7 @@ class User {
     #type;
     #password;
 
-    constructor(name, surname, email, type, password, id = null) {
+    constructor(id, name, surname, email, type, password) {
         this.#id = id;
         this.#name = name;
         this.#surname = surname;
