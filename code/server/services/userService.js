@@ -40,7 +40,7 @@ class UserService {
 
     //GET /api/suppliers 
     async getAllSuppliers() {
-        const result = await this.#dao.getAllUsersOfType("SUPPLIER").catch(err => "ErrorDB");
+        const result = await this.#dao.getAllUsersOfType("supplier").catch(err => "ErrorDB");
 
         if (result === "ErrorDB") {
             return {
