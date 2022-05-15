@@ -260,13 +260,12 @@ router.get('/skuitems/sku/:id', async (req, res) => {
         // validate URL parameter
         const skuId = req.params.id;
 
-        if (Joi.number().integer().required().validate(skuId).error) {
+        if (Joi.number().integer().required().validate(skuId).error)
             return res.status(422).send('Unprocessable Entity');
-        }
 
         const { error, code, obj } = await skuItemsService.getAvailableSkuItemsOf(skuId);
 
-        if(error) {
+        if (error) {
             return res.status(code).send(error);
         }
 
@@ -419,20 +418,93 @@ router.delete('/skuitems/:rfid', async (req, res) => {
  * Item
  */
 
-////////////////////////////////////////////////////////////////
-// TODO: implement all APIs below
-
 router.get('/items', async (req, res) => {
+    // TODO: add login check
+    if (!true) {
+        return res.status(401).send('Unauthorized');
+    }
 
+    try {
+        const { error, code, obj } = await itemsService.getAllItems();
+
+        if (error) {
+            return res.status(code).send(error);
+        }
+
+        const allItems = obj;
+        return res.status(code).json(allItems);
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).send('Internal Server Error');
+    }
 });
 
 router.get('/items/:id', async (req, res) => {
-    
+    // TODO: add login check
+    if (!true) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    try {
+        // validate URL parameter
+        const { id } = req.params;
+
+        if (Joi.number().integer().required().validate(id).error)
+            return res.status(422).send('Unprocessable entity');
+
+        const { error, code, obj } = await itemsService.getItemById(id);
+
+        if (error) 
+            return res.status(code).send(error);
+
+        const item = obj;
+        return res.status(code).json(item);
+    } 
+    catch (err) {
+        console.log(err);
+        return res.status(500).send('Internal Server Error');
+    }
 });
 
 router.post('/item', async (req, res) => {
-    
+    // TODO: add login check
+    if (!true) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    try {
+        // validate request body
+        const schema = Joi.object({
+            id: Joi.number().integer().required(),
+            description: Joi.string().required(),
+            price: Joi.number().required(),
+            SKUId: Joi.number().integer().required(),
+            supplierId: Joi.number().integer().required()
+        });
+
+        const result = schema.validate(req.body);
+
+        if (result.error) 
+            return res.status(422).send('Unprocessable Entity')
+
+        const { id, description, price, SKUId, supplierId } = req.body;
+
+        const { error, code } = 
+            await itemsService.createItem(id, description, price, SKUId, supplierId);
+
+        if (error)
+            return res.status(code).send(error);
+
+        return res.status(code).end();
+    } 
+    catch (err) {
+        console.log(err);
+        return res.status(503).send('Service Unavailable');
+    }
 });
+
+////////////////////////////////////////////////////////////////
 
 router.put('/item/:id', async (req, res) => {
     

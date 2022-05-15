@@ -80,10 +80,6 @@ async function createTestResult(req, res) {
 
     try {
 
-        if (Joi.string().required().validate(req.params.rfid).error) {
-            return res.status(422).send('Invalid rfid')
-        }
-
         const schema = Joi.object({
             rfid: Joi.string().required(),
             idTestDescriptor: Joi.number().integer().required(),

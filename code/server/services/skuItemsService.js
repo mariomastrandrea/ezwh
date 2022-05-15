@@ -1,6 +1,5 @@
 const SkuItem = require('../models/skuItem');
 const { int } = require("../utilities");
-const dayjs = require('dayjs');
 
 const {
     OK,
@@ -11,7 +10,6 @@ const {
     INTERNAL_SERVER_ERROR,
     SERVICE_UNAVAILABLE
 } = require("../statusCodes");
-const Joi = require('joi');
 
 
 class SkuItemsService {
@@ -65,7 +63,7 @@ class SkuItemsService {
 
         // * create skuItem * 
         const skuItem = new SkuItem(rfid, skuId, dateOfStock);
-        const skuItemWasCreated = await this.#dao.createSkuItem(skuItem);
+        const skuItemWasCreated = await this.#dao.storeSkuItem(skuItem);
 
         if (!skuItemWasCreated)  // generic error during skuItem creation
             return SERVICE_UNAVAILABLE();

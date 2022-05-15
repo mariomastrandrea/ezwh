@@ -27,7 +27,7 @@ class Item {
         id: this.getId(),
         description: this.getDescription(),
         price: this.getPrice(),
-        skuId: this.getSkuId(),
+        SKUId: this.getSkuId(),
         supplierId: this.getSupplierId()
     });
 }
