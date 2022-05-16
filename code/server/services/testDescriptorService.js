@@ -1,4 +1,6 @@
 const TestDescriptor = require("../models/testDescriptor");
+const { OK, CREATED } = require("../statusCodes");
+const { int } = require("../utilities");
 
 class TestDescriptorService {
     #dao;
@@ -7,157 +9,94 @@ class TestDescriptorService {
         this.#dao = dao;
     }
 
-    //GET /api/testDescriptors 
+    // GET /api/testDescriptors 
     async getAllTestDescriptors() {
         const result = await this.#dao.getAllTestDescriptors().catch(err => "ErrorDB");
 
-        if (result === "ErrorDB") {
-            return {
-                code: 500,
-                error: "ErrorDB"
-            };
-        }
+        if (result === "ErrorDB") 
+            return INTERNAL_SERVER_ERROR("ErrorDB");
 
-        return {
-            code: 200,
-            object: result
-        };
+        return OK(result);
     };
 
-    //GET /api/testDescriptors/:id
+    // GET /api/testDescriptors/:id
     async getTestDescriptor(id) {
+        id = int(id);
         const result = await this.#dao.getTestDescriptor(id).catch(err => "ErrorDB");
 
-        if (result === "ErrorDB") {
-            return {
-                code: 500,
-                error: "ErrorDB"
-            };
-        }
+        if (result === "ErrorDB") 
+            return INTERNAL_SERVER_ERROR("ErrorDB");
 
-        if(!result){
-            return {
-                code: 404,
-                error: "Test descriptor not found"
-            };
-        }
+        if(!result)
+            return NOT_FOUND("Test descriptor not found");
         
-        return {
-            code: 200,
-            object: result
-        };
+        return OK(result);
     };
 
-    //POST /api/testDescriptor 
-    async createTestDescriptor(name,procedureDescription,idSKU){
-        const sku = await this.#dao.getSku(idSKU).catch(err => "ErrorDB");
+    // POST /api/testDescriptor 
+    async createTestDescriptor(name, procedureDescription, idSKU){
+        const sku = await this.#dao.getSkuById(idSKU).catch(err => "ErrorDB");
 
-        if (sku === "ErrorDB") {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if (sku === "ErrorDB") 
+            return SERVICE_UNAVAILABLE("Error DB");
 
-        if(!sku){
-            return {
-                code: 404,
-                error: "Sku not found"
-            };
-        }
+        if(!sku)
+            return NOT_FOUND("Sku not found");
 
-        const result = await this.#dao.storeTestDescriptor(new TestDescriptor(null,name,procedureDescription,idSKU)).catch(err => "ErrorDB");
+        const result = await this.#dao.storeTestDescriptor(
+            new TestDescriptor(null, name, procedureDescription, idSKU)).catch(err => "ErrorDB");
 
-        if (result === "ErrorDB") {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if (result === "ErrorDB") 
+            return SERVICE_UNAVAILABLE("Error DB");
         
-        return {
-            code: 201
-        };
+        return CREATED();
     };
 
-    //PUT /api/testDescriptor/:id 
-    async updateTestDescriptor(id,newName,newProcedureDescription,newIdSKU){
+    // PUT /api/testDescriptor/:id 
+    async updateTestDescriptor(id, newName, newProcedureDescription, newIdSKU) {
+        id = int(id);
         const testdesc = await this.#dao.getTestDescriptor(id).catch(err => "ErrorDB");
 
-        if(testdesc === 'ErrorDb'){
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if(testdesc === 'ErrorDB')
+            return SERVICE_UNAVAILABLE("Error DB");
 
-        if(!testdesc){
-            return {
-                code: 404,
-                error: "Test descriptor not found"
-            };
-        }
+        if(!testdesc)
+            return NOT_FOUND("Test descriptor not found");
 
-        const sku = await this.#dao.getSku(newIdSKU).catch(err => "ErrorDB");
+        const sku = await this.#dao.getSkuById(newIdSKU).catch(err => "ErrorDB");
 
-        if (sku === "ErrorDB") {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if (sku === "ErrorDB") 
+            return SERVICE_UNAVAILABLE("Error DB");
 
-        if(!sku){
-            return {
-                code: 404,
-                error: "Sku not found"
-            };
-        }
+        if(!sku)
+            return NOT_FOUND("Sku not found");
 
-        const result = await this.#dao.updateTestDescriptor(new TestDescriptor(id,newName,newProcedureDescription,newIdSKU)).catch(err => "ErrorDB");
+        const result = await this.#dao.updateTestDescriptor(
+            new TestDescriptor(id, newName, newProcedureDescription, newIdSKU)).catch(err => "ErrorDB");
 
-        if (result === "ErrorDB" || result === 0) {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if (result === "ErrorDB" || !result) 
+            return SERVICE_UNAVAILABLE("Error DB");
         
-        return {
-            code: 200,
-        };
+        return OK();
     };
 
-    //DELETE /api/testDescriptor/:id 
+    // DELETE /api/testDescriptor/:id 
     async deleteTestDescriptor(id){
+        id = int(id);
         const testdesc = await this.#dao.getTestDescriptor(id).catch(err => "ErrorDB");
 
-        if(testdesc === 'ErrorDb'){
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if(testdesc === 'ErrorDB')
+            return SERVICE_UNAVAILABLE("Error DB");
 
-        if(!testdesc){
-            return {
-                code: 422,
-                error: "Test descriptor not found"
-            };
-        }
+        if(!testdesc)
+            return UNPROCESSABLE_ENTITY("Test descriptor not found");s
 
         const result = await this.#dao.deleteTestDescriptor(id).catch(err => "ErrorDB");
 
-        if (result === "ErrorDB" || result === 0) {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if (result === "ErrorDB" || !result) 
+            return SERVICE_UNAVAILABLE("Error DB");
         
-        return {
-            code: 204,
-        };
+        return NO_CONTENT();
     }
 }
 

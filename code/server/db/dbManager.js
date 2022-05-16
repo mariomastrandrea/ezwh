@@ -566,34 +566,46 @@ class DbManager {
 
     getAllTestDescriptors() {
         let testDescriptors = [];
-        let sql = 'SELECT * FROM TestDescriptor';
+        let sql = `SELECT * 
+                   FROM TestDescriptor`;
+
         return new Promise((resolve, reject) => {
             this.#db.all(sql, (err, rows) => {
-                if (err)
-                    return reject(err);
-
-                for (let row of rows) {
-                    testDescriptors.push(new TestDescriptor(row.ID, row.Name, row.ProcedureDescription, row.SkuId));
+                if (err) {
+                    reject(err);
+                    return;
                 }
 
-                return resolve(testDescriptors);
+                for (let row of rows) {
+                    testDescriptors.push(
+                        new TestDescriptor(row.ID, row.Name, row.ProcedureDescription, row.SkuId));
+                }
+
+                resolve(testDescriptors);
             });
         })
     };
 
     getTestDescriptor(id) {
         let testDescriptor;
-        let sql = 'SELECT * FROM TestDescriptor WHERE ID=?';
-        return new Promise((resolve, reject) => {
-            this.#db.all(sql, [id], (err, rows) => {
-                if (err)
-                    return reject(err);
+        let sql = `SELECT * 
+                   FROM TestDescriptor 
+                   WHERE ID=?`;
 
-                for (let row of rows) {
-                    testDescriptor = new TestDescriptor(row.ID, row.Name, row.ProcedureDescription, row.SkuId);
+        return new Promise((resolve, reject) => {
+            this.#db.get(sql, [id], (err, row) => {
+                if (err) {
+                    reject(err);
+                    return;
                 }
 
-                return resolve(testDescriptor);
+                if(!row) {
+                    resolve(null);
+                    return;
+                }
+
+                testDescriptor = new TestDescriptor(row.ID, row.Name, row.ProcedureDescription, row.SkuId);
+                resolve(testDescriptor);
             });
         })
     };
@@ -615,37 +627,50 @@ class DbManager {
     }
 
     storeTestDescriptor(td) {
-        let sql = 'INSERT INTO TestDescriptor (Name, ProcedureDescription, SkuId) VALUES (?,?,?)';
+        let sql = `INSERT INTO TestDescriptor (Name, ProcedureDescription, SkuId) 
+                   VALUES (?,?,?)`;
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [td.getName(), td.getProcedureDescription(), td.getSkuId()], function (err) {
-                if (err)
-                    return reject(err);
+                if (err) {
+                    reject(err);
+                    return;
+                }
 
-                return resolve(new TestDescriptor(this.lastID, td.getName(), td.getProcedureDescription(), td.getSkuId()));
+                resolve(new TestDescriptor(this.lastID, td.getName(), td.getProcedureDescription(), td.getSkuId()));
             });
         })
     };
 
     updateTestDescriptor(td) {
-        let sql = 'UPDATE TestDescriptor SET Name=?, ProcedureDescription=?, SkuId=? WHERE ID=?';
+        let sql = `UPDATE TestDescriptor 
+                   SET Name=?, ProcedureDescription=?, SkuId=? 
+                   WHERE ID=?`;
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [td.getName(), td.getProcedureDescription(), td.getSkuId(), td.getId()], function (err) {
-                if (err)
-                    return reject(err);
+                if (err) {
+                    reject(err);
+                    return;
+                }
 
-                return resolve(this.changes);
+                resolve(this.changes > 0);
             });
         })
     };
 
     deleteTestDescriptor(id) {
-        let sql = 'DELETE FROM TestDescriptor WHERE ID=?';
+        let sql = `DELETE FROM TestDescriptor 
+                   WHERE ID=?`;
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [id], function (err) {
-                if (err)
-                    return reject(err);
+                if (err) {
+                    reject(err);
+                    return;
+                }
 
-                return resolve(this.changes);
+                resolve(this.changes > 0);
             });
         })
     };
@@ -654,72 +679,93 @@ class DbManager {
      * TestResult
      */
 
-    getAllTestResultsBySkuIem(rfid) {
+    getAllTestResultsBySkuItem(rfid) {
         let testResults = [];
-        let sql = 'SELECT * FROM TestResult WHERE RFID=?';
+        let sql = `SELECT * 
+                   FROM TestResult 
+                   WHERE RFID=?`;
+
         return new Promise((resolve, reject) => {
             this.#db.all(sql, [rfid], (err, rows) => {
-                if (err)
-                    return reject(err);
+                if (err) {
+                    reject(err);
+                    return;
+                }
 
                 for (let row of rows) {
                     testResults.push(new TestResult(row.ID, row.RFID, row.TestDescriptorId, row.Date, row.Result));
                 }
 
-                return resolve(testResults);
+                resolve(testResults);
             });
         })
     };
 
     getTestResult(id, rfid) {
-        let testResult;
-        let sql = 'SELECT * FROM TestResult WHERE ID=? AND RFID=?';
-        return new Promise((resolve, reject) => {
-            this.#db.all(sql, [id, rfid], (err, rows) => {
-                if (err)
-                    return reject(err);
+        let sql = `SELECT * 
+                   FROM TestResult 
+                   WHERE ID=? AND RFID=?`;
 
-                for (let row of rows) {
-                    testResult = new TestResult(row.ID, row.RFID, row.TestDescriptorId, row.Date, row.Result);
+        return new Promise((resolve, reject) => {
+            this.#db.get(sql, [id, rfid], (err, row) => {
+                if (err) {
+                    reject(err);
+                    return;
                 }
 
-                return resolve(testResult);
+                if (!row) {
+                    resolve(null);
+                    return;
+                }
+
+                const testResult = new TestResult(row.ID, row.RFID, row.TestDescriptorId, row.Date, row.Result);
+                resolve(testResult);
             });
         })
     }
 
     storeTestResult(tr) {
-        let sql = 'INSERT INTO TestResult(RFID, TestDescriptorId, Date, Result) VALUES (?,?,?,?)';
+        let sql = `INSERT INTO TestResult(RFID, TestDescriptorId, Date, Result) 
+                   VALUES (?,?,?,?)`;
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()], function (err) {
                 if (err)
-                    return reject(err);
+                    reject(err);
 
-                return resolve(new TestResult(this.lastID, tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()));
+                else resolve(new TestResult(this.lastID, tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()));
             });
         })
     }
 
     updateTestResult(tr) {
-        let sql = 'UPDATE TestResult SET TestDescriptorId=?, Date=?, Result=? WHERE ID=? AND RFID=?';
+        let sql = `UPDATE TestResult 
+                   SET TestDescriptorId=?, Date=?, Result=? 
+                   WHERE ID=? AND RFID=?`;
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [tr.getTestDescriptorId(), tr.getDate(), tr.getResult(), tr.getId(), tr.getRfid()], function (err) {
-                if (err)
-                    return reject(err);
+                if (err) {
+                    reject(err);
+                    return;
+                }
 
-                return resolve(this.changes);
+                resolve(this.changes > 0);
             });
         })
     }
 
     deleteTestResult(id, rfid) {
-        let sql = 'DELETE FROM TestResult WHERE ID=? AND RFID=?';
+        let sql = `DELETE FROM TestResult 
+                   WHERE ID=? AND RFID=?`;
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [id, rfid], function (err) {
-                if (err)
-                    return reject(err);
-
-                return resolve(this.changes);
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(this.changes > 0);
             });
         })
     }
@@ -1396,88 +1442,108 @@ class DbManager {
     }
 
     getUser(username, type) {
-        let user;
-        let sql = 'SELECT * FROM User WHERE Email=? AND Type=?';
-        return new Promise((resolve, reject) => {
-            this.#db.all(sql, [username, type], (err, rows) => {
-                if (err)
-                    return reject(err);
+        let sql = `SELECT * 
+                   FROM User 
+                   WHERE Email=? AND Type=?`;
 
-                for (let row of rows) {
-                    user = new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password);
+        return new Promise((resolve, reject) => {
+            this.#db.get(sql, [username, type], (err, row) => {
+                if (err) {
+                    reject(err);
+                    return;
                 }
 
-                return resolve(user);
+                const user = new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password);
+                resolve(user);
             });
         })
     }
 
     getAllUsersOfType(type) {
         let users = [];
-        let sql = 'SELECT * FROM User WHERE Type=?';
+        let sql = `SELECT * 
+                   FROM User 
+                   WHERE Type=?`;
+
         return new Promise((resolve, reject) => {
             this.#db.all(sql, [type], (err, rows) => {
-                if (err)
-                    return reject(err);
-
-                for (let row of rows) {
-                    users.push(new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password));
+                if (err) {
+                    reject(err);
+                    return;
                 }
 
-                return resolve(users);
+                for (let row of rows) {
+                    users.push(
+                        new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password));
+                }
+
+                resolve(users);
             });
         })
     }
 
     getAllUsers() {
         let users = [];
-        let sql = "SELECT * FROM User WHERE Type!='manager'";
+        let sql = `SELECT * 
+                   FROM User 
+                   WHERE Type!='manager'`;
+
         return new Promise((resolve, reject) => {
             this.#db.all(sql, (err, rows) => {
-                if (err)
-                    return reject(err);
-
-                for (let row of rows) {
-                    users.push(new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password));
+                if (err) {
+                    reject(err);
+                    return;
                 }
 
-                return resolve(users);
+                for (let row of rows) {
+                    users.push(
+                        new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password));
+                }
+
+                resolve(users);
             });
         })
     }
 
     storeNewUser(us) {
-        let sql = 'INSERT INTO User(Name, Surname, Email, Type, Password) VALUES (?,?,?,?,?)';
+        let sql = `INSERT INTO User(Name, Surname, Email, Type, Password) 
+                   VALUES (?,?,?,?,?)`;
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()], function (err) {
                 if (err)
-                    return reject(err);
-
-                return resolve(new User(this.lastID, us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()));
+                    reject(err);
+                else 
+                    resolve(new User(this.lastID, us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()));
             });
         })
     }
 
     updateUser(us) {
-        let sql = 'UPDATE User SET Name=?,Surname=?,Email=?,Type=?,Password=? WHERE ID=?';
+        let sql = `UPDATE User 
+                   SET Name=?,Surname=?,Email=?,Type=?,Password=? 
+                   WHERE ID=?`;
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword(), us.getId()], function (err) {
                 if (err)
-                    return reject(err);
-
-                return resolve(this.changes);
+                    reject(err);
+                else 
+                    resolve(this.changes > 0);
             });
         })
     }
 
     deleteUser(id) {
-        let sql = 'DELETE FROM User WHERE ID=?';
+        let sql = `DELETE FROM User 
+                   WHERE ID=?`;
+
         return new Promise((resolve, reject) => {
             this.#db.run(sql, [id], function (err) {
                 if (err)
-                    return reject(err);
+                    reject(err);
 
-                return resolve(this.changes);
+                else resolve(this.changes > 0);
             });
         })
     }

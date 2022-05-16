@@ -12,7 +12,7 @@ const {
 } = require("../statusCodes");
 
 
-class SkusService {
+class SkuService {
     #dao;
 
     constructor(dao) {
@@ -188,4 +188,4 @@ class SkusService {
     };
 }
 
-module.exports = SkusService;
+module.exports = SkuService;

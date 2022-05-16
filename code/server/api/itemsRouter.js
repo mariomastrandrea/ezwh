@@ -11,14 +11,14 @@ const dao = DbManagerFactory();
 
 // import Services classes and inject dao
 
-const SkusService = require("../services/skusService");
-const skusService = new SkusService(dao);
+const SkuService = require("../services/skuService");
+const skuService = new SkuService(dao);
 
-const SkuItemsService = require("../services/skuItemsService");
-const skuItemsService = new SkuItemsService(dao);
+const SkuItemService = require("../services/skuItemService");
+const skuItemService = new SkuItemService(dao);
 
-const ItemsService = require("../services/itemsService");
-const itemsService = new ItemsService(dao);
+const ItemService = require("../services/itemService");
+const itemService = new ItemService(dao);
 
 /**
  * Sku
@@ -31,7 +31,7 @@ router.get('/skus', async (req, res) => {
     }
 
     try {
-        const { error, code, obj } = await skusService.getAllSkus();
+        const { error, code, obj } = await skuService.getAllSkus();
 
         if (error) {
             return res.status(code).send(error);
@@ -60,7 +60,7 @@ router.get('/skus/:id', async (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const { error, code, obj } = await skusService.getSkuById(id);
+        const { error, code, obj } = await skuService.getSkuById(id);
 
         if (error) {
             return res.status(code).send(error);
@@ -99,7 +99,7 @@ router.post('/sku', async (req, res) => {
 
         const { description, weight, volume, notes, price, availableQuantity } = req.body;
         const { error, code } =
-            await skusService.createSku(description, weight, volume, notes, price, availableQuantity);
+            await skuService.createSku(description, weight, volume, notes, price, availableQuantity);
 
         if (error) {
             return res.status(code).send(error);
@@ -144,7 +144,7 @@ router.put('/sku/:id', async (req, res) => {
 
         const { newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity } = req.body;
 
-        const { error, code } = await skusService.updateSku(id,
+        const { error, code } = await skuService.updateSku(id,
             newDescription, newWeight, newVolume, newNotes, newPrice, newAvailableQuantity);
 
         if (error) {
@@ -181,7 +181,7 @@ router.put('/sku/:id/position', async (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const { error, code } = await skusService.updateSkuPosition(skuId, newPositionId);
+        const { error, code } = await skuService.updateSkuPosition(skuId, newPositionId);
 
         if (error) {
             return res.status(code).send(error);
@@ -209,7 +209,7 @@ router.delete('/skus/:id', async (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const { error, code } = await skusService.deleteSku(id);
+        const { error, code } = await skuService.deleteSku(id);
 
         if (error) {
             return res.status(code).send(error);
@@ -235,7 +235,7 @@ router.get('/skuitems', async (req, res) => {
     }
 
     try {
-        const { error, code, obj } = await skuItemsService.getAllSkuItems();
+        const { error, code, obj } = await skuItemService.getAllSkuItems();
 
         if (error) {
             return res.status(code).send(error);
@@ -263,7 +263,7 @@ router.get('/skuitems/sku/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(skuId).error)
             return res.status(422).send('Unprocessable Entity');
 
-        const { error, code, obj } = await skuItemsService.getAvailableSkuItemsOf(skuId);
+        const { error, code, obj } = await skuItemService.getAvailableSkuItemsOf(skuId);
 
         if (error) {
             return res.status(code).send(error);
@@ -293,7 +293,7 @@ router.get('/skuitems/:rfid', async (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const { error, code, obj } = await skuItemsService.getSkuItem(rfid);
+        const { error, code, obj } = await skuItemService.getSkuItem(rfid);
 
         if(error) {
             return res.status(code).send(error);
@@ -331,7 +331,7 @@ router.post('/skuitem', async (req, res) => {
         }
 
         const { RFID, SKUId, DateOfStock } = req.body;
-        const { error, code } = await skuItemsService.createSkuItem(RFID, SKUId, DateOfStock);
+        const { error, code } = await skuItemService.createSkuItem(RFID, SKUId, DateOfStock);
 
         return error ? 
             res.status(code).send(error) :
@@ -375,7 +375,7 @@ router.put('/skuitems/:rfid', async (req, res) => {
 
         const { newRFID, newAvailable, newDateOfStock } = req.body;
         const { error, code } = 
-            await skuItemsService.updateSkuItem(rfid, newRFID, newAvailable, newDateOfStock);
+            await skuItemService.updateSkuItem(rfid, newRFID, newAvailable, newDateOfStock);
 
         return error ? 
             res.status(code).send(error) :
@@ -402,7 +402,7 @@ router.delete('/skuitems/:rfid', async (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const { error, code } = await skuItemsService.deleteSkuItem(rfid);
+        const { error, code } = await skuItemService.deleteSkuItem(rfid);
 
         return error ? 
             res.status(code).send(error) :
@@ -425,7 +425,7 @@ router.get('/items', async (req, res) => {
     }
 
     try {
-        const { error, code, obj } = await itemsService.getAllItems();
+        const { error, code, obj } = await itemService.getAllItems();
 
         if (error) {
             return res.status(code).send(error);
@@ -453,7 +453,7 @@ router.get('/items/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code, obj } = await itemsService.getItemById(id);
+        const { error, code, obj } = await itemService.getItemById(id);
 
         if (error) 
             return res.status(code).send(error);
@@ -491,7 +491,7 @@ router.post('/item', async (req, res) => {
         const { id, description, price, SKUId, supplierId } = req.body;
 
         const { error, code } = 
-            await itemsService.createItem(id, description, price, SKUId, supplierId);
+            await itemService.createItem(id, description, price, SKUId, supplierId);
 
         if (error)
             return res.status(code).send(error);
@@ -528,7 +528,7 @@ router.put('/item/:id', async (req, res) => {
             return res.status(422).send('Unprocessable Entity')
 
         const { newDescription, newPrice } = req.body;
-        const { error, code } = await itemsService.updateItem(id, newDescription, newPrice);
+        const { error, code } = await itemService.updateItem(id, newDescription, newPrice);
 
         return error ?
             res.status(code).send(error) : 
@@ -553,7 +553,7 @@ router.delete('/items/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code } = await itemsService.deleteItem(itemId);
+        const { error, code } = await itemService.deleteItem(itemId);
 
         return error ?
             res.status(code).send(error) : 

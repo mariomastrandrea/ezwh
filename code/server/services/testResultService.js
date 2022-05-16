@@ -1,4 +1,16 @@
 const TestResult = require("../models/testResult");
+const { int } = require("../utilities");
+
+const {
+    OK,
+    CREATED,
+    NO_CONTENT,
+    NOT_FOUND,
+    UNPROCESSABLE_ENTITY,
+    INTERNAL_SERVER_ERROR,
+    SERVICE_UNAVAILABLE
+} = require("../statusCodes");
+
 
 class TestResultService {
     #dao;
@@ -7,233 +19,136 @@ class TestResultService {
         this.#dao = dao;
     }
 
-    //GET /api/skuitems/:rfid/testResults
+    // GET /api/skuitems/:rfid/testResults
     async getTestResultsBySkuItem(rfid){
         const skuitem = await this.#dao.getSkuItemByRfid(rfid).catch(err => "ErrorDB");
 
-        if (skuitem === "ErrorDB") {
-            return {
-                code: 500,
-                error: "ErrorDB"
-            };
-        }
-
-        if(!skuitem){
-            return {
-                code: 404,
-                error: "Sku item not found"
-            };
-        }
-
-        const result = await this.#dao.getAllTestResultsBySkuIem(rfid).catch(err => "ErrorDB");
-
-        if (result === "ErrorDB") {
-            return {
-                code: 500,
-                error: "ErrorDB"
-            };
-        }
+        if (skuitem === "ErrorDB") 
+            return INTERNAL_SERVER_ERROR("ErrorDB");
         
-        return {
-            code: 200,
-            object: result
-        };
+        if(!skuitem)
+            return NOT_FOUND("Sku item not found");
+
+        const result = await this.#dao.getAllTestResultsBySkuItem(rfid).catch(err => "ErrorDB");
+
+        if (result === "ErrorDB") 
+            return INTERNAL_SERVER_ERROR("ErrorDB");
+
+        return OK(result);
     }
 
-    //GET /api/skuitems/:rfid/testResults/:id 
-    async getTestResult(id,rfid){
+    // GET /api/skuitems/:rfid/testResults/:id 
+    async getTestResult(id, rfid){
+        id = int(id);
         const skuitem = await this.#dao.getSkuItemByRfid(rfid).catch(err => "ErrorDB");
 
-        if (skuitem === "ErrorDB") {
-            return {
-                code: 500,
-                error: "ErrorDB"
-            };
-        }
+        if (skuitem === "ErrorDB") 
+            return INTERNAL_SERVER_ERROR("ErrorDB");
 
-        if(!skuitem){
-            return {
-                code: 404,
-                error: "Sku item not found"
-            };
-        }
+        if(!skuitem)
+            return NOT_FOUND("Sku item not found");
 
-        const result = await this.#dao.getTestResult(id,rfid).catch(err => "ErrorDB");
+        const result = await this.#dao.getTestResult(id, rfid).catch(err => "ErrorDB");
 
-        if (result === "ErrorDB") {
-            return {
-                code: 500,
-                error: "ErrorDB"
-            };
-        }
+        if (result === "ErrorDB") 
+            return INTERNAL_SERVER_ERROR("ErrorDB");
 
-        if(!result){
-            return {
-                code: 404,
-                error: "Test result not found"
-            };
-        }
+        if(!result)
+            return NOT_FOUND("Test result not found");
         
-        return {
-            code: 200,
-            object: result
-        };
+        return OK(result);
     }
 
-    //POST /api/skuitems/testResult 
+    // POST /api/skuitems/testResult 
     async createTestResult(rfid, idTestDescriptor, date, testresult){
+        // check sku item existence
         const skuitem = await this.#dao.getSkuItemByRfid(rfid).catch(err => "ErrorDB");
 
-        if (skuitem === "ErrorDB") {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if (skuitem === "ErrorDB") 
+            SERVICE_UNAVAILABLE("ErrorDB");
 
-        if(!skuitem){
-            return {
-                code: 404,
-                error: "Sku item not found"
-            };
-        }
+        if(!skuitem)
+            return NOT_FOUND("Sku item not found");
 
+        // check test descriptor existence
         const testdesc = await this.#dao.getTestDescriptor(idTestDescriptor).catch(err => "ErrorDB");
 
-        if(testdesc === 'ErrorDb'){
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if(testdesc === 'ErrorDB')
+            return SERVICE_UNAVAILABLE("Error DB"); 
 
-        if(!testdesc){
-            return {
-                code: 404,
-                error: "Test descriptor not found"
-            };
-        }
+        if(!testdesc)
+            return NOT_FOUND("Test descriptor not found");
 
-        if(testdesc.getSkuId() !== skuitem.getSkuId()){
-            return {
-                code: 422,
-                error: "Test descriptor does not correspond to sku"
-            };
-        }
+        // check that test descriptor refers to the right sku
+        if(testdesc.getSkuId() !== skuitem.getSkuId())
+            return UNPROCESSABLE_ENTITY("Test descriptor does not correspond to sku");
 
-        const result = await this.#dao.storeTestResult(new TestResult(null, rfid, idTestDescriptor, date, testresult)).catch(err => "ErrorDB");
+        // * create test result *
+        const result = await this.#dao.storeTestResult(
+            new TestResult(null, rfid, idTestDescriptor, date, testresult)).catch(err => "ErrorDB");
 
-        if (result === "ErrorDB") {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if (result === "ErrorDB") 
+            return SERVICE_UNAVAILABLE("Error DB");
         
-        return {
-            code: 201
-        };
+        return CREATED();
     }
 
-    //PUT /api/skuitems/:rfid/testResult/:id 
-    async updateTestResult(id,rfid, newIdTestDescriptor, newDate, newTestresult){
+    // PUT /api/skuitems/:rfid/testResult/:id 
+    async updateTestResult(id, rfid, newIdTestDescriptor, newDate, newTestresult){
+        id = int(id);
         const testres = await this.#dao.getTestResult(id,rfid).catch(err => 'ErrorDB');
-        if (testres === "ErrorDB") {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
 
-        if(!testres){
-            return {
-                code: 404,
-                error: "Test result not found for rfid"
-            };
-        }
+        if (testres === "ErrorDB") 
+            return SERVICE_UNAVAILABLE("Error DB");
+
+        if(!testres)
+            return NOT_FOUND("Test result not found for rfid");
 
         const skuitem = await this.#dao.getSkuItemByRfid(rfid).catch(err => "ErrorDB");
 
-        if (skuitem === "ErrorDB") {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if (skuitem === "ErrorDB") 
+            return SERVICE_UNAVAILABLE("Error DB");
 
-        if(!skuitem){
-            return {
-                code: 404,
-                error: "Sku item not found"
-            };
-        }
+        if(!skuitem)
+            return NOT_FOUND("Sku item not found");
 
         const testdesc = await this.#dao.getTestDescriptor(newIdTestDescriptor).catch(err => "ErrorDB");
 
-        if(testdesc === 'ErrorDb'){
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if(testdesc === 'ErrorDB')
+            return SERVICE_UNAVAILABLE("Error DB");
 
-        if(!testdesc){
-            return {
-                code: 404,
-                error: "Test descriptor not found"
-            };
-        }
+        if(!testdesc)
+            return NOT_FOUND("Test descriptor not found");
 
-        if(testdesc.getSkuId() !== skuitem.getSkuId()){
-            return {
-                code: 422,
-                error: "Test descriptor does not correspond to sku"
-            };
-        }
+        if(testdesc.getSkuId() !== skuitem.getSkuId())
+            return UNPROCESSABLE_ENTITY("Test descriptor does not correspond to sku");
 
-        const result = await this.#dao.updateTestResult(new TestResult(id, rfid, newIdTestDescriptor, newDate, newTestresult)).catch(err => "ErrorDB");
+        const result = await this.#dao.updateTestResult(
+            new TestResult(id, rfid, newIdTestDescriptor, newDate, newTestresult)).catch(err => "ErrorDB");
 
-        if (result === "ErrorDB" || result === 0) {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        if (result === "ErrorDB" || !result) 
+            return SERVICE_UNAVAILABLE("Error DB");
         
-        return {
-            code: 200
-        };
+        return OK();
     }
 
-    //DELETE /api/skuitems/:rfid/testResult/:id  
-    async deleteTestResult(id,rfid){
-        const testres = await this.#dao.getTestResult(id,rfid).catch(err => 'ErrorDB');
-        if (testres === "ErrorDB") {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+    // DELETE /api/skuitems/:rfid/testResult/:id  
+    async deleteTestResult(id, rfid){
+        id = int(id);
+        const testres = await this.#dao.getTestResult(id, rfid).catch(err => 'ErrorDB');
 
-        if(!testres){
-            return {
-                code: 422,
-                error: "Test result not found for rfid"
-            };
-        }
+        if (testres === "ErrorDB") 
+            return SERVICE_UNAVAILABLE("Error DB");
 
-        const result = await this.#dao.deleteTestResult(id,rfid).catch(err => "ErrorDB");
+        if(!testres)
+            return UNPROCESSABLE_ENTITY("Test result not found for rfid");
 
-        if (result === "ErrorDB" || result === 0) {
-            return {
-                code: 503,
-                error: "ErrorDB"
-            };
-        }
+        const result = await this.#dao.deleteTestResult(id, rfid).catch(err => "ErrorDB");
+
+        if (result === "ErrorDB" || !result) 
+            return SERVICE_UNAVAILABLE("Error DB");
         
-        return {
-            code: 204,
-        };
+        return NO_CONTENT();
     }
 }
 
