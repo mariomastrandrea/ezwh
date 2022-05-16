@@ -3,21 +3,26 @@ const router = express.Router();
 
 //dayjs is a date library for javascript
 const dayjs = require('dayjs');
+
 // validation
 const Joi = require('joi');
+
 // DbManager / DAO
-const DbManagerFactory = require('../db/dbManager3');
+const DbManagerFactory = require('../db/dbManager');
 const dao = DbManagerFactory();
 
 // import Services classes and inject dao
 
 const InternalOrderService = require("../services/internalOrderService");
 const internalService = new InternalOrderService(dao);
+
 const RestockOrderService = require("../services/restockOrderService");
 const restockService = new RestockOrderService(dao);
+
 const ReturnOrderService = require("../services/returnOrderService");
 const returnService = new ReturnOrderService(dao);
 
+// enums
 const internalStates = ['ISSUED', 'ACCEPTED', 'REFUSED', 'CANCELED', 'COMPLETED'];
 const restockStates = ['ISSUED', 'DELIVERY', 'DELIVERED', 'TESTED', 'COMPLETED', 'COMPLETEDRETURN'];
 const restockUpdateType = { skuItems: 'skuItems', state: 'state', transportNote: 'transportNote' }

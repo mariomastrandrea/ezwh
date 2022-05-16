@@ -6,7 +6,7 @@ const { isInt } = require("../utilities");
 const Joi = require('joi').extend(require('@joi/date'));
 
 // DbManager / DAO
-const DbManagerFactory = require('../db/dbManager3');
+const DbManagerFactory = require('../db/dbManager');
 const dao = DbManagerFactory();
 
 // import Services classes and inject dao

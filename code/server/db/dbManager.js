@@ -1,624 +1,1537 @@
+// import db connection
 const { dbConnection } = require("./dbUtilities");
 
-const Sku = require('../models/sku');
-const SkuItem = require('../models/skuItem');
-const Item = require('../models/item');
+// import models
+const Position = require("../models/position");
+const Sku = require("../models/sku");
+const SkuItem = require("../models/skuItem");
+const Item = require("../models/item");
+const TestDescriptor = require('../models/testDescriptor');
+const TestResult = require('../models/testResult');
+const RestockOrder = require("../models/restockOrder");
+const ReturnOrder = require("../models/returnOrder");
+const InternalOrder = require("../models/internalOrder");
+const User = require("../models/user");
 
-const RestockOrder = require('../models/restockOrder');
-const InternalOrder = require('../models/internalOrder');
-const ReturnOrder = require('../models/returnOrder');
 
+class DbManager {
+    #db;
+    static instance; // singleton instance
 
-const dbManagerFactory = (function () {
-
-    function DbManager() {
-        this.db = dbConnection;
-        
-        // internal orders functions
-        this.getAllInternalOrders = () => {
-            return new Promise((resolve, reject) => {
-                const sql = `SELECT id, issueDate, state, io.skuId, description, quantity, customerId, RFID FROM internalOrder as io LEFT JOIN  internalOrderSkuItem si ON io.id = si.internalOrderId and io.skuId = si.skuId`;
-                db.all(sql, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    if (rows.length > 0) {
-                        let listOfIds = [];
-                        let orders = [];
-                        let products = [];
-                        for (const row of rows) {
-                            console.log(row)
-                            let rowProducts = {
-                                SKUId: row.skuId,
-                                description: row.description,
-                                price: row.price
-                            };
-                            if (row.RFID){
-                                rowProducts.RFID = row.RFID;
-                            }else{
-                                rowProducts.qty = row.quantity;
-                            }
-                            if (!listOfIds.includes(row.id)) {
-                                listOfIds.push(row.id);
-                                orders.push(
-                                    {
-                                        id: row.id,
-                                        issueDate: row.issueDate,
-                                        state: row.state,
-                                        products: [],
-                                        customerId: row.customerId,
-                                    }
-                                );
-                                products.push([rowProducts]);
-                            } else {
-                                const orderId = listOfIds.indexOf(row.id);
-                                products[orderId].push(rowProducts);
-                            }
-                        }
-                        for (let i = 0; i < orders.length; i++) {
-                            orders[i].products = products[i];
-                        }
-                        resolve(orders.map(order => new InternalOrder(order.issueDate, order.products, order.customerId, order.state, order.id)));
-                    } else {
-                        reject('No internalOrders found');
-                    }
-                })
-            });
-        };
-
-        this.getInternalOrderInState = (state) => {
-            return new Promise((resolve, reject) => {
-                const sql = `SELECT * FROM internalOrder WHERE state LIKE ?`;
-                const params = [state];
-                db.all(sql, params, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    if (rows.length > 0) {
-                        let listOfIds = [];
-                        let orders = [];
-                        let products = [];
-                        for (const row of rows) {
-                            let rowProducts = {
-                                SKUId: row.skuId,
-                                description: row.description,
-                                price: row.price,
-                                qty: row.quantity
-                            };
-                            if (!listOfIds.includes(row.id)) {
-                                listOfIds.push(row.id);
-                                orders.push(
-                                    {
-                                        id: row.id,
-                                        issueDate: row.issueDate,
-                                        state: row.state,
-                                        products: [],
-                                        customerId: row.customerId,
-                                    }
-                                );
-                                products.push([rowProducts]);
-                            } else {
-                                const orderId = listOfIds.indexOf(row.id);
-                                products[orderId].push(rowProducts);
-                            }
-                        }
-                        for (let i = 0; i < orders.length; i++) {
-                            orders[i].products = products[i];
-                        }
-                        resolve(orders.map(order => new InternalOrder(order.issueDate, order.products, order.customerId, order.state, order.id)));
-                    } else {
-                        reject('No internal found in state ' + state);
-                    }
-                })
-            });
-        };
-
-        this.getInternalOrder = (id) => {
-            return new Promise((resolve, reject) => {
-                const sql = `SELECT id, issueDate, state, io.skuId, description, quantity, customerId, RFID FROM internalOrder as io LEFT JOIN  internalOrderSkuItem si ON io.id = si.internalOrderId and io.skuId = si.skuId WHERE id = ${id}`;
-                db.all(sql, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    if (rows.length > 0) {
-                        let products = [];
-                        for (const row of rows) {
-                            let rowProducts = {
-                                SKUId: row.skuId,
-                                description: row.description,
-                                price: row.price
-                            };
-                            if (row.RFID){
-                                rowProducts.RFID = row.RFID;
-                            }else{
-                                rowProducts.qty = row.quantity;
-                            }
-                            products.push(rowProducts);
-                        }
-                        resolve(new InternalOrder(rows[0].issueDate, products, rows[0].customerId, rows[0].state, rows[0].id));
-                    } else {
-                        reject('No internal order found');
-                    }
-                })
-            });
-        };
-
-        this.storeInternalOrder = (io) => {
-            let sql = `INSERT INTO internalOrder (id, issueDate, state, skuId, description, price, quantity, customerId) VALUES (?,?,?,?,?,?,?,?)`;
-            const params = [];
-            for (const sku of io.products) {
-                params.push([io.id, io.issueDate, io.state, sku.SKUId, sku.description, sku.price, sku.quantity, io.customerId]);
-            }
-            return new Promise((resolve, reject) => {
-                let statement = db.prepare(sql);
-                for (let i = 0; i < params.length; i++) {
-                    statement.run(params[i], (err) => { reject(err) });
-                }
-                statement.finalize();
-                resolve(1);
-            });
-        };
-
-        this.updateInternalOrder = (io) => {
-            const sql = `UPDATE internalOrder SET state = ? WHERE id = ?`;
-            const params = [io.state, io.id];
-            return new Promise((resolve, reject) => {
-                db.run(sql, params, (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve(1);
-                    }
-                });
-            });
-        };
-
-        this.getInternalOrderSkuItems = (id) => {
-            return new Promise((resolve, reject) => {
-                const sql = `SELECT * FROM internalOrderSkuItem WHERE internalOrderId = ${id}`;
-                db.all(sql, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        if (rows.length > 0) {
-                            resolve(rows.map(row => {
-                                return {
-                                    SKUId: row.skuId,
-                                    RFID: row.RFID,
-                                }
-                            }));
-                        } else {
-                            reject('No skuItems found');
-                        }
-                    }
-                });
-            });
-        }
-
-        this.storeInternalOrderSkuItems = (id, skuItems) => {
-            let sql = `INSERT INTO internalOrderSkuItem (internalorderId, skuId, RFID) VALUES (?,?,?)`;
-            const params = [];
-            for (const skuItem of skuItems) {
-                params.push([id, skuItem.SkuID, skuItem.RFID]);
-            }
-            return new Promise((resolve, reject) => {
-                let statement = db.prepare(sql);
-                for (let i = 0; i < params.length; i++) {
-                    statement.run(params[i], (err) => { reject(err) });
-                }
-                statement.finalize();
-                resolve(1);
-            });
-        }
-
-        this.deleteInternalOrderSkuItems = (id) => {
-            const sql = `DELETE FROM internalOrderSkuItem WHERE internalOrderId = ?`;
-            const params = [id];
-            return new Promise((resolve, reject) => {
-                db.run(sql, params, (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    resolve(1);
-                })
-            });
-        }
-
-        this.deleteInternalOrder = (id) => {
-            const sql = `DELETE FROM internalOrder WHERE id = ?`;
-            const params = [id];
-            return new Promise((resolve, reject) => {
-                db.run(sql, params, (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    resolve(1);
-                })
-            });
-        };
-
-        // return orders functions
-        this.getAllReturnOrders = () => {
-            return new Promise((resolve, reject) => {
-                const sql = `SELECT * FROM returnOrder`;
-                db.all(sql, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    if (rows.length > 0) {
-                        let listOfIds = [];
-                        let orders = [];
-                        let products = [];
-                        for (const row of rows) {
-                            let rowProducts = {
-                                SKUId: row.skuId,
-                                description: row.description,
-                                price: row.price,
-                                RFID: row.rfid
-                            };
-                            if (!listOfIds.includes(row.id)) {
-                                listOfIds.push(row.id);
-                                orders.push(
-                                    {
-                                        id: row.id,
-                                        returnDate: row.returnDate,
-                                        products: [],
-                                        restockOrderId: row.restockOrderId
-                                    }
-                                );
-                                products.push([rowProducts]);
-                            } else {
-                                const orderId = listOfIds.indexOf(row.id);
-                                products[orderId].push(rowProducts);
-                            }
-                        }
-                        for (let i = 0; i < orders.length; i++) {
-                            orders[i].products = products[i];
-                        }
-                        resolve(orders.map(order => new ReturnOrder(order.returnDate, order.products, order.restockOrderId, order.id)));
-                    } else {
-                        reject('No returnOrders found');
-                    }
-                })
-            });
-        };
-
-        this.getReturnOrder = (id) => {
-            return new Promise((resolve, reject) => {
-                const sql = `SELECT * FROM returnOrder WHERE id = ${id}`;
-                db.all(sql, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    if (rows.length > 0) {
-                        let products = [];
-                        for (const row of rows) {
-                            products.push({
-                                SKUId: row.skuId,
-                                description: row.description,
-                                RFID: row.rfid
-                            });
-                        }
-                        resolve(new ReturnOrder(rows[0].returnDate, products, rows[0].restockOrderId, rows[0].id));
-                    } else {
-                        reject('No return order found');
-                    }
-                })
-            });
-        };
-
-        this.storeReturnOrder = (ro) => {
-            let sql = `INSERT INTO returnOrder (id, returnDate, skuId, description, price, rfid, restockOrderId) VALUES (?,?,?,?,?,?,?)`;
-            const params = [];
-            for (const skuItem of ro.products) {
-                params.push([ro.id, ro.returnDate, skuItem.SKUId, skuItem.description, skuItem.price, skuItem.RFID, ro.restockOrderId]);
-            }
-            return new Promise((resolve, reject) => {
-                let statement = db.prepare(sql);
-                for (let i = 0; i < params.length; i++) {
-                    statement.run(params[i], (err) => { reject(err) });
-                }
-                statement.finalize();
-                resolve(1);
-            });
-        };
-
-        this.deleteReturnOrder = function (id) {
-            const sql = `DELETE FROM returnOrder WHERE id = ?`;
-            const params = [id];
-            return new Promise((resolve, reject) => {
-                db.run(sql, params, (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    resolve(1);
-                })
-            });
-        };
-
-        // restock orders functions
-        this.getAllRestockOrders = () => {
-            return new Promise((resolve, reject) => {
-                const sql = `select id, issueDate, state, ro.skuId, description, price, supplierId, transportNote, quantity, si.skuId, RFID from restockOrder as ro LEFT JOIN restockOrderSkuItem as si ON ro.id = si.restockOrderId`;
-                db.all(sql, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    if (rows.length > 0) {
-                        let listOfIds = [];
-                        let orders = [];
-                        let products = [];
-                        let skuItems = [];
-                        for (const row of rows) {
-                            let rowProducts = {
-                                SKUId: row.skuId,
-                                description: row.description,
-                                price: row.price,
-                                qty: row.quantity
-                            };
-                            let rowSkuItems = {
-                                //todo add row Sku items
-                            }
-                            if (!listOfIds.includes(row.id)) {
-                                listOfIds.push(row.id);
-                                orders.push(
-                                    {
-                                        id: row.id,
-                                        issueDate: row.issueDate,
-                                        state: row.state,
-                                        products: [],
-                                        supplierId: row.supplierId,
-                                        transportNote: row.transportNote,
-                                        skuItems: []
-                                    }
-                                );
-                                products.push([rowProducts]);
-                            } else {
-                                const orderId = listOfIds.indexOf(row.id);
-                                products[orderId].push(rowProducts);
-                            }
-                        }
-                        for (let i = 0; i < orders.length; i++) {
-                            orders[i].products = products[i];
-                        }
-                        resolve(orders.map(order => new RestockOrder(order.issueDate, order.products, order.supplierId, order.transportNote, order.id, order.skuItems, order.state)));
-                    } else {
-                        reject('No restockOrders found');
-                    }
-                })
-            });
-        };
-
-        this.getRestockOrdersInState = (state) => {
-            return new Promise((resolve, reject) => {
-                const sql = `SELECT * FROM restockOrder WHERE state LIKE ?`;
-                const params = [state];
-                db.all(sql, params, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    if (rows.length > 0) {
-                        let listOfIds = [];
-                        let orders = [];
-                        let products = [];
-                        for (const row of rows) {
-                            let rowProducts = {
-                                SKUId: row.skuId,
-                                description: row.description,
-                                price: row.price,
-                                qty: row.quantity
-                            };
-                            if (!listOfIds.includes(row.id)) {
-                                listOfIds.push(row.id);
-                                orders.push(
-                                    {
-                                        id: row.id,
-                                        issueDate: row.issueDate,
-                                        state: row.state,
-                                        products: [],
-                                        supplierId: row.supplierId,
-                                        transportNote: row.transportNote,
-                                        skuItems: []
-                                    }
-                                );
-                                products.push([rowProducts]);
-                            } else {
-                                const orderId = listOfIds.indexOf(row.id);
-                                products[orderId].push(rowProducts);
-                            }
-                        }
-                        for (let i = 0; i < orders.length; i++) {
-                            orders[i].products = products[i];
-                        }
-                        resolve(orders.map(order => new RestockOrder(order.issueDate, order.products, order.supplierId, order.transportNote, order.id, order.skuItems, order.state)));
-                    } else {
-                        reject('No restockOrders found in state ' + state);
-                    }
-                })
-            });
-        };
-
-        this.getRestockOrder = (id) => {
-            return new Promise((resolve, reject) => {
-                const sql = `SELECT * FROM restockOrder WHERE id = ${id}`;
-                db.all(sql, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    if (rows.length > 0) {
-                        let products = [];
-                        for (const row of rows) {
-                            products.push({
-                                SKUId: row.skuId,
-                                description: row.description,
-                                price: row.price,
-                                qty: row.quantity
-                            });
-                        }
-                        resolve(new RestockOrder(rows[0].issueDate, products, rows[0].supplierId, rows[0].transportNote, rows[0].id, [], rows[0].state));
-                    } else {
-                        reject('No restock order found');
-                    }
-                })
-            });
-        };
-
-        // todo this.getSkuItemsToBeReturned
-        this.updateRestockOrder = (ro) => {
-            // const sql = `UPDATE restockOrder SET id = ?, issueDate = ?, state = ?, skuId = ?, description = ?, price = ?, supplierId = ?, transportNote = ?, quantity = ? WHERE id = ? and skuId = ?`;
-            // const params = [];
-            // console.log(ro);
-            // for (const sku of ro.products) {
-            //     console.log(sku);
-            //     params.push([ro.id, ro.issueDate, ro.state, sku.SKUId, sku.description, sku.price, ro.supplierId, ro.transportNote, sku.qty, ro.id, sku.SKUId]);
-            // }
-            // return new Promise((resolve, reject) => {
-            //     let statement = db.prepare(sql);
-            //     for (let i = 0; i < params.length; i++) {
-            //         console.log(params[i]);
-            //         statement.run(params[i], (err) => {reject(err)});
-            //     }
-            //     statement.finalize();
-            //     resolve(1);
-            // });
-
-            const sql = `UPDATE restockOrder SET state = ?, transportNote = ? WHERE id = ?`;
-            const params = [ro.state, ro.transportNote, ro.id];
-            return new Promise((resolve, reject) => {
-                db.run(sql, params, (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve(1);
-                    }
-                });
-            });
-        }
-
-        this.getRestockOrderSkuItems = (id) => {
-            return new Promise((resolve, reject) => {
-                const sql = `SELECT * FROM restockOrderSkuItem WHERE restockOrderId = ${id}`;
-                db.all(sql, (err, rows) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        if (rows.length > 0) {
-                            resolve(rows.map(row => {
-                                return {
-                                    SKUId: row.skuId,
-                                    rfid: row.RFID,
-                                }
-                            }));
-                        } else {
-                            reject('No skuItems found');
-                        }
-                    }
-                });
-            });
-        };
-
-        this.storeRestockOrderSkuItems = (id, skuItems) => {
-            let sql = `INSERT INTO restockOrderSkuItem (restockOrderId, skuId, RFID) VALUES (?,?,?)`;
-            const params = [];
-            for (const skuItem of skuItems) {
-                params.push([id, skuItem.SKUId, skuItem.rfid]);
-            }
-            return new Promise((resolve, reject) => {
-                let statement = db.prepare(sql);
-                for (let i = 0; i < params.length; i++) {
-                    statement.run(params[i], (err) => { reject(err) });
-                }
-                statement.finalize();
-                resolve(1);
-            });
-        };
-
-        this.deleteRestockOrderSkuItems = (id) => {
-            const sql = `DELETE FROM restockOrderSkuItem WHERE id = ?`;
-            const params = [id];
-            return new Promise((resolve, reject) => {
-                db.run(sql, params, (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    resolve(1);
-                })
-            });
-        };
-
-        this.storeRestockOrder = (ro) => {
-            let sql = `INSERT INTO restockOrder (id, issueDate, state, skuId, description, price, supplierId, transportNote, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-            const params = [];
-            for (const sku of ro.products) {
-                params.push([ro.id, ro.issueDate, ro.state, sku.SKUId, sku.description, sku.price, ro.supplierId, ro.transportNote, sku.quantity]);
-            }
-            return new Promise((resolve, reject) => {
-                let statement = db.prepare(sql);
-                for (let i = 0; i < params.length; i++) {
-                    statement.run(params[i], (err) => { reject(err) });
-                }
-                statement.finalize();
-                resolve(1);
-            });
-        };
-
-        this.deleteRestockOrder = (id) => {
-            const sql = `DELETE FROM restockOrder WHERE id = ?`;
-            const params = [id];
-            return new Promise((resolve, reject) => {
-                db.run(sql, params, (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    resolve(1);
-                })
-            });
-        };
-
-        this.getNextAvailableId = (table) => {
-            return new Promise((resolve, reject) => {
-                const sql = `SELECT MAX(id) AS MAX FROM ${table}`;
-                db.get(sql, (err, row) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    }
-                    if (typeof row !== 'undefined') {
-                        resolve(row.MAX + 1);
-                    } else {
-                        reject('No max id found');
-                    }
-                })
-            });
-        };
+    constructor(db) {
+        this.#db = db;
     }
 
-    let instance;
-    return {
-        getInstance: function () {
-            if (!instance) {
-                instance = new DbManager();
-            }
-            return instance;
-        }
-    }
-})();
+    static getInstance() {
+        if (!DbManager.instance)
+            DbManager.instance = new DbManager(dbConnection);
 
-module.exports = dbManagerFactory;
+        return DbManager.instance;
+    }
+
+    closeDb() {
+        this.#db.close();
+    }
+
+    /**
+     * Position 
+     */
+
+    // returns the required position, or 'null' if it is not found
+    getPosition(positionId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM Position
+                              WHERE ID=?`;
+
+            this.#db.get(sqlQuery, [positionId], (err, row) => {
+                if (err)
+                    reject(err);
+                else if (!row)  // position not found
+                    resolve(null);
+                else
+                    resolve(new Position(row.ID, row.Aisle, row.Row, row.Col, row.MaxWeight,
+                        row.MaxVolume, row.OccupiedWeight, row.OccupiedVolume));
+            });
+        });
+    }
+
+    // returns an array containing all the existing positions
+    getAllPositions() {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM Position`;
+
+            this.#db.all(sqlQuery, (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row =>
+                        new Position(row.ID, row.Aisle, row.Row, row.Col, row.MaxWeight,
+                            row.MaxVolume, row.OccupiedWeight, row.OccupiedVolume)));
+            });
+        });
+    }
+
+    // returns the new created position
+    storePosition(newPosition) {
+        const positionId = newPosition.getPositionId();
+        const aisle = newPosition.getAisle();
+        const row = newPosition.getRow();
+        const col = newPosition.getCol();
+        const maxWeight = newPosition.getMaxWeight();
+        const maxVolume = newPosition.getMaxVolume();
+        const occupiedWeight = newPosition.getOccupiedWeight();
+        const occupiedVolume = newPosition.getOccupiedVolume();
+
+        return new Promise((resolve, reject) => {
+            const sqlStatement =
+                `INSERT INTO Position (ID, Aisle, Row, Col, MaxWeight, MaxVolume, OccupiedWeight, OccupiedVolume)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+            this.#db.run(sqlStatement, [positionId, aisle, row, col, maxWeight, maxVolume,
+                occupiedWeight, occupiedVolume], function (err) {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve(new Position(this.lastID, aisle, row, col, maxWeight, maxVolume,
+                            occupiedWeight, occupiedVolume));
+                });
+        });
+    }
+
+    // returns 'true' if the position was successfully updated; 'false' otherwise
+    updatePosition(oldPositionId, newPosition) {
+        const positionId = newPosition.getPositionId();
+        const aisle = newPosition.getAisle();
+        const row = newPosition.getRow();
+        const col = newPosition.getCol();
+        const maxWeight = newPosition.getMaxWeight();
+        const maxVolume = newPosition.getMaxVolume();
+        const occupiedWeight = newPosition.getOccupiedWeight();
+        const occupiedVolume = newPosition.getOccupiedVolume();
+
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `UPDATE Position
+                                  SET    ID=?, Aisle=?, Row=?, Col=?, MaxWeight=?, 
+                                         MaxVolume=?, OccupiedWeight=?, OccupiedVolume=?
+                                  WHERE  ID=?`;
+
+            const params = [positionId, aisle, row, col, maxWeight, maxVolume,
+                occupiedWeight, occupiedVolume, oldPositionId];
+
+            this.#db.run(sqlStatement, params, function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(this.changes > 0);
+            });
+        });
+    }
+
+    // returns 'true' if the position has been deleted, 'false' otherwise
+    deletePosition(positionId) {
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `DELETE FROM Position
+                                  WHERE ID=?`;
+
+            this.#db.run(sqlStatement, [positionId], function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(this.changes > 0)
+            })
+        });
+    }
+
+    // return an object with 'weight' and 'volume' properties, corresponding to the position's 
+    // actual weight and volume occupied
+    getOccupiedCapacitiesOf(positionId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT SUM(Weight) AS weight, SUM(Volume) AS volume
+                              FROM SkuItem SI, Sku S
+                              WHERE SI.SkuId = S.ID AND S.Position=?`;
+
+            this.#db.get(sqlQuery, [positionId], (err, row) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve({
+                        weight: row.weight ?? 0,
+                        volume: row.volume ?? 0
+                    });
+            });
+        })
+    }
+
+    /**
+     * Sku
+     */
+
+    // returns the sku object corresponding to the provided skuId; 
+    // or 'null' if there is no corresponding sku
+    getSkuById(skuId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT * 
+                              FROM Sku 
+                              WHERE id=?`;
+
+            this.#db.get(sqlQuery, [skuId], (err, row) => {
+                if (err)
+                    reject(err);
+                else if (!row)
+                    resolve(null);
+                else
+                    resolve(new Sku(row.Description, row.Weight, row.Volume, row.Notes,
+                        row.Price, row.AvailableQuantity, row.Position, [], row.ID));
+            })
+        });
+    }
+
+    // returns an array containing all the existing Skus
+    getAllSkus() {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT * 
+                              FROM Sku`;
+
+            this.#db.all(sqlQuery, (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row => new Sku(row.Description, row.Weight, row.Volume,
+                        row.Notes, row.Price, row.AvailableQuantity, row.Position, [], row.ID)));
+            })
+        });
+    }
+
+    storeSku(sku) {
+        const description = sku.getDescription();
+        const weight = sku.getWeight();
+        const volume = sku.getVolume();
+        const notes = sku.getNotes();
+        const position = sku.getPosition();
+        const availableQuantity = sku.getAvailableQuantity();
+        const price = sku.getPrice();
+
+        return new Promise((resolve, reject) => {
+            const sqlQuery =
+                `INSERT INTO Sku (Description, Weight, Volume, Notes, Position, AvailableQuantity, Price) 
+                 VALUES (?,?,?,?,?,?,?)`;
+
+            const params = [description, weight, volume, notes, position, availableQuantity, price];
+
+            this.#db.run(sqlQuery, params, function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(new Sku(description, weight, volume, notes, price,
+                        availableQuantity, position, [], this.lastID));
+            })
+        });
+    }
+
+    // returns 'true' if the sku was successfully updated; 'false' otherwise
+    updateSku(sku) {
+        const description = sku.getDescription();
+        const weight = sku.getWeight();
+        const volume = sku.getVolume();
+        const notes = sku.getNotes();
+        const position = sku.getPosition();
+        const availableQuantity = sku.getAvailableQuantity();
+        const price = sku.getPrice();
+        const id = sku.getId();
+
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `UPDATE Sku
+                              SET Description=?, Weight=?, Volume=?, Notes=?, Position=?, AvailableQuantity=?, Price=?
+                              WHERE ID=?`;
+
+            const params = [description, weight, volume, notes, position, availableQuantity, price, id];
+
+            this.#db.run(sqlQuery, params, function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(this.changes > 0);
+            });
+        });
+    }
+
+    // return 'true' if the positionID is successfully updated; 'false' otherwise
+    updateSkuPosition(oldPositionID, newPositionID) {
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `UPDATE Sku
+                                  SET Position=?
+                                  WHERE Position=?`;
+
+            this.#db.run(sqlStatement, [newPositionID, oldPositionID], function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(this.changes > 0);
+            });
+        })
+    }
+
+    // return sku corresponding to the specified position
+    getSkuOfPosition(positionID) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM Sku
+                              WHERE Position=?`;
+
+            this.#db.get(sqlQuery, [positionID], (err, row) => {
+                if (err)
+                    reject(err);
+                else if (!row)
+                    resolve(null);
+                else
+                    resolve(new Sku(row.Description, row.Weight, row.Volume, row.Notes,
+                        row.Price, row.AvailableQuantity, row.Position, [], row.ID));
+            });
+        })
+    }
+    /* End of Position */
+
+    /* Start of Restock Order */
+
+    deleteSku(id) {
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `DELETE FROM Sku
+                                  WHERE ID=?`;
+
+            this.#db.run(sqlStatement, [id], function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(this.changes > 0);
+            });
+        });
+    }
+
+    /**
+     * SkuItem
+     */
+
+    // returns an array containing all the existing skuItems
+    getAllSkuItems() {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT * 
+                              FROM SkuItem`;
+
+            this.#db.all(sqlQuery, (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row =>
+                        new SkuItem(row.RFID, row.SkuId, row.DateOfStock, row.Available)));
+            });
+        });
+    }
+
+    // returns the skuItem object corresponding to the provided RFID; 
+    // or 'null' if there is no corresponding skuItem
+    getSkuItemByRfid(rfid) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM SkuItem
+                              WHERE RFID=?`;
+
+            this.#db.get(sqlQuery, [rfid], (err, row) => {
+                if (err)
+                    reject(err);
+                else if (!row)
+                    resolve(null);
+                else
+                    resolve(new SkuItem(row.RFID, row.SkuId, row.DateOfStock, row.Available));
+            });
+        });
+    }
+
+    // return an array containing all the SkuItems of the specified sku
+    getSkuItemsOf(skuId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM SkuItem
+                              WHERE SkuId=?`;
+
+            this.#db.all(sqlQuery, [skuId], (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row =>
+                        new SkuItem(row.RFID, row.SkuId, row.DateOfStock, row.Available, [])));
+            });
+        });
+    }
+
+    // return an array containing all the AVAILABLE SkuItems of the specified sku
+    getAvailableSkuItemsOf(skuId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM SkuItem
+                              WHERE SkuId=? AND Available=1`;
+
+            this.#db.all(sqlQuery, [skuId], (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row =>
+                        new SkuItem(row.RFID, row.SkuId, row.DateOfStock, row.Available, [])));
+            });
+        });
+    }
+
+    // create a new persistent SkuItem in the db; returns the new SkuItem created 
+    storeSkuItem(skuItem) {
+        const rfid = skuItem.getRfid();
+        const skuId = skuItem.getSkuId();
+        const available = skuItem.getAvailable();
+        const dateOfStock = skuItem.getDateOfStock();
+
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `INSERT INTO SkuItem (RFID, SkuId, Available, DateOfStock)
+                                  VALUES (?, ?, ?, ?)`;
+
+            this.#db.run(sqlStatement, [rfid, skuId, available, dateOfStock], function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(new SkuItem(this.ID, skuId, dateOfStock, available));
+            });
+        });
+    }
+
+    // update the existing SkuItem with the information contained in the provided skuItem;
+    // returns 'true' if the SkuItem was successfully updated, 'false' otherwise
+    updateSkuItem(oldRfid, newSkuItem) {
+        const newRfid = newSkuItem.getRfid();
+        const newSkuId = newSkuItem.getSkuId();
+        const newAvailable = newSkuItem.getAvailable();
+        const newDateOfStock = newSkuItem.getDateOfStock();
+
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `UPDATE SkuItem
+                                  SET RFID=?, SkuId=?, Available=?, DateOfStock=?
+                                  WHERE RFID=?`;
+
+            const params = [newRfid, newSkuId, newAvailable, newDateOfStock, oldRfid];
+
+            this.#db.run(sqlStatement, params, function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(this.changes > 0);
+            });
+        });
+    }
+
+    // delete the SkuItem corresponding to the provided RFID; returns 'true' if the 
+    // SkuItem was successfully deleted, 'false' otherwise
+    deleteSkuItem(rfid) {
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `DELETE FROM SkuItem
+                                  WHERE RFID=?`;
+
+            this.#db.run(sqlStatement, [rfid], function (err) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(this.changes > 0);
+            });
+        });
+    }
+
+    /**
+     * Item
+     */
+
+    // returns an array containing all the existing Items
+    getAllItems() {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM Item`;
+
+            this.#db.all(sqlQuery, (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row =>
+                        new Item(row.ID, row.Description, row.Price, row.SkuId, row.SupplierId)));
+            });
+        });
+    }
+
+    // returns the Item corresponding to the given skuId; 'null' if the item is not found
+    getItemById(itemId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM Item
+                              WHERE ID=?`;
+
+            this.#db.get(sqlQuery, [itemId], (err, row) => {
+                if (err)
+                    reject(err);
+                else if (!row)
+                    resolve(null);
+                else
+                    resolve(new Item(row.ID, row.Description, row.Price, row.SkuId, row.SupplierId));
+            });
+        });
+    }
+
+    getItemBySkuIdAndSupplier(skuId, supplierId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM Item
+                              WHERE SkuId=? AND SupplierId=?`;
+
+            this.#db.get(sqlQuery, [skuId, supplierId], (err, row) => {
+                if (err)
+                    reject(err);
+                else if (!row)
+                    resolve(null);
+                else 
+                    resolve(new Item(row.ID, row.Description, row.Price, row.SkuId, row.SupplierId));
+            });
+        });
+    }
+
+    // create a new persistent SkuItem in the db; returns the new SkuItem created 
+    storeItem(newItem) {
+        const newId = newItem.getId();
+        const newDescription = newItem.getDescription();
+        const newPrice = newItem.getPrice();
+        const newSkuId = newItem.getSkuId();
+        const newSupplierId = newItem.getSupplierId();
+
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `INSERT INTO Item (ID, Description, Price, SkuId, SupplierId)
+                                  VALUES (?, ?, ?, ?, ?)`;
+
+            const params = [newId, newDescription, newPrice, newSkuId, newSupplierId];
+
+            this.#db.run(sqlStatement, params, function(err) {
+                if (err)
+                    reject(err);
+                else 
+                    resolve(new Item(this.ID, newDescription, newPrice, newSkuId, newSupplierId));
+            });
+        });
+    }
+
+    // it updates the provided Item's information (except the ID)
+    // returns 'true' if the sku was successfully updated; 'false' otherwise
+    updateItem(newItem) {
+        const itemId = newItem.getId();
+        const newDescription = newItem.getDescription();
+        const newPrice = newItem.getPrice();
+        const newSkuId = newItem.getSkuId();
+        const newSupplierId = newItem.getSupplierId();
+
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `UPDATE Item 
+                                  SET Description=?, Price=?, SkuId=?, SupplierId=?
+                                  WHERE ID=?`;
+
+            const params = [newDescription, newPrice, newSkuId, newSupplierId, itemId];
+
+            this.#db.run(sqlStatement, params, function(err) {
+                if (err)
+                    reject(err);
+                else 
+                    resolve(this.changes > 0);
+            });
+        });
+    }
+
+    // returns 'true' if the Item was successfully deleted; 'false' otherwise
+    deleteItem(itemId) {
+        return new Promise((resolve, reject) => {
+            const sqlStatement = `DELETE FROM Item
+                                  WHERE ID=?`;
+            
+            this.#db.run(sqlStatement, [itemId], function(err) {
+                if(err)
+                    reject(err);
+                else 
+                    resolve(this.changes > 0);s
+            });
+        });
+    }
+
+    /**
+     * TestDescriptor
+     */
+
+    getAllTestDescriptors() {
+        let testDescriptors = [];
+        let sql = 'SELECT * FROM TestDescriptor';
+        return new Promise((resolve, reject) => {
+            this.#db.all(sql, (err, rows) => {
+                if (err)
+                    return reject(err);
+
+                for (let row of rows) {
+                    testDescriptors.push(new TestDescriptor(row.ID, row.Name, row.ProcedureDescription, row.SkuId));
+                }
+
+                return resolve(testDescriptors);
+            });
+        })
+    };
+
+    getTestDescriptor(id) {
+        let testDescriptor;
+        let sql = 'SELECT * FROM TestDescriptor WHERE ID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.all(sql, [id], (err, rows) => {
+                if (err)
+                    return reject(err);
+
+                for (let row of rows) {
+                    testDescriptor = new TestDescriptor(row.ID, row.Name, row.ProcedureDescription, row.SkuId);
+                }
+
+                return resolve(testDescriptor);
+            });
+        })
+    };
+
+    // returns an array containing the test descriptors' IDs of the specified sku
+    getTestDescriptorsOf(skuId) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT ID
+                              FROM TestDescriptor
+                              WHERE SkuId=?`;
+
+            this.#db.all(sqlQuery, [skuId], (err, rows) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(rows.map(row => row.ID));
+            });
+        });
+    }
+
+    storeTestDescriptor(td) {
+        let sql = 'INSERT INTO TestDescriptor (Name, ProcedureDescription, SkuId) VALUES (?,?,?)';
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, [td.getName(), td.getProcedureDescription(), td.getSkuId()], function (err) {
+                if (err)
+                    return reject(err);
+
+                return resolve(new TestDescriptor(this.lastID, td.getName(), td.getProcedureDescription(), td.getSkuId()));
+            });
+        })
+    };
+
+    updateTestDescriptor(td) {
+        let sql = 'UPDATE TestDescriptor SET Name=?, ProcedureDescription=?, SkuId=? WHERE ID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, [td.getName(), td.getProcedureDescription(), td.getSkuId(), td.getId()], function (err) {
+                if (err)
+                    return reject(err);
+
+                return resolve(this.changes);
+            });
+        })
+    };
+
+    deleteTestDescriptor(id) {
+        let sql = 'DELETE FROM TestDescriptor WHERE ID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, [id], function (err) {
+                if (err)
+                    return reject(err);
+
+                return resolve(this.changes);
+            });
+        })
+    };
+
+    /**
+     * TestResult
+     */
+
+    getAllTestResultsBySkuIem(rfid) {
+        let testResults = [];
+        let sql = 'SELECT * FROM TestResult WHERE RFID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.all(sql, [rfid], (err, rows) => {
+                if (err)
+                    return reject(err);
+
+                for (let row of rows) {
+                    testResults.push(new TestResult(row.ID, row.RFID, row.TestDescriptorId, row.Date, row.Result));
+                }
+
+                return resolve(testResults);
+            });
+        })
+    };
+
+    getTestResult(id, rfid) {
+        let testResult;
+        let sql = 'SELECT * FROM TestResult WHERE ID=? AND RFID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.all(sql, [id, rfid], (err, rows) => {
+                if (err)
+                    return reject(err);
+
+                for (let row of rows) {
+                    testResult = new TestResult(row.ID, row.RFID, row.TestDescriptorId, row.Date, row.Result);
+                }
+
+                return resolve(testResult);
+            });
+        })
+    }
+
+    storeTestResult(tr) {
+        let sql = 'INSERT INTO TestResult(RFID, TestDescriptorId, Date, Result) VALUES (?,?,?,?)';
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, [tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()], function (err) {
+                if (err)
+                    return reject(err);
+
+                return resolve(new TestResult(this.lastID, tr.getRfid(), tr.getTestDescriptorId(), tr.getDate(), tr.getResult()));
+            });
+        })
+    }
+
+    updateTestResult(tr) {
+        let sql = 'UPDATE TestResult SET TestDescriptorId=?, Date=?, Result=? WHERE ID=? AND RFID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, [tr.getTestDescriptorId(), tr.getDate(), tr.getResult(), tr.getId(), tr.getRfid()], function (err) {
+                if (err)
+                    return reject(err);
+
+                return resolve(this.changes);
+            });
+        })
+    }
+
+    deleteTestResult(id, rfid) {
+        let sql = 'DELETE FROM TestResult WHERE ID=? AND RFID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, [id, rfid], function (err) {
+                if (err)
+                    return reject(err);
+
+                return resolve(this.changes);
+            });
+        })
+    }
+
+
+    /**
+     * RestockOrder
+     */
+
+    // Function to get all restock orders
+    // OUTPUT - array of restock orders
+    getAllRestockOrders() {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM RestockOrder`;
+            this.#db.all(sql, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else resolve(rows.map(order => new RestockOrder(order.IssueDate, [], order.SupplierId,
+                    order.TransportNote, order.ID, [], order.State)));
+            })
+        });
+    };
+
+    // Function to get all restock orders in a state. 
+    // INPUT - state
+    // OUTPUT - array of restock orders
+    getRestockOrdersInState(state) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM RestockOrder WHERE State LIKE ?`;
+            const params = [state];
+            this.#db.all(sql, params, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else resolve(rows.map(order => new RestockOrder(order.IssueDate, [], order.SupplierId,
+                    order.TransportNote, order.ID, [], order.State)));
+            })
+        });
+    };
+
+    // Function to get a restock order by id
+    // INPUT - id
+    // OUTPUT - restock order
+    getRestockOrder(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM RestockOrder WHERE ID = ?`;
+            const params = [id];
+            this.#db.get(sql, params, (err, row) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else if (!row) {
+                    resolve(undefined);
+                }
+                else
+                    resolve(new RestockOrder(row.IssueDate, [], row.SupplierId,
+                        row.TransportNote, row.ID, [], row.State));
+            })
+        });
+    };
+
+    // Function to get sku info of a restock order
+    // INPUT - restock order id
+    // OUTPUT - array of map{skuId, description, price, quantity}
+    getRestockOrderSku(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * 
+                         FROM RestockOrderSKU 
+                         WHERE RestockOrderId = ?`;
+            const params = [id];
+            this.#db.all(sql, params, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else
+                    resolve(rows.map(row => {
+                        return {
+                            SKUId: row.SkuId,
+                            description: row.Description,
+                            price: row.Price,
+                            qty: row.Quantity,
+                        }
+                    }));
+
+            });
+        });
+    }
+
+    // Function to get sku items of a restock order
+    // INPUT - restock order id
+    // OUTPUT - array of map{skuId, RFID}
+    getRestockOrderSkuItems(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * 
+                         FROM RestockOrderSkuItem 
+                        WHERE RestockOrderId = ?`;
+            const params = [id];
+            this.#db.all(sql, params, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else
+                    resolve(rows.map(row => {
+                        return {
+                            SKUId: row.SkuId,
+                            RFID: row.RFID,
+                        }
+                    }));
+            });
+        });
+    }
+
+    // Function to get sku items to be returned of a restock order
+    // INPUT - restock order id
+    // OUTPUT - array of map{skuId, RFID}
+    getReturnItemsByRestockOrderId(id) {
+        return new Promise((resolve, reject) => {
+            //const sql = `SELECT ros.skuId as skuId, ros.RFID as RFID FROM restockorderSkuItem as ros JOIN TestResult as tr ON ros.RFID = tr.RFID WHERE restockOrderId = ? and Result = 0`;
+            const sql = `SELECT * 
+                         FROM RestockOrderSkuItem 
+                         WHERE RFID NOT IN (SELECT DISTINCT RFID 
+                                            FROM TestResult 
+                                            WHERE Result = 1) AND RestockOrderId = ?`;
+            const params = [id];
+            this.#db.all(sql, params, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else
+                    resolve(rows.map(row => {
+                        return {
+                            SKUId: row.SkuId,
+                            RFID: row.RFID,
+                        }
+                    }));
+            });
+        });
+    }
+
+    // Function to store a restock order in the database
+    // INPUT - restock order
+    // OUTPUT - restock order
+    storeRestockOrder(ro) {
+        const sql = `INSERT INTO RestockOrder (IssueDate, State, SupplierId, TransportNote) 
+                     VALUES (?,?,?,?)`;
+        const params = [ro.getIssueDate(), ro.getState(), ro.getSupplierId(), ro.getTransportNoteString()];
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else resolve(new RestockOrder(ro.getIssueDate(), ro.getProducts(),
+                    ro.getSupplierId(), ro.getTransportNote(), this.lastID,
+                    ro.getSkuItems(), ro.getState()));
+            });
+        });
+    };
+
+    // Function to store the info about sku of a restock order in the database
+    // INPUT - restock order id, {skuId, description, price, quantity}
+    // OUTPUT - true if successful else false
+    storeRestockOrderSku(id, products) {
+        const sql = `INSERT INTO RestockOrderSku(RestockOrderId, SkuId, Description, Price, Quantity) VALUES (?,?,?,?,?)`;
+        let params = products.map(sku => [id, sku.SKUId, sku.description, sku.price, sku.qty]);
+
+        return new Promise((resolve, reject) => {
+            let statement = this.#db.prepare(sql);
+            for (let i = 0; i < params.length; i++) {
+                statement.run(params[i], function (err) {
+                    if (err || this.changes == 0) reject(err);
+                });
+            }
+            statement.finalize();
+            resolve(true);
+        });
+    }
+
+    // Function to store the info about sku items of a restock order in the database
+    // INPUT - restock orderId, {skuId, RFID}
+    // OUTPUT - true if successful else false
+    storeRestockOrderSkuItems(id, skuItems) {
+        let sql = `INSERT INTO RestockOrderSkuItem (RestockOrderId, SkuId, RFID) VALUES (?,?,?)`;
+        const params = skuItems.map(skuItem => [id, skuItem.SKUId, skuItem.RFID]);
+
+        return new Promise((resolve, reject) => {
+            let statement = this.#db.prepare(sql);
+            for (let i = 0; i < params.length; i++) {
+                statement.run(params[i], function (err) {
+                    if (err || this.changes == 0) reject(err);
+                });
+
+            }
+            statement.finalize();
+            resolve(true);
+        });
+    }
+
+    // Function to update the state of a restock order
+    // INPUT - restock order
+    // OUTPUT - true if successful else false
+    updateRestockOrder(ro) {
+        const sql = `UPDATE RestockOrder 
+                     SET state = ?, transportNote = ? 
+                     WHERE id = ?`;
+
+        const params = [ro.getState(), ro.getTransportNoteString(), ro.getId()];
+
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else {
+                    resolve(this.changes > 0);
+                }
+            });
+        });
+    };
+
+    // Function to delete a restock order
+    // INPUT - restock order id
+    // OUTPUT - true if successful else false
+    deleteRestockOrder(id) {
+        const sql = `DELETE FROM RestockOrder 
+                     WHERE id = ?`;
+
+        const params = [id];
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else {
+                    resolve(this.changes > 0);
+                }
+            })
+        });
+    };
+
+    // Function to delete the info about sku of a restockOrder order
+    // INPUT - restock order id
+    // OUTPUT - true if successful else false
+    deleteRestockOrderSku(id) {
+        const sql = `DELETE FROM RestockOrderSku WHERE RestockOrderId = ?`;
+        const params = [id];
+
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else
+                    resolve(this.changes > 0);
+            })
+        });
+    };
+
+    // Function to delete the info about sku items of a restock order
+    // INPUT - restock order id
+    // OUTPUT - true if successful else false
+    deleteRestockOrderSkuItems(id) {
+        const sql = `DELETE FROM RestockOrderSkuItem WHERE RestockOrderId = ?`;
+        const params = [id];
+
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                else
+                    resolve(this.changes > 0);
+            })
+        });
+    }
+
+    /* 
+     * ReturnOrder 
+     */
+
+    // Function to get all return orders. 
+    // INPUT - none
+    // OUTPUT - array of return orders
+    getAllReturnOrders() {
+        return new Promise((resolve, reject) => {
+            let sql = `SELECT * FROM ReturnOrder`;
+            this.#db.all(sql, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(rows.map(order => new ReturnOrder(order.ReturnDate, [], order.RestockOrderId, order.ID)));
+            })
+        });
+    };
+
+    // Function to get a return order by id
+    // INPUT - id
+    // OUTPUT - return order
+    getReturnOrder(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM ReturnOrder where ID = ?`;
+            const params = [id];
+            this.#db.get(sql, params, function (err, row) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                if (row === undefined) {
+                    resolve(undefined);
+                } else
+                    resolve(new ReturnOrder(row.ReturnDate, [], row.RestockOrderId, row.ID));
+            })
+        });
+    };
+
+    // Function to get sku items of a return order
+    // INPUT - restock order id
+    // OUTPUT - array of map{skuId, description, price, RFID}
+    getReturnOrderSkuItems(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM ReturnOrderSkuItem WHERE ReturnOrderId = ?`;
+            const params = [id];
+            this.#db.all(sql, params, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(rows.map(row => {
+                    return {
+                        SKUId: row.SkuId,
+                        description: row.Description,
+                        price: row.Price,
+                        RFID: row.RFID,
+                    }
+                }));
+            });
+        });
+    }
+
+    // Function to store a return order in the database
+    // INPUT - return order
+    // OUTPUT - return order
+    storeReturnOrder(ro) {
+        let sql = `INSERT INTO ReturnOrder (ReturnDate, RestockOrderId) VALUES (?,?)`;
+        const params = [ro.getReturnDate(), ro.getRestockOrderId()];
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(new ReturnOrder(ro.getReturnDate(), ro.getProducts(), ro.getRestockOrderId(), this.lastID));
+            });
+        });
+    };
+
+    // Function to store the info about sku items of a return order in the database
+    // INPUT - return orderId, {skuId, description, price, RFID}
+    // OUTPUT - true if successful else false
+    storeReturnOrderSkuItems(id, skuItems) {
+        let sql = `INSERT INTO ReturnOrderSkuItem (ReturnOrderId, SkuId, Description, Price, RFID) VALUES (?,?,?,?,?)`;
+        const params = [];
+        for (const skuItem of skuItems) {
+            params.push([id, skuItem.SkuID, skuItem.description, skuItem.price, skuItem.RFID]);
+        }
+        return new Promise((resolve, reject) => {
+            let statement = this.#db.prepare(sql);
+            for (let i = 0; i < params.length; i++) {
+                statement.run(params[i], function (err) {
+                    if (err || this.changes == 0) reject(err);
+                });
+            }
+            statement.finalize();
+            resolve(true);
+        });
+    }
+
+    // Function to delete a return order
+    // INPUT - return order id
+    // OUTPUT - true if successful else false
+    deleteReturnOrder(id) {
+        const sql = `DELETE FROM ReturnOrder WHERE id = ?`;
+        const params = [id];
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(this.changes > 0);
+            })
+        });
+    };
+
+    // Function to delete the info about sku items of a return order
+    // INPUT - restock order id
+    // OUTPUT - true if successful else false
+    deleteReturnOrderSkuItems(id) {
+        const sql = `DELETE FROM ReturnOrderSkuItem WHERE ReturnOrderId = ?`;
+        const params = [id];
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(this.changes > 0);
+            })
+        });
+    }
+
+    /*
+     * InternalOrder
+     */
+
+    // Function to get all internal orders
+    // OUTPUT - array of internal orders
+    getAllInternalOrders() {
+        return new Promise((resolve, reject) => {
+            let sql = `SELECT * FROM InternalOrder`;
+            this.#db.all(sql, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(rows.map(order => new InternalOrder(order.IssueDate, [], order.CustomerId, order.State, order.ID)));
+            })
+        });
+    };
+
+    // Function to get all internal orders in a specified state
+    // INPUT - state
+    // OUTPUT - array of internal orders
+    getInternalOrdersInState(state) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM InternalOrder WHERE State LIKE ?`;
+            const params = [state];
+            this.#db.all(sql, params, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(rows.map(order => new InternalOrder(order.IssueDate, [], order.CustomerId, order.State, order.ID)));
+            })
+        });
+    }
+
+    // Function to get an internal order by id
+    // INPUT - id
+    // OUTPUT - internal order
+    getInternalOrder(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM InternalOrder WHERE ID = ?`;
+            const params = [id];
+            this.#db.get(sql, params, (err, row) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                if (row === undefined) {
+                    resolve(undefined);
+                } else
+                    resolve(new InternalOrder(row.IssueDate, [], row.CustomerId, row.State, row.ID));
+            })
+        });
+    };
+
+    // Function to get sku info of an internal order
+    // INPUT - internal order id
+    // OUTPUT - array of map{skuId, description, price, quantity}
+    getInternalOrderSku(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM InternalOrderSku WHERE InternalOrderId = ?`;
+            const params = [id];
+            this.#db.all(sql, params, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(rows.map(row => {
+                    return {
+                        SKUId: row.SkuId,
+                        description: row.Description,
+                        price: row.Price,
+                        qty: row.Quantity,
+                    }
+                }));
+
+            });
+        });
+    }
+
+    // Function to get sku items of an internal order
+    // INPUT - internal order id
+    // OUTPUT - array of map{skuId, RFID}
+    getInternalOrderSkuItems(id) {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT * FROM InternalOrderSkuItem WHERE InternalOrderId = ?`;
+            const params = [id];
+            this.#db.all(sql, params, (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(rows.map(row => {
+                    return {
+                        SKUId: row.SkuId,
+                        RFID: row.RFID,
+                    }
+                }));
+            });
+        });
+    }
+
+    // Function to store an internal order in the database
+    // INPUT - internal order
+    // OUTPUT - internal order
+    storeInternalOrder(io) {
+        const sql = `INSERT INTO InternalOrder (IssueDate, CustomerId, State) VALUES (?,?,?)`;
+        const params = [io.getIssueDate(), io.getCustomerId(), io.getState()];
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(new InternalOrder(io.getIssueDate(), io.getProducts(), io.getCustomerId(), io.getState(), this.lastID));
+            });
+        });
+    };
+
+    // Function to store the info about sku of an internal order in the database
+    // INPUT - internal order id, {skuId, description, price, quantity}
+    // OUTPUT - true if successful else false
+    storeInternalOrderSku(id, products) {
+        const sql = `INSERT INTO internalOrderSku(internalOrderId, skuId, description, price, quantity) VALUES (?,?,?,?,?)`;
+        let params = [];
+        for (const sku of products) {
+            params.push([id, sku.SKUId, sku.description, sku.price, sku.qty]);
+        }
+        return new Promise((resolve, reject) => {
+            let statement = this.#db.prepare(sql);
+            for (let i = 0; i < params.length; i++) {
+                statement.run(params[i], function (err) {
+                    if (err || this.changes == 0) reject(err);
+                });
+            }
+            statement.finalize();
+            resolve(true);
+        });
+    }
+
+    // Function to store the info about sku items of an internal order in the database
+    // INPUT - internal orderId, {skuId, RFID}
+    // OUTPUT - true if successful else false
+    storeInternalOrderSkuItems(id, skuItems) {
+        let sql = `INSERT INTO InternalOrderSkuItem (InternalOrderId, SkuId, RFID) VALUES (?,?,?)`;
+        const params = [];
+        for (const skuItem of skuItems) {
+            params.push([id, skuItem.SkuID, skuItem.RFID]);
+        }
+        return new Promise((resolve, reject) => {
+            let statement = this.#db.prepare(sql);
+            for (let i = 0; i < params.length; i++) {
+                statement.run(params[i], function (err) {
+                    if (err || this.changes == 0) reject(err);
+                });
+            }
+            statement.finalize();
+            resolve(true);
+        });
+    }
+
+    // Function to update the state of an internal order
+    // INPUT - internal order
+    // OUTPUT - true if successful else false
+    updateInternalOrder(io) {
+        const sql = `UPDATE InternalOrder SET State = ? WHERE ID = ?`;
+        const params = [io.getState(), io.getId()];
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(this.changes > 0);
+            });
+        });
+    };
+
+    // Function to delete an internal order
+    // INPUT - internal order id
+    // OUTPUT - true if successful else false
+    deleteInternalOrder(id) {
+        const sql = `DELETE FROM InternalOrder WHERE ID = ?`;
+        const params = [id];
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(this.changes > 0);
+            })
+        });
+    };
+
+    // Function to delete the info about sku of an internal order
+    // INPUT - internal order id
+    // OUTPUT - true if successful else false
+    deleteInternalOrderSku(id) {
+        const sql = `DELETE FROM InternalOrderSku WHERE InternalOrderId = ?`;
+        const params = [id];
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(this.changes > 0);
+            })
+        });
+    };
+
+    // Function to delete the info about sku items of an internal order
+    // INPUT - internal order id
+    // OUTPUT - true if successful else false
+    deleteInternalOrderSkuItems(id) {
+        const sql = `DELETE FROM InternalOrderSkuItem WHERE InternalOrderId = ?`;
+        const params = [id];
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, params, function (err) {
+                if (err) {
+                    console.error(err.message);
+                    reject(err);
+                }
+                resolve(this.changes > 0);
+            })
+        });
+    }
+
+    /**
+     * User
+     */
+
+    // it returns the user corresponding to the provided id and type; 'null' if it does not exist
+    getUserByIdAndType(userId, userType) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM User
+                              WHERE ID=? AND Type=?`;
+            
+            this.#db.get(sqlQuery, [userId, userType], (err, row) => {
+                if (err)
+                    reject(err);
+                else if (!row)
+                    resolve(null);
+                else 
+                    resolve(new User(row.Name, row.Surname, row.Email, row.Type, row.Password, row.ID));
+            });
+        });
+    }
+
+    getUser(username, type) {
+        let user;
+        let sql = 'SELECT * FROM User WHERE Email=? AND Type=?';
+        return new Promise((resolve, reject) => {
+            this.#db.all(sql, [username, type], (err, rows) => {
+                if (err)
+                    return reject(err);
+
+                for (let row of rows) {
+                    user = new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password);
+                }
+
+                return resolve(user);
+            });
+        })
+    }
+
+    getAllUsersOfType(type) {
+        let users = [];
+        let sql = 'SELECT * FROM User WHERE Type=?';
+        return new Promise((resolve, reject) => {
+            this.#db.all(sql, [type], (err, rows) => {
+                if (err)
+                    return reject(err);
+
+                for (let row of rows) {
+                    users.push(new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password));
+                }
+
+                return resolve(users);
+            });
+        })
+    }
+
+    getAllUsers() {
+        let users = [];
+        let sql = "SELECT * FROM User WHERE Type!='manager'";
+        return new Promise((resolve, reject) => {
+            this.#db.all(sql, (err, rows) => {
+                if (err)
+                    return reject(err);
+
+                for (let row of rows) {
+                    users.push(new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password));
+                }
+
+                return resolve(users);
+            });
+        })
+    }
+
+    storeNewUser(us) {
+        let sql = 'INSERT INTO User(Name, Surname, Email, Type, Password) VALUES (?,?,?,?,?)';
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, [us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()], function (err) {
+                if (err)
+                    return reject(err);
+
+                return resolve(new User(this.lastID, us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()));
+            });
+        })
+    }
+
+    updateUser(us) {
+        let sql = 'UPDATE User SET Name=?,Surname=?,Email=?,Type=?,Password=? WHERE ID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, [us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword(), us.getId()], function (err) {
+                if (err)
+                    return reject(err);
+
+                return resolve(this.changes);
+            });
+        })
+    }
+
+    deleteUser(id) {
+        let sql = 'DELETE FROM User WHERE ID=?';
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, [id], function (err) {
+                if (err)
+                    return reject(err);
+
+                return resolve(this.changes);
+            });
+        })
+    }
+}
+
+/*
+    #region Test
+
+async function main() {
+    const db2 = new DbManager2();
+
+    //const a = await db2.getAllTestDescriptors();
+    //console.log(a[1]);
+
+    //console.log(await db2.getTestDescriptor(2));
+
+    //console.log(await db2.storeTestDescriptor(new TestDescriptor(null,'test16','desc16',6)));
+
+    //console.log(await db2.updateTestDescriptor(new TestDescriptor(17,'test16upd','desc16',6)));
+
+    //console.log(await db2.deleteTestDescriptor(20));
+
+    //const a = await db2.getAllTestResultsBySkuIem('rfid2');
+    //console.log(a[0]);
+
+    //console.log(await db2.getTestResult(2,'rfid1'));
+
+    //console.log(await db2.storeTestResult(new TestResult(null,'rfid4',14,'23/04/2022',false)));
+    
+    //console.log(await db2.updateTestResult(new TestResult(7,'rfid4',144,'23/04/2022',false)));
+
+    //console.log(await db2.deleteTestResult(7,'rfid4'));
+
+    //console.log(await db2.getUser('e4@gmail.com'));
+
+    //const a = await db2.getAllUsersOfType('CUSTOMER');
+    //console.log(a[0]);
+
+    //const a = await db2.getAllUsers();
+    //console.log(a.length);
+
+    //console.log(await db2.updateUser(new User(1,'N1','S1','e1@gmail.com','CLERK','pass1')));
+
+    //console.log(await db2.deleteUser('e4@gmail.com'));
+
+    //db2.closeDb();
+
+    //console.log(await db2.deleteSkuItem().catch(err => err));
+    //console.log(await db2.updateSkuItem());
+}
+
+    main();
+
+    #endregion
+*/
+
+module.exports = DbManager.getInstance;

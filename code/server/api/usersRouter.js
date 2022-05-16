@@ -2,16 +2,18 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
 
-const DbManager = require('../db/dbManager2');
+// DbManager / DAO
+const DbManager = require('../db/dbManager');
 const dao = new DbManager();
 
+// import Service and inject dao
 const UserService = require("../services/userService");
 const userService = new UserService(dao);
 
 
 //GET /api/userinfo - getUserInfo
 router.get('/userinfo', async function(req, res) {
-
+    // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
@@ -34,7 +36,7 @@ router.get('/userinfo', async function(req, res) {
 
 //GET /api/suppliers - getAllSuppliers
 router.get('/suppliers', async function(req, res) {
-
+    // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
@@ -56,7 +58,7 @@ router.get('/suppliers', async function(req, res) {
 
 //GET /api/users - getAllUsers
 router.get('/users', async function(req, res) {
-
+    // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
@@ -78,7 +80,7 @@ router.get('/users', async function(req, res) {
 
 //POST /api/newUser - createNewUser
 router.post('/newUser', async function(req, res) {
-
+    // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
@@ -144,6 +146,7 @@ router.post('/deliveryEmployeeSessions', async function(req,res){
 
 //utility function used by all session POST APIs
 async function session(req,res,type){
+    // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
@@ -176,7 +179,7 @@ async function session(req,res,type){
 
 //POST /api/logout
 router.post('/logout', async function(req,res){
-
+    // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
@@ -192,7 +195,7 @@ router.post('/logout', async function(req,res){
 
 //PUT /api/users/:username - updateUserRights
 router.put('/users/:username', async function(req, res) {
-
+    // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }
@@ -229,7 +232,7 @@ router.put('/users/:username', async function(req, res) {
 
 //DELETE /api/users/:username/:type - deleteUser
 router.delete('/users/:username/:type', async function(req, res) {
-
+    // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
     }

@@ -9,7 +9,7 @@ class TestResultService {
 
     //GET /api/skuitems/:rfid/testResults
     async getTestResultsBySkuItem(rfid){
-        const skuitem = await this.#dao.getSkuItem(rfid).catch(err => "ErrorDB");
+        const skuitem = await this.#dao.getSkuItemByRfid(rfid).catch(err => "ErrorDB");
 
         if (skuitem === "ErrorDB") {
             return {
@@ -42,7 +42,7 @@ class TestResultService {
 
     //GET /api/skuitems/:rfid/testResults/:id 
     async getTestResult(id,rfid){
-        const skuitem = await this.#dao.getSkuItem(rfid).catch(err => "ErrorDB");
+        const skuitem = await this.#dao.getSkuItemByRfid(rfid).catch(err => "ErrorDB");
 
         if (skuitem === "ErrorDB") {
             return {
@@ -82,7 +82,7 @@ class TestResultService {
 
     //POST /api/skuitems/testResult 
     async createTestResult(rfid, idTestDescriptor, date, testresult){
-        const skuitem = await this.#dao.getSkuItem(rfid).catch(err => "ErrorDB");
+        const skuitem = await this.#dao.getSkuItemByRfid(rfid).catch(err => "ErrorDB");
 
         if (skuitem === "ErrorDB") {
             return {
@@ -152,7 +152,7 @@ class TestResultService {
             };
         }
 
-        const skuitem = await this.#dao.getSkuItem(rfid).catch(err => "ErrorDB");
+        const skuitem = await this.#dao.getSkuItemByRfid(rfid).catch(err => "ErrorDB");
 
         if (skuitem === "ErrorDB") {
             return {

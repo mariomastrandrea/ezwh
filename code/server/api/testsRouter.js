@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
+
+// validation
 const Joi = require('joi');
 
-const DbManager = require('../db/dbManager2');
+// DbManager / DAO
+const DbManager = require('../db/dbManager');
 const dao = new DbManager();
+
+// import Services and inject dao
 
 const TestDescriptorService = require("../services/testDescriptorService");
 const testDescriptorService = new TestDescriptorService(dao);

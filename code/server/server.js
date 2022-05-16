@@ -26,14 +26,6 @@ app.use('/api', testsRouter);
 app.use('/api', usersRouter);
 app.use('/api', positionsRouter);
 
-// GET /api/test  -  * used for test only *
-app.get('/api/hello', (req, res) => {
-    let message = {
-        message: 'Hello World!'
-    }
-    return res.status(200).json(message);
-});
-
 // activate the server
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);

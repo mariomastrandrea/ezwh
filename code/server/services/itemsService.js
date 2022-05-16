@@ -47,7 +47,7 @@ class ItemsService {
             return NOT_FOUND(`sku ${skuId} not found`);
 
         // check supplier existence
-        const supplier = this.#dao.getUser(supplierId, 'SUPPLIER');
+        const supplier = this.#dao.getUserByIdAndType(supplierId, 'SUPPLIER');
 
         if (!supplier)
             return NOT_FOUND(`supplier ${supplierId} not found`);
