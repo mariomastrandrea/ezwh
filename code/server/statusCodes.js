@@ -12,9 +12,19 @@ const NO_CONTENT = () => ({
     code: 204
 });
 
+const UNAUTHORIZED = (message) => ({
+    error: `Unauthorized${message ? ` - ${message}` : ""}`,
+    code: 404
+});
+
 const NOT_FOUND = (message) => ({
     error: `Not Found${message ? ` - ${message}` : ""}`,
     code: 404
+});
+
+const CONFLICT = (message) => ({
+    error: `Conflict${message ? ` - ${message}` : ""}`,
+    code: 409
 });
 
 const UNPROCESSABLE_ENTITY = (message) => ({
@@ -36,7 +46,9 @@ module.exports = {
     OK, 
     CREATED, 
     NO_CONTENT, 
-    NOT_FOUND, 
+    UNAUTHORIZED,
+    NOT_FOUND,
+    CONFLICT, 
     UNPROCESSABLE_ENTITY, 
     INTERNAL_SERVER_ERROR,
     SERVICE_UNAVAILABLE
