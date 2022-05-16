@@ -50,8 +50,8 @@ router.post("/position", async (req, res) => {
             aisleID: Joi.string().min(4).max(4).required(),
             row: Joi.string().min(4).max(4).required(),
             col: Joi.string().min(4).max(4).required(),
-            maxWeight: Joi.number().required(),
-            maxVolume: Joi.number().required()
+            maxWeight: Joi.number().min(0).required(),
+            maxVolume: Joi.number().min(0).required()
         })
 
         const result = schema.validate(req.body);
@@ -102,10 +102,10 @@ router.put("/position/:positionID", async (req, res) => {
             newAisleID: Joi.string().min(4).max(4).required(),
             newRow: Joi.string().min(4).max(4).required(),
             newCol: Joi.string().min(4).max(4).required(),
-            newMaxWeight: Joi.number().required(),
-            newMaxVolume: Joi.number().required(),
-            newOccupiedWeight: Joi.number().required(),
-            newOccupiedVolume: Joi.number().required()
+            newMaxWeight: Joi.number().min(0).required(),
+            newMaxVolume: Joi.number().min(0).required(),
+            newOccupiedWeight: Joi.number().min(0).required(),
+            newOccupiedVolume: Joi.number().min(0).required()
         })
 
         const result = schema.validate(req.body);

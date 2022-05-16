@@ -1,4 +1,4 @@
-const DbManagerFactory = require('../../db/dbManager3');
+const DbManagerFactory = require('../../db/dbManager');
 const dao = DbManagerFactory();
 const RestockOrder = require('../../models/restockOrder');
 const ReturnOrder = require('../../models/returnOrder');

@@ -111,7 +111,7 @@ class InternalOrderService {
             switch (body.newState) {
                 case 'COMPLETED':
                     result = await this.dao.storeInternalOrderSkuItems(io.getId(), body.products);
-                case 'ACCEPTED':
+                default:
                     io.setState(body.newState);
                     result = await this.dao.updateInternalOrder(io);
                     break;
@@ -130,7 +130,6 @@ class InternalOrderService {
 
             const io = await this.dao.getInternalOrder(parsedId);
             if (!io) return statusCodes.NOT_FOUND();
-
             if (io.getState() !== 'ISSUED')
                 return statusCodes.SERVICE_UNAVAILABLE();
 
@@ -142,6 +141,7 @@ class InternalOrderService {
             }
             let result = await this.dao.deleteInternalOrderSku(io.getId());
             result += await this.dao.deleteInternalOrder(io.getId());
+            
             if (result > 0) return statusCodes.NO_CONTENT();
             return statusCodes.SERVICE_UNAVAILABLE();
         } catch (err) {

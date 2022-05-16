@@ -6,7 +6,7 @@ const Joi = require('joi');
 
 // DbManager / DAO
 const DbManager = require('../db/dbManager');
-const dao = new DbManager();
+const dao = DbManager();
 
 // import Services and inject dao
 
@@ -48,7 +48,7 @@ router.get('/testDescriptors/:id', async function (req, res) {
     }
 
     try {
-        if (Joi.number().integer().required().validate(req.params.id).error) {
+        if (Joi.number().integer().min(1).required().validate(req.params.id).error) {
             return res.status(422).send('Invalid test descriptor id')
         }
 
@@ -77,7 +77,7 @@ router.post('/testDescriptor', async function (req, res) {
         const schema = Joi.object({
             name: Joi.string().required(),
             procedureDescription: Joi.string().required(),
-            idSKU: Joi.number().integer().required()
+            idSKU: Joi.number().integer().min(1).required()
         });
 
         const result = schema.validate(req.body);
@@ -111,7 +111,7 @@ router.put('/testDescriptor/:id', async function (req, res) {
         const schema = Joi.object({
             newName: Joi.string().required(),
             newProcedureDescription: Joi.string().required(),
-            newIdSKU: Joi.number().integer().required()
+            newIdSKU: Joi.number().integer().min(1).required()
         });
 
         const result = schema.validate(req.body);
@@ -145,7 +145,7 @@ router.delete('/testDescriptor/:id', async function (req, res) {
     }
 
     try {
-        if (Joi.number().integer().required().validate(req.params.id).error)
+        if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Invalid test descriptor id')
 
             const { code, error } = await testDescriptorService.deleteTestDescriptor(parseInt(req.params.id));
@@ -206,7 +206,7 @@ router.get('/skuitems/:rfid/testResults/:id', async function(req, res) {
             return res.status(422).send('Invalid rfid')
         }
 
-        if (Joi.number().integer().required().validate(req.params.id).error) {
+        if (Joi.number().integer().min(1).required().validate(req.params.id).error) {
             return res.status(422).send('Invalid test result id')
         }
 
@@ -268,7 +268,7 @@ router.put('/skuitems/:rfid/testResult/:id', async function(req, res) {
 
     try {
         const schema = Joi.object({
-            newIdTestDescriptor: Joi.number().integer().required(),
+            newIdTestDescriptor: Joi.number().integer().min(1).required(),
             newDate: Joi.date().required(),
             newResult: Joi.boolean().required()
         });
@@ -282,7 +282,7 @@ router.put('/skuitems/:rfid/testResult/:id', async function(req, res) {
             return res.status(422).send('Invalid rfid')
         }
 
-        if (Joi.number().integer().required().validate(req.params.id).error) {
+        if (Joi.number().integer().min(1).required().validate(req.params.id).error) {
             return res.status(422).send('Invalid test result id')
         }
 
@@ -312,7 +312,7 @@ router.delete('/skuitems/:rfid/testResult/:id', async function(req, res) {
             return res.status(422).send('Invalid rfid')
         }
 
-        if (Joi.number().integer().required().validate(req.params.id).error) {
+        if (Joi.number().integer().min(1).required().validate(req.params.id).error) {
             return res.status(422).send('Invalid test result id')
         }
 

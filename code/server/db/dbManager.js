@@ -910,7 +910,7 @@ class DbManager {
     // OUTPUT - true if successful else false
     storeRestockOrderSkuItems(id, skuItems) {
         let sql = `INSERT INTO RestockOrderSkuItem (RestockOrderId, SkuId, RFID) VALUES (?,?,?)`;
-        const params = skuItems.map(skuItem => [id, skuItem.SKUId, skuItem.RFID]);
+        const params = skuItems.map(skuItem => [id, skuItem.SKUId, skuItem.rfid]);
 
         return new Promise((resolve, reject) => {
             let statement = this.#db.prepare(sql);

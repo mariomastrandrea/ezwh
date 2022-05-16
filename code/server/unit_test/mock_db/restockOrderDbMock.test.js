@@ -186,6 +186,7 @@ describe('get restock orders', () => {
         let res = await restockOrderService.getRestockOrderById(id);
         // expected 200
         expect(res.obj.toDatabase()).toEqual(fakeRestockOrder.toDatabase());
+        expect(res.obj.toJSON()).toEqual(fakeRestockOrder.toJSON());
         expect(res.code).toEqual(200);
 
         res = await restockOrderService.getRestockOrderById(id + 1);

@@ -4,7 +4,7 @@ const Joi = require('joi');
 
 // DbManager / DAO
 const DbManager = require('../db/dbManager');
-const dao = new DbManager();
+const dao = DbManager();
 
 // import Service and inject dao
 const UserService = require("../services/userService");

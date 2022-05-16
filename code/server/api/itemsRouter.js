@@ -56,7 +56,7 @@ router.get('/skus/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().required().validate(id).error) {
+        if (Joi.number().integer().min(1).required().validate(id).error) {
             return res.status(422).send('Unprocessable Entity');
         }
 
@@ -85,11 +85,11 @@ router.post('/sku', async (req, res) => {
         // validate request body
         const schema = Joi.object({
             description: Joi.string().required(),
-            weight: Joi.number().required(),
-            volume: Joi.number().required(),
-            notes: Joi.string().required(),
-            price: Joi.number().required(),
-            availableQuantity: Joi.number().integer().required()
+            weight: Joi.number().min(0).required(),
+            volume: Joi.number().min(0).required(),
+            notes: Joi.string().min(0).required(),
+            price: Joi.number().min(0).required(),
+            availableQuantity: Joi.number().integer().min(0).required()
         })
 
         const result = schema.validate(req.body);
@@ -105,7 +105,7 @@ router.post('/sku', async (req, res) => {
             return res.status(code).send(error);
         }
 
-        return res.status(code).end(); s
+        return res.status(code).end();
     }
     catch (err) {
         console.log(err);
@@ -123,18 +123,18 @@ router.put('/sku/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().required().validate(id).error) {
+        if (Joi.number().integer().min(1).required().validate(id).error) {
             return res.status(422).send('Unprocessable Entity');
         }
 
         // validate request body
         const schema = Joi.object({
             newDescription: Joi.string().required(),
-            newWeight: Joi.number().required(),
-            newVolume: Joi.number().required(),
+            newWeight: Joi.number().min(0).required(),
+            newVolume: Joi.number().min(0).required(),
             newNotes: Joi.string().required(),
-            newPrice: Joi.number().required(),
-            newAvailableQuantity: Joi.number().integer()    // not required
+            newPrice: Joi.number().min(0).required(),
+            newAvailableQuantity: Joi.number().integer().min(0)    // not required
         })
 
         const result = schema.validate(req.body);
@@ -169,7 +169,7 @@ router.put('/sku/:id/position', async (req, res) => {
         // validate URL parameter
         const skuId = req.params.id;
 
-        if (Joi.number().integer().required().validate(skuId).error) {
+        if (Joi.number().integer().min(1).required().validate(skuId).error) {
             return res.status(422).send('Unprocessable Entity');
         }
 
@@ -205,7 +205,7 @@ router.delete('/skus/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().required().validate(id).error) {
+        if (Joi.number().integer().min(1).required().validate(id).error) {
             return res.status(422).send('Unprocessable Entity');
         }
 
@@ -260,7 +260,7 @@ router.get('/skuitems/sku/:id', async (req, res) => {
         // validate URL parameter
         const skuId = req.params.id;
 
-        if (Joi.number().integer().required().validate(skuId).error)
+        if (Joi.number().integer().min(1).required().validate(skuId).error)
             return res.status(422).send('Unprocessable Entity');
 
         const { error, code, obj } = await skuItemsService.getAvailableSkuItemsOf(skuId);
@@ -318,7 +318,7 @@ router.post('/skuitem', async (req, res) => {
         // validate response body
         const schema = Joi.object({
             RFID: Joi.string().min(32).max(32).required(),
-            SKUId: Joi.number().required(),
+            SKUId: Joi.number().min(0).required(),
             DateOfStock: Joi.date().required()
                     .format(["YYYY/MM/DD", "YYYY/MM/DD HH:mm"]) // permits either YYYY/MM/DD format and YYYY/MM/DD HH:mm format
                     .allow(null)
@@ -326,7 +326,7 @@ router.post('/skuitem', async (req, res) => {
 
         const result = schema.validate(req.body);
 
-        if (result.error) {
+        if (result.error || !isInt(req.body.RFID)) {
             return res.status(422).send('Unprocessable Entity');
         }
 
@@ -450,7 +450,7 @@ router.get('/items/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().required().validate(id).error)
+        if (Joi.number().integer().min(1).required().validate(id).error)
             return res.status(422).send('Unprocessable entity');
 
         const { error, code, obj } = await itemsService.getItemById(id);
@@ -476,11 +476,11 @@ router.post('/item', async (req, res) => {
     try {
         // validate request body
         const schema = Joi.object({
-            id: Joi.number().integer().required(),
+            id: Joi.number().integer().min(1).required(),
             description: Joi.string().required(),
-            price: Joi.number().required(),
-            SKUId: Joi.number().integer().required(),
-            supplierId: Joi.number().integer().required()
+            price: Joi.number().min(0).required(),
+            SKUId: Joi.number().integer().min(0).required(),
+            supplierId: Joi.number().integer().min(0).required()
         });
 
         const result = schema.validate(req.body);
@@ -514,12 +514,12 @@ router.put('/item/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().required().validate(id).error)
+        if (Joi.number().integer().min(1).required().validate(id).error)
             return res.status(422).send('Unprocessable entity');
 
         const schema = Joi.object({
             newDescription: Joi.string().required(),
-            newPrice: Joi.number().required()
+            newPrice: Joi.number().min(0).required()
         });
 
         const result = schema.validate(req.body);
@@ -550,7 +550,7 @@ router.delete('/items/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().required().validate(id).error)
+        if (Joi.number().integer().min(1).required().validate(id).error)
             return res.status(422).send('Unprocessable entity');
 
         const { error, code } = await itemsService.deleteItem(itemId);
