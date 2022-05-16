@@ -504,14 +504,65 @@ router.post('/item', async (req, res) => {
     }
 });
 
-////////////////////////////////////////////////////////////////
-
 router.put('/item/:id', async (req, res) => {
-    
+    // TODO: add login check
+    if (!true) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    try {
+        // validate URL parameter
+        const { id } = req.params;
+
+        if (Joi.number().integer().required().validate(id).error)
+            return res.status(422).send('Unprocessable entity');
+
+        const schema = Joi.object({
+            newDescription: Joi.string().required(),
+            newPrice: Joi.number().required()
+        });
+
+        const result = schema.validate(req.body);
+
+        if (result.error) 
+            return res.status(422).send('Unprocessable Entity')
+
+        const { newDescription, newPrice } = req.body;
+        const { error, code } = await itemsService.updateItem(id, newDescription, newPrice);
+
+        return error ?
+            res.status(code).send(error) : 
+            res.status(code).end();    
+    } 
+    catch (err) {
+        console.log(err);
+        return res.status(503).send('Service Unavailable');
+    }
 });
 
 router.delete('/items/:id', async (req, res) => {
-    
+    // TODO: add login check
+    if (!true) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    try {
+        // validate URL parameter
+        const { id } = req.params;
+
+        if (Joi.number().integer().required().validate(id).error)
+            return res.status(422).send('Unprocessable entity');
+
+        const { error, code } = await itemsService.deleteItem(itemId);
+
+        return error ?
+            res.status(code).send(error) : 
+            res.status(code).end();       
+    } 
+    catch (err) {
+        console.log(err);
+        return res.status(503).send('Service Unavailable');
+    }
 });
 
 // module export

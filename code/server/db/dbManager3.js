@@ -1228,7 +1228,7 @@ class DbManager3 {
                               FROM User
                               WHERE ID=? AND Type=?`;
             
-            this.#db.get(sqlStatement, [userId, userType], (err, row) => {
+            this.#db.get(sqlQuery, [userId, userType], (err, row) => {
                 if (err)
                     reject(err);
                 else if (!row)
