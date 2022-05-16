@@ -17,7 +17,7 @@ class InternalOrderService {
                     io.setProducts(products);
 
                     if (io.getState() === 'COMPLETED') {
-                        const skuItems = await this.dao.getInternalOrderSku(ro.getId());
+                        const skuItems = await this.dao.getInternalOrderSkuItems(io.getId());
                         io.setSkuItems(skuItems);
                     }
                 }
@@ -110,10 +110,10 @@ class InternalOrderService {
             let result = 0;
             switch (body.newState) {
                 case 'COMPLETED':
-                    result = await this.dao.storeInternalOrderSkuItems(io.getId(), body.skuItems);
+                    result = await this.dao.storeInternalOrderSkuItems(io.getId(), body.products);
                 case 'ACCEPTED':
                     io.setState(body.newState);
-                    result = await this.dao.updateInternalOrder(ro);
+                    result = await this.dao.updateInternalOrder(io);
                     break;
             }
             if (result) return statusCodes.OK(true);

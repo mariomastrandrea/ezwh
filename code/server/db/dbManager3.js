@@ -1113,7 +1113,7 @@ class DbManager3 {
         const sql = `INSERT INTO internalOrderSku(internalOrderId, skuId, description, price, quantity) VALUES (?,?,?,?,?)`;
         let params = [];
         for (const sku of products) {
-            params.push([id, sku.SKUId, sku.description, sku.price, sku.quantity]);
+            params.push([id, sku.SKUId, sku.description, sku.price, sku.qty]);
         }
         return new Promise((resolve, reject) => {
             let statement = this.#db.prepare(sql);

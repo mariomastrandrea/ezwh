@@ -132,7 +132,7 @@ router.post('/internalOrders', async (req, res) => {
         const issueDate = dayjs(req.body.issueDate);
 
         const result = schema.validate(req.body);
-        if (result.error || issueDate < dayjs()) {
+        if (result.error || dayjs().diff(issueDate, 'day') > 3) {
             return res.status(422).send('Unprocessable Entity')
         }
 
