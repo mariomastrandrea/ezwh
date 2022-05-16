@@ -291,7 +291,6 @@ class DbManager {
             });
         })
     }
-    /* End of Position */
 
     /* Start of Restock Order */
 
@@ -1548,56 +1547,5 @@ class DbManager {
         })
     }
 }
-
-/*
-    #region Test
-
-async function main() {
-    const db2 = new DbManager2();
-
-    //const a = await db2.getAllTestDescriptors();
-    //console.log(a[1]);
-
-    //console.log(await db2.getTestDescriptor(2));
-
-    //console.log(await db2.storeTestDescriptor(new TestDescriptor(null,'test16','desc16',6)));
-
-    //console.log(await db2.updateTestDescriptor(new TestDescriptor(17,'test16upd','desc16',6)));
-
-    //console.log(await db2.deleteTestDescriptor(20));
-
-    //const a = await db2.getAllTestResultsBySkuIem('rfid2');
-    //console.log(a[0]);
-
-    //console.log(await db2.getTestResult(2,'rfid1'));
-
-    //console.log(await db2.storeTestResult(new TestResult(null,'rfid4',14,'23/04/2022',false)));
-    
-    //console.log(await db2.updateTestResult(new TestResult(7,'rfid4',144,'23/04/2022',false)));
-
-    //console.log(await db2.deleteTestResult(7,'rfid4'));
-
-    //console.log(await db2.getUser('e4@gmail.com'));
-
-    //const a = await db2.getAllUsersOfType('CUSTOMER');
-    //console.log(a[0]);
-
-    //const a = await db2.getAllUsers();
-    //console.log(a.length);
-
-    //console.log(await db2.updateUser(new User(1,'N1','S1','e1@gmail.com','CLERK','pass1')));
-
-    //console.log(await db2.deleteUser('e4@gmail.com'));
-
-    //db2.closeDb();
-
-    //console.log(await db2.deleteSkuItem().catch(err => err));
-    //console.log(await db2.updateSkuItem());
-}
-
-    main();
-
-    #endregion
-*/
 
 module.exports = DbManager.getInstance;

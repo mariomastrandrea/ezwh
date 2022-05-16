@@ -1,5 +1,5 @@
 const RestockOrderService = require('../../services/restockOrderService');
-const dao = require('../../db/mock/mockOrders');
+const dao = require('../mock/mockDbManager');
 const RestockOrder = require('../../models/restockOrder');
 
 const restockOrderService = new RestockOrderService(dao);

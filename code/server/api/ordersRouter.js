@@ -5,7 +5,7 @@ const router = express.Router();
 const dayjs = require('dayjs');
 
 // validation
-const Joi = require('joi');
+const Joi = require('joi').extend(require('@joi/date'));
 
 // DbManager / DAO
 const DbManagerFactory = require('../db/dbManager');
@@ -129,7 +129,7 @@ router.post('/internalOrders', async (req, res) => {
             qty: Joi.number().integer().min(0).required()
         })
         const schema = Joi.object({
-            issueDate: Joi.date().required(),
+            issueDate: Joi.date().required().format("YYYY/MM/DD HH:mm"),
             products: Joi.array().items(productSchema).required(),
             customerId: Joi.number().integer().min(1).required()
         });
@@ -282,7 +282,7 @@ router.post('/returnOrder', async (req, res) => {
             RFID: Joi.string().regex(/^[0-9]{32}$/).required()
         })
         const schema = Joi.object({
-            returnDate: Joi.date().required(),
+            returnDate: Joi.date().required().format("YYYY/MM/DD HH:mm"),
             products: Joi.array().items(productSchema).required(),
             restockOrderId: Joi.number().integer().min(0).required()
         });
@@ -440,7 +440,7 @@ router.post('/restockOrder', async (req, res) => {
             qty: Joi.number().integer().min(0).required()
         })
         const schema = Joi.object({
-            issueDate: Joi.date().required(),
+            issueDate: Joi.date().required().format("YYYY/MM/DD HH:mm"),
             products: Joi.array().items(productSchema).required(),
             supplierId: Joi.number().integer().min(1).required()
         });

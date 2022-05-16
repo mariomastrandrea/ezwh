@@ -1,5 +1,5 @@
 const InternalOrderService = require('../../services/internalOrderService');
-const dao = require('../../db/mock/mockOrders');
+const dao = require('../mock/mockDbManager');
 const InternalOrder = require('../../models/internalOrder');
 
 const internalOrderService = new InternalOrderService(dao);
