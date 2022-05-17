@@ -30,7 +30,7 @@ class ReturnOrderService {
             const parsedId = typeof id === 'number' ? id : parseInt(id);
 
             const ro = await this.dao.getReturnOrder(parsedId);
-            if (!ro) return statusCodes.NOT_FOUND();
+            if (!ro) return statusCodes.NOT_FOUND(`No return order found with id: ${id}`);
             const products = await this.dao.getReturnOrderSkuItems(ro.getId());
             ro.setProducts(products);
             return statusCodes.OK(ro);
@@ -44,7 +44,7 @@ class ReturnOrderService {
         try {
             const restockId = typeof restockOrderId === 'number' ? restockOrderId : parseInt(restockOrderId);
             const restockOrder = await this.dao.getRestockOrder(restockId);
-            if (!restockOrder) return statusCodes.NOT_FOUND();
+            if (!restockOrder) return statusCodes.NOT_FOUND(`No restock order found with id: ${restockOrderId}`);
 
             const ro = new ReturnOrder(
                 returnDate,
@@ -52,13 +52,13 @@ class ReturnOrderService {
                 restockId
             );
 
+            if (dayjs(returnDate) < dayjs(restockOrder.getIssueDate())) return statusCodes.UNPROCESSABLE_ENTITY(`Return date must be after issue date`);
             const roFromDb = await this.dao.storeReturnOrder(ro);
 
-            if (!roFromDb) return statusCodes.SERVICE_UNAVAILABLE();
-            if (dayjs(returnDate) >= dayjs(restockOrder.getIssueDate())) return statusCodes.UNPROCESSABLE_ENTITY();
-
+            if (!roFromDb) return statusCodes.SERVICE_UNAVAILABLE(`There was an error creating the return order`);
+        
             const productsAdded = await this.dao.storeReturnOrderSkuItems(roFromDb.getId(), roFromDb.getProducts());
-            if (!productsAdded) return statusCodes.SERVICE_UNAVAILABLE();
+            if (!productsAdded) return statusCodes.SERVICE_UNAVAILABLE(`There was an error adding the products to the return order`);
 
             return statusCodes.CREATED();
         } catch (err) {
@@ -71,11 +71,11 @@ class ReturnOrderService {
         try {
             const parsedId = typeof id === 'number' ? id : parseInt(id);
             const ro = await this.dao.getReturnOrder(parsedId);
-            if (!ro) return statusCodes.NOT_FOUND();
+            if (!ro) return statusCodes.NOT_FOUND(`No return order found with id: ${id}`);
 
             const deleted = await this.dao.deleteReturnOrder(parsedId);
             if (deleted) return statusCodes.NO_CONTENT();
-            return statusCodes.SERVICE_UNAVAILABLE();
+            return statusCodes.SERVICE_UNAVAILABLE(`There was an error deleting the return order`);
         }catch (err) {
             console.log(err);
             return statusCodes.SERVICE_UNAVAILABLE();

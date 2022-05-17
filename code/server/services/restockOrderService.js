@@ -51,7 +51,7 @@ class RestockOrderService {
         try {
             const parsedId = typeof id === 'number' ? id : parseInt(id);
             const ro = await this.dao.getRestockOrder(parsedId);
-            if (!ro) return statusCodes.NOT_FOUND();
+            if (!ro) return statusCodes.NOT_FOUND(`No restock order found with id: ${id}`);
 
             const products = await this.dao.getRestockOrderSku(ro.getId());
             ro.setProducts(products);
@@ -72,8 +72,8 @@ class RestockOrderService {
             const parsedId = typeof id === 'number' ? id : parseInt(id);
             const ro = await this.dao.getRestockOrder(parsedId);
             let ris = [];
-            if (!ro) return statusCodes.NOT_FOUND();
-            if (ro.getState() != 'COMPLETEDRETURN') return statusCodes.UNPROCESSABLE_ENTITY();
+            if (!ro) return statusCodes.NOT_FOUND(`No restock order found with id: ${id}`);
+            if (ro.getState() != 'COMPLETEDRETURN') return statusCodes.UNPROCESSABLE_ENTITY(`Restock order with id: ${id} is not COMPLETED RETURN state`);
             if (ro.getState() == 'COMPLETEDRETURN') {
                 ris = await this.dao.getReturnItemsByRestockOrderId(parsedId);
             }
@@ -96,7 +96,7 @@ class RestockOrderService {
             // then create the restock order skus in the table of restock order skus
             const result = await this.dao.storeRestockOrderSku(roFromDb.getId(), products);
             if (result) return statusCodes.CREATED();
-            return statusCodes.SERVICE_UNAVAILABLE();
+            return statusCodes.SERVICE_UNAVAILABLE(`There was an error creating the restock order`);
         } catch (err) {
             console.log(err);
             return statusCodes.SERVICE_UNAVAILABLE();
@@ -110,12 +110,12 @@ class RestockOrderService {
             const parsedId = typeof id === 'number' ? id : parseInt(id);
             const ro = await this.dao.getRestockOrder(parsedId);
             if (!ro)
-                return statusCodes.NOT_FOUND();
+                return statusCodes.NOT_FOUND(`No restock order found with id: ${id}`);
 
             let result = 0;
             switch (type) {
                 case 'skuItems':
-                    if (ro.getState() != 'DELIVERED') return statusCodes.UNPROCESSABLE_ENTITY();
+                    if (ro.getState() != 'DELIVERED') return statusCodes.UNPROCESSABLE_ENTITY(`Restock order with id: ${id} is not DELIVERED state`);
                     result = await this.dao.storeRestockOrderSkuItems(ro.getId(), body.skuItems);
                     break;
                 case 'state':
@@ -127,13 +127,13 @@ class RestockOrderService {
                         ro.getState() != 'DELIVERY' ||
                         dayjs(body.transportNote.deliveryDate) < dayjs(ro.getIssueDate())
                     )
-                        return statusCodes.UNPROCESSABLE_ENTITY();
+                        return statusCodes.UNPROCESSABLE_ENTITY(`Restock order with id: ${id} is not DELIVERY state or delivery date is before issue date`);
                     ro.setTransportNote(body.transportNote);
                     result = await this.dao.updateRestockOrder(ro);
                     break;
             }
             if (result) return statusCodes.OK(true);
-            return statusCodes.SERVICE_UNAVAILABLE();
+            return statusCodes.SERVICE_UNAVAILABLE(`There was an error updating the restock order with id: ${id}`);
         } catch (err) {
             console.log(err);
             return statusCodes.SERVICE_UNAVAILABLE();
@@ -145,15 +145,15 @@ class RestockOrderService {
             const parsedId = typeof id === 'number' ? id : parseInt(id);
 
             const ro = await this.dao.getRestockOrder(parsedId);
-            if (!ro) return statusCodes.NOT_FOUND();
+            if (!ro) return statusCodes.NOT_FOUND(`No restock order found with id: ${id}`);
 
             if (ro.getState() !== 'ISSUED')
-                return statusCodes.SERVICE_UNAVAILABLE();
+                return statusCodes.SERVICE_UNAVAILABLE(`Restock order with id: ${id} is not ISSUED state, cannot delete because it will cause data inconsistency`);
 
             let result = await this.dao.deleteRestockOrderSku(ro.getId());
             result += await this.dao.deleteRestockOrder(ro.getId());
             if (result > 0) return statusCodes.NO_CONTENT();
-            return statusCodes.SERVICE_UNAVAILABLE();
+            return statusCodes.SERVICE_UNAVAILABLE(`There was an error deleting the restock order with id: ${id}`);
         } catch (err) {
             console.log(err);
             return statusCodes.SERVICE_UNAVAILABLE();

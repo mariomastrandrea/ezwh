@@ -128,7 +128,7 @@ describe('get return orders', () => {
 
         // expect 404
         res = await returnOrderService.getReturnOrderById(id + 1);
-        expect(res.error).toEqual('Not Found');
+        expect(res.error).toEqual(expect.stringContaining('Not Found'));
         expect(res.code).toEqual(404);
     })
 });
@@ -152,7 +152,7 @@ describe('create return order', () => {
     test('add return order', async () => {
         // expect 200
         let res = await returnOrderService.createReturnOrder(
-            '2020/01/01 00:00',
+            "2021/11/30 09:33",
             [
                 {
                     SKUId: 1,
@@ -170,7 +170,7 @@ describe('create return order', () => {
             1
         );
         expect(dao.storeReturnOrder.mock.calls[0][0].toJSON()).toEqual(new ReturnOrder(
-            '2020/01/01 00:00',
+            "2021/11/30 09:33",
             [
                 {
                     SKUId: 1,
@@ -225,7 +225,7 @@ describe('create return order', () => {
             453
         );
 
-        expect(res.error).toEqual('Not Found');
+        expect(res.error).toEqual(expect.stringContaining('Not Found'));
         expect(res.code).toEqual(404);
 
         // expect 503
@@ -248,8 +248,8 @@ describe('create return order', () => {
             1
         );
 
-        expect(res.error).toEqual('Service Unavailable');
-        expect(res.code).toEqual(503);
+        expect(res.error).toEqual(expect.stringContaining('Unprocessable Entity'));
+        expect(res.code).toEqual(422);
     });
 });
 
@@ -272,12 +272,12 @@ describe('delete return order', () => {
 
         // expect 404
         res = await returnOrderService.deleteReturnOrder(id + 1);
-        expect(res.error).toEqual('Not Found');
+        expect(res.error).toEqual(expect.stringContaining('Not Found'));
         expect(res.code).toEqual(404);
 
         // expect 503
         res = await returnOrderService.deleteReturnOrder(id);
-        expect(res.error).toEqual('Service Unavailable');
+        expect(res.error).toEqual(expect.stringContaining('Service Unavailable'));
         expect(res.code).toEqual(503);
     });
 });
