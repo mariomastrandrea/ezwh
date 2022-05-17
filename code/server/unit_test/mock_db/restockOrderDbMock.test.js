@@ -195,7 +195,7 @@ describe('get restock orders', () => {
         // expected 404
         const notId = 2938329;
         res = await restockOrderService.getRestockOrderById(notId);
-        expect(res.error).toEqual('Not Found');
+        expect(res.error).toEqual(expect.stringContaining('Not Found'));
         expect(res.code).toEqual(404);
     });
 
@@ -232,7 +232,7 @@ describe('get restock orders', () => {
         const id = 1;
         let res = await restockOrderService.getReturnItemsByRestockOrderId(id);
         // expected 422 because not completed return
-        expect(res.error).toEqual('Unprocessable Entity');
+        expect(res.error).toEqual(expect.stringContaining('Unprocessable Entity'));
         expect(res.code).toEqual(422);
 
         // expected 200
@@ -251,7 +251,7 @@ describe('get restock orders', () => {
 
         // expect 404 because no restock order with id
         res = await restockOrderService.getReturnItemsByRestockOrderId(id + 2);
-        expect(res.error).toEqual('Not Found');
+        expect(res.error).toEqual(expect.stringContaining('Not Found'));
         expect(res.code).toEqual(404);
     });
 });
@@ -354,7 +354,7 @@ describe("create restock order", () => {
             }
         ]);
 
-        expect(res.error).toEqual('Service Unavailable');
+        expect(res.error).toEqual(expect.stringContaining('Service Unavailable'));
         expect(res.code).toEqual(503);
     });
 
