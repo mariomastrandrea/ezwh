@@ -1,9 +1,10 @@
 const RestockOrder = require('../models/restockOrder');
 const statusCodes = require('../statusCodes');
+const { int } = require("../utilities");
 const dayjs = require('dayjs');
 
 class RestockOrderService {
-    dao;
+    #dao;
 
     constructor(dao) {
         this.dao = dao;
@@ -17,7 +18,7 @@ class RestockOrderService {
                     const products = await this.dao.getRestockOrderSku(ro.getId());
                     ro.setProducts(products);
 
-                    if (ro.getState() != 'ISSUED' || ro.getState() != 'DELIVERY') {
+                    if (ro.getState() !== 'ISSUED' && ro.getState() !== 'DELIVERY') {
                         const skuItems = await this.dao.getRestockOrderSkuItems(ro.getId());
                         ro.setSkuItems(skuItems);
                     }
@@ -49,13 +50,13 @@ class RestockOrderService {
 
     getRestockOrderById = async (id) => {
         try {
-            const parsedId = typeof id === 'number' ? id : parseInt(id);
+            const parsedId = typeof id === 'number' ? id : int(id);
             const ro = await this.dao.getRestockOrder(parsedId);
             if (!ro) return statusCodes.NOT_FOUND();
 
             const products = await this.dao.getRestockOrderSku(ro.getId());
             ro.setProducts(products);
-            if (ro.getState() != 'ISSUED' || ro.getState() != 'DELIVERY') {
+            if (ro.getState() !== 'ISSUED' && ro.getState() !== 'DELIVERY') {
                 const skuItems = await this.dao.getRestockOrderSkuItems(ro.getId());
                 ro.setSkuItems(skuItems);
             }
@@ -64,17 +65,16 @@ class RestockOrderService {
             console.log(err);
             return statusCodes.INTERNAL_SERVER_ERROR();
         }
-
     };
 
     getReturnItemsByRestockOrderId = async (id) => {
         try {
-            const parsedId = typeof id === 'number' ? id : parseInt(id);
+            const parsedId = typeof id === 'number' ? id : int(id);
             const ro = await this.dao.getRestockOrder(parsedId);
             let ris = [];
             if (!ro) return statusCodes.NOT_FOUND();
-            if (ro.getState() != 'COMPLETEDRETURN') return statusCodes.UNPROCESSABLE_ENTITY();
-            if (ro.getState() == 'COMPLETEDRETURN') {
+            if (ro.getState() !== 'COMPLETEDRETURN') return statusCodes.UNPROCESSABLE_ENTITY();
+            if (ro.getState() === 'COMPLETEDRETURN') {
                 ris = await this.dao.getReturnItemsByRestockOrderId(parsedId);
             }
             return statusCodes.OK(ris);

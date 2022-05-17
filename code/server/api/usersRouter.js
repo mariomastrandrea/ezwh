@@ -19,8 +19,8 @@ router.get('/userinfo', async (req, res) => {
     }
 
     try {
-        //todo for current user
-        const { code, obj, error } = await userService.getUserInfo('e1@gmail.com', 'CLERK');
+        // TODO: implement for current user
+        const { code, obj, error } = await userService.getUserInfo('e1@gmail.com', 'clerk');
 
         if (error) {
             return res.status(code).send(error);
@@ -204,7 +204,10 @@ router.put('/users/:username', async (req, res) => {
     }
 
     try {
-        if (Joi.string().email().required().validate(req.params.username).error) {
+        // validate URL parameter
+        const { username } = req.params;
+
+        if (Joi.string().email().required().validate(username).error) {
             return res.status(422).send('Invalid username');
         }
 
@@ -218,8 +221,9 @@ router.put('/users/:username', async (req, res) => {
             return res.status(422).send('Invalid request body')
         }
 
+        const { oldType, newType } = req.body;
         const { code, error } =
-            await userService.updateUserRights(req.params.username, req.body.oldType, req.body.newType);
+            await userService.updateUserRights(username, oldType, newType);
 
         if (error) {
             return res.status(code).send(error);

@@ -335,7 +335,7 @@ router.delete('/returnOrder/:id', async (req, res) => {
 
 
 /** Restock Order
- * routes for restocking orders
+ * routes for restock orders
  */
 
 router.get('/restockOrders', async (req, res) => {
@@ -389,7 +389,7 @@ router.get('/restockOrders/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code, obj } = await restockService.getRestockOrderById(parseInt(req.params.id));
+        const { error, code, obj } = await restockService.getRestockOrderById(req.params.id);
 
         if (error) {
             return res.status(code).send(error);
@@ -413,7 +413,7 @@ router.get('/restockOrders/:id/returnitems', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code, obj } = await restockService.getReturnItemsByRestockOrderId(parseInt(req.params.id));
+        const { error, code, obj } = await restockService.getReturnItemsByRestockOrderId(req.params.id);
 
         if (error) {
             return res.status(code).send(error);

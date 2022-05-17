@@ -490,7 +490,7 @@ class DbManager {
                     reject(err);
                 else if (!row)
                     resolve(null);
-                else 
+                else
                     resolve(new Item(row.ID, row.Description, row.Price, row.SkuId, row.SupplierId));
             });
         });
@@ -510,10 +510,10 @@ class DbManager {
 
             const params = [newId, newDescription, newPrice, newSkuId, newSupplierId];
 
-            this.#db.run(sqlStatement, params, function(err) {
+            this.#db.run(sqlStatement, params, function (err) {
                 if (err)
                     reject(err);
-                else 
+                else
                     resolve(new Item(this.ID, newDescription, newPrice, newSkuId, newSupplierId));
             });
         });
@@ -535,10 +535,10 @@ class DbManager {
 
             const params = [newDescription, newPrice, newSkuId, newSupplierId, itemId];
 
-            this.#db.run(sqlStatement, params, function(err) {
+            this.#db.run(sqlStatement, params, function (err) {
                 if (err)
                     reject(err);
-                else 
+                else
                     resolve(this.changes > 0);
             });
         });
@@ -549,12 +549,12 @@ class DbManager {
         return new Promise((resolve, reject) => {
             const sqlStatement = `DELETE FROM Item
                                   WHERE ID=?`;
-            
-            this.#db.run(sqlStatement, [itemId], function(err) {
-                if(err)
+
+            this.#db.run(sqlStatement, [itemId], function (err) {
+                if (err)
                     reject(err);
-                else 
-                    resolve(this.changes > 0);s
+                else
+                    resolve(this.changes > 0); s
             });
         });
     }
@@ -598,7 +598,7 @@ class DbManager {
                     return;
                 }
 
-                if(!row) {
+                if (!row) {
                     resolve(null);
                     return;
                 }
@@ -836,8 +836,9 @@ class DbManager {
     getRestockOrderSku(id) {
         return new Promise((resolve, reject) => {
             const sql = `SELECT * 
-                         FROM RestockOrderSKU 
-                         WHERE RestockOrderId = ?`;
+                         FROM RestockOrderSku 
+                         WHERE RestockOrderId=?`;
+
             const params = [id];
             this.#db.all(sql, params, (err, rows) => {
                 if (err) {
@@ -850,10 +851,9 @@ class DbManager {
                             SKUId: row.SkuId,
                             description: row.Description,
                             price: row.Price,
-                            qty: row.Quantity,
+                            qty: row.Quantity
                         }
                     }));
-
             });
         });
     }
@@ -865,7 +865,7 @@ class DbManager {
         return new Promise((resolve, reject) => {
             const sql = `SELECT * 
                          FROM RestockOrderSkuItem 
-                        WHERE RestockOrderId = ?`;
+                         WHERE RestockOrderId=?`;
             const params = [id];
             this.#db.all(sql, params, (err, rows) => {
                 if (err) {
@@ -876,7 +876,7 @@ class DbManager {
                     resolve(rows.map(row => {
                         return {
                             SKUId: row.SkuId,
-                            RFID: row.RFID,
+                            rfid: row.RFID,
                         }
                     }));
             });
@@ -1428,13 +1428,13 @@ class DbManager {
             const sqlQuery = `SELECT *
                               FROM User
                               WHERE ID=? AND Type=?`;
-            
+
             this.#db.get(sqlQuery, [userId, userType], (err, row) => {
                 if (err)
                     reject(err);
                 else if (!row)
                     resolve(null);
-                else 
+                else
                     resolve(new User(row.Name, row.Surname, row.Email, row.Type, row.Password, row.ID));
             });
         });
@@ -1449,6 +1449,11 @@ class DbManager {
             this.#db.get(sql, [username, type], (err, row) => {
                 if (err) {
                     reject(err);
+                    return;
+                }
+
+                if (!row) {
+                    resolve(null);
                     return;
                 }
 
@@ -1512,7 +1517,7 @@ class DbManager {
             this.#db.run(sql, [us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()], function (err) {
                 if (err)
                     reject(err);
-                else 
+                else
                     resolve(new User(this.lastID, us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword()));
             });
         })
@@ -1527,7 +1532,7 @@ class DbManager {
             this.#db.run(sql, [us.getName(), us.getSurname(), us.getEmail(), us.getType(), us.getPassword(), us.getId()], function (err) {
                 if (err)
                     reject(err);
-                else 
+                else
                     resolve(this.changes > 0);
             });
         })
@@ -1541,8 +1546,8 @@ class DbManager {
             this.#db.run(sql, [id], function (err) {
                 if (err)
                     reject(err);
-
-                else resolve(this.changes > 0);
+                else
+                    resolve(this.changes > 0);
             });
         })
     }
