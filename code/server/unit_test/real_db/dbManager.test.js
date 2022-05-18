@@ -26,7 +26,7 @@ describe('[DB] restock orders GET functions', () => {
         // id not in db
         id = 999;
         ro = await dao.getRestockOrder(id);
-        expect(ro).toBe(undefined);
+        expect(ro).toBe(null);
     });
     test('get sku of a restock order', async () => {
         let id = 1;
@@ -50,7 +50,7 @@ describe('[DB] restock orders GET functions', () => {
         for (const item of items) {
             expect(item).toEqual({
                 SKUId: expect.any(Number),
-                RFID: expect.any(String),
+                rfid: expect.any(String),
             })
         }
         // id not in db
@@ -184,7 +184,7 @@ describe('[DB] return orders functions', () => {
         // id not in db
         id = 999;
         ro = await dao.getReturnOrder(id);
-        expect(ro).toBe(undefined);
+        expect(ro).toBe(null);
     });
     test('get sku items of a return order', async () => {
         let id = 1;
@@ -246,7 +246,7 @@ describe('[DB] internal orders GET functions', () => {
         // id not in db
         id = 999;
         order = await dao.getInternalOrder(id);
-        expect(order).toBe(undefined);
+        expect(order).toBe(null);
     });
     test('get internal order sku', async () => {
         let id = 1;

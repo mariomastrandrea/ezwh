@@ -368,7 +368,7 @@ describe("update restock order", () => {
 
         dao.getRestockOrder.mockReturnValueOnce(
             fakeRestockOrder
-        ).mockReturnValueOnce().mockReturnValue(
+        ).mockReturnValueOnce(null).mockReturnValue(
             fakeRestockOrder
         );
 
@@ -469,15 +469,15 @@ describe("delete restock order", () => {
         dao.getRestockOrderSkuItems.mockReset();
 
         dao.getRestockOrder.mockReturnValueOnce(fakeIssuedRestockOrder)
-            .mockReturnValueOnce().mockReturnValue(fakeRestockOrder);
+            .mockReturnValueOnce(null).mockReturnValue(fakeRestockOrder);
 
         dao.getRestockOrderSkuItems.mockReturnValueOnce([])
             .mockReturnValueOnce([{ SKUId: 123, rfid: "123" }])
             .mockReturnValue([]);
 
-        dao.deleteRestockOrder.mockReturnValueOnce(1).mockReturnValue(0);
-
-        dao.deleteRestockOrderSku.mockReturnValue(1);
+        dao.deleteRestockOrder.mockReturnValueOnce(true).mockReturnValue(false);
+        dao.deleteRestockOrderSku.mockReturnValue(true);
+        dao.deleteRestockOrderSkuItems.mockReturnValue(true);
     })
 
     test('delete restock order', async () => {

@@ -140,13 +140,17 @@ describe('create return order', () => {
         dao.getRestockOrder.mockReset();
 
         dao.getRestockOrder.mockReturnValueOnce(fakeRestockOrder)
-            .mockReturnValueOnce().mockReturnValue(fakeRestockOrder);
+            .mockReturnValueOnce(null).mockReturnValue(fakeRestockOrder);
 
         dao.storeReturnOrder.mockReturnValueOnce(fakeReturn)
-            .mockReturnValueOnce().mockReturnValue(fakeReturn);
+            .mockReturnValueOnce(null).mockReturnValue(fakeReturn);
 
         dao.storeReturnOrderSkuItems
             .mockReturnValueOnce(1).mockReturnValue(0);
+
+        dao.getSkuItemByRfid.mockReturnValue(true);
+        dao.getSkuById.mockReturnValue(true);
+        dao.getNegativeTestResultsOf.mockReturnValue([1]);
     });
 
     test('add return order', async () => {
@@ -259,7 +263,7 @@ describe('delete return order', () => {
         dao.getReturnOrder.mockReset();
 
         dao.getReturnOrder.mockReturnValueOnce(fakeReturn)
-        .mockReturnValueOnce().mockReturnValue(fakeReturn);
+        .mockReturnValueOnce(null).mockReturnValue(fakeReturn);
 
         dao.deleteReturnOrder.mockReturnValueOnce(1).mockReturnValue(0);
     });

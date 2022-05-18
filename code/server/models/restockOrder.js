@@ -14,9 +14,9 @@ class RestockOrder {
         this.#products = products;
         this.#supplierId = supplierId;
         if (typeof transportNote === 'string') {
-            this.#transportNote = { deliveryDate: transportNote.split(' ')[1] };
+            this.transportNote = { deliveryDate: transportNote.split(' ')[1] };
         } else {
-            this.#transportNote = transportNote;
+            this.transportNote = transportNote;
         }
         this.#skuItems = skuItems;
         this.#state = state;
@@ -28,17 +28,17 @@ class RestockOrder {
     getState = () => this.#state;
     getProducts = () => this.#products;
     getSupplierId = () => this.#supplierId;
-    getTransportNote = () => this.#transportNote;
+    getTransportNote = () => this.transportNote;
     getTransportNoteString = () => {
-        if (this.#transportNote.deliveryDate) {
-            return `deliveryDate: ${this.#transportNote.deliveryDate}`;
+        if (this.transportNote.deliveryDate) {
+            return `deliveryDate: ${this.transportNote.deliveryDate}`;
         }
     };
     getSkuItems = () => [this.#skuItems];
 
     // setters
     setState = (state) => this.#state = state;
-    setTransportNote = (transportNote) => this.#transportNote = transportNote;
+    setTransportNote = (transportNote) => this.transportNote = transportNote;
     setProducts = (products) => this.#products = products;
     setSkuItems = (skuItems) => {
         let array = [];

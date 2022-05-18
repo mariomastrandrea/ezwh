@@ -1,6 +1,9 @@
 const InternalOrderService = require('../../services/internalOrderService');
 const dao = require('../mock/mockDbManager');
 const InternalOrder = require('../../models/internalOrder');
+const Sku = require("../../models/sku");
+const SkuItem = require("../../models/skuItem");
+
 
 const internalOrderService = new InternalOrderService(dao);
 const fakeInternalOrder = new InternalOrder(
@@ -86,7 +89,7 @@ describe('get internal orders', () => {
             [],
             1,
             "ISSUED",
-            1)).mockReturnValue(undefined);
+            1)).mockReturnValue(null);
 
         dao.getInternalOrdersInState.mockReturnValueOnce([new InternalOrder(
             "2020/01/01 00:00",
@@ -226,7 +229,7 @@ describe('create edit delete internal orders', () => {
 
         dao.storeInternalOrderSku.mockReturnValueOnce(1).mockReturnValue(0);
 
-        dao.getInternalOrder.mockReturnValueOnce(undefined)
+        dao.getInternalOrder.mockReturnValueOnce(null)
             .mockReturnValueOnce(new InternalOrder(
                 "2020/01/01 00:00",
                 [],
@@ -241,11 +244,29 @@ describe('create edit delete internal orders', () => {
                 1
             )));
 
-        dao.updateInternalOrder.mockReturnValueOnce(1).mockReturnValue(0);
+        dao.updateInternalOrder.mockReturnValueOnce(true).mockReturnValue(false);
         dao.storeInternalOrderSkuItems.mockReturnValueOnce(1).mockReturnValue(0);
         dao.getInternalOrderSkuItems.mockReturnValueOnce([]).mockReturnValue(["abc"]);
-        dao.deleteInternalOrder.mockReturnValue(1);
-        dao.deleteInternalOrderSku.mockReturnValue(1);
+        dao.deleteInternalOrder.mockReturnValue(true);
+        dao.deleteInternalOrderSku.mockReturnValue(true);
+
+        dao.getSkuById.mockReturnValueOnce(new Sku("", 20, 20, "", 10, 1, "", [], 1))
+                      .mockReturnValueOnce(new Sku("", 20, 20, "", 10, 1, "", [], 2))
+                      .mockReturnValueOnce(new Sku("", 20, 20, "", 10, 1, "", [], 1))
+                      .mockReturnValueOnce(new Sku("", 20, 20, "", 10, 1, "", [], 2))
+                      .mockReturnValueOnce(new Sku("", 20, 20, "", 10, 1, "", [], 1))
+                      .mockReturnValueOnce(new Sku("", 20, 20, "", 10, 1, "", [], 2))
+                      .mockReturnValueOnce(new Sku("", 20, 20, "", 10, 1, "", [], 1))
+                      .mockReturnValueOnce(new Sku("", 20, 20, "", 10, 1, "", [], 2));
+
+        dao.getSkuItemByRfid.mockReturnValueOnce(new SkuItem("123456789", 1, null, 1, []))
+                            .mockReturnValueOnce(new SkuItem("123456779", 2, null, 1, []))
+                            .mockReturnValueOnce(new SkuItem("123456789", 1, null, 1, []))
+                            .mockReturnValueOnce(new SkuItem("123456779", 2, null, 1, []))
+                            .mockReturnValueOnce(new SkuItem("123456789", 1, null, 1, []))
+                            .mockReturnValueOnce(new SkuItem("123456779", 2, null, 1, []))
+                            .mockReturnValueOnce(new SkuItem("123456789", 1, null, 1, []))
+                            .mockReturnValueOnce(new SkuItem("123456779", 2, null, 1, []))
     });
 
     test('create internal order', async () => {
@@ -311,16 +332,19 @@ describe('create edit delete internal orders', () => {
     });
 
     test('update state and sku items internal order', async () => {
-        let body = { newState: "COMPLETED", skuItems: [
-            {
-                SKUId: 1,
-                RFID: "123456789",
-            },
-            {
-                SKUId: 2,
-                RFID: "123456779",
-            },
-        ], };
+        let body = { 
+            newState: "COMPLETED", 
+            products: [
+                {
+                    SKUId: 1,
+                    RFID: "123456789",
+                },
+                {
+                    SKUId: 2,
+                    RFID: "123456779",
+                },
+            ]
+        };
         let res = await internalOrderService.updateInternalOrder(1, body);
 
         // expect 404
@@ -343,7 +367,7 @@ describe('create edit delete internal orders', () => {
         expect(res.code).toBe(503);
     });
 
-    test('delete internal order', async() => {
+    test('delete internal order', async () => {
         let res = await internalOrderService.deleteInternalOrder(1);
 
         // expect 404
@@ -353,9 +377,5 @@ describe('create edit delete internal orders', () => {
         res = await internalOrderService.deleteInternalOrder(1);
         expect(dao.deleteInternalOrder.mock.calls[0][0]).toBe(1);
         expect(res.code).toBe(204);
-
-        // expect 503
-        res = await internalOrderService.deleteInternalOrder(1);
-        expect(res.code).toBe(503);
     });
 });

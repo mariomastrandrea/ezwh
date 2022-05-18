@@ -723,6 +723,22 @@ class DbManager {
         })
     }
 
+    getNegativeTestResultsOf(rfid) {
+        return new Promise((resolve, reject) => {
+            const sqlQuery = `SELECT *
+                              FROM TestResult
+                              WHERE RFID=? AND Result=0`;
+            
+            this.#db.all(sqlQuery, [rfid], (err, rows) => {
+                if(err)
+                    reject(err);
+                else 
+                    resolve(rows.map(row => 
+                        new TestResult(row.ID, row.RFID, row.TestDescriptorId, row.Date, row.Result)));
+            });
+        });
+    }
+
     storeTestResult(tr) {
         let sql = `INSERT INTO TestResult(RFID, TestDescriptorId, Date, Result) 
                    VALUES (?,?,?,?)`;
@@ -821,7 +837,7 @@ class DbManager {
                     reject(err);
                 }
                 else if (!row) {
-                    resolve(undefined);
+                    resolve(null);
                 }
                 else
                     resolve(new RestockOrder(row.IssueDate, [], row.SupplierId,
@@ -888,12 +904,11 @@ class DbManager {
     // OUTPUT - array of map{skuId, RFID}
     getReturnItemsByRestockOrderId(id) {
         return new Promise((resolve, reject) => {
-            //const sql = `SELECT ros.skuId as skuId, ros.RFID as RFID FROM restockorderSkuItem as ros JOIN TestResult as tr ON ros.RFID = tr.RFID WHERE restockOrderId = ? and Result = 0`;
             const sql = `SELECT * 
                          FROM RestockOrderSkuItem 
-                         WHERE RFID NOT IN (SELECT DISTINCT RFID 
-                                            FROM TestResult 
-                                            WHERE Result = 1) AND RestockOrderId = ?`;
+                         WHERE RFID IN (SELECT RFID 
+                                        FROM TestResult 
+                                        WHERE Result=0) AND RestockOrderId=?`;
             const params = [id];
             this.#db.all(sql, params, (err, rows) => {
                 if (err) {
@@ -904,7 +919,7 @@ class DbManager {
                     resolve(rows.map(row => {
                         return {
                             SKUId: row.SkuId,
-                            RFID: row.RFID,
+                            rfid: row.RFID,
                         }
                     }));
             });
@@ -935,14 +950,18 @@ class DbManager {
     // INPUT - restock order id, {skuId, description, price, quantity}
     // OUTPUT - true if successful else false
     storeRestockOrderSku(id, products) {
-        const sql = `INSERT INTO RestockOrderSku(RestockOrderId, SkuId, Description, Price, Quantity) VALUES (?,?,?,?,?)`;
+        const sql = `INSERT INTO RestockOrderSku(RestockOrderId, SkuId, Description, Price, Quantity) 
+                     VALUES (?,?,?,?,?)`;
         let params = products.map(sku => [id, sku.SKUId, sku.description, sku.price, sku.qty]);
 
         return new Promise((resolve, reject) => {
             let statement = this.#db.prepare(sql);
             for (let i = 0; i < params.length; i++) {
                 statement.run(params[i], function (err) {
-                    if (err || this.changes == 0) reject(err);
+                    if (err || this.changes == 0) {
+                        reject(err);
+                        return;
+                    }
                 });
             }
             statement.finalize();
@@ -954,17 +973,22 @@ class DbManager {
     // INPUT - restock orderId, {skuId, RFID}
     // OUTPUT - true if successful else false
     storeRestockOrderSkuItems(id, skuItems) {
-        let sql = `INSERT INTO RestockOrderSkuItem (RestockOrderId, SkuId, RFID) VALUES (?,?,?)`;
+        let sql = `INSERT INTO RestockOrderSkuItem (RestockOrderId, SkuId, RFID) 
+                   VALUES (?,?,?)`;
+
         const params = skuItems.map(skuItem => [id, skuItem.SKUId, skuItem.rfid]);
 
         return new Promise((resolve, reject) => {
             let statement = this.#db.prepare(sql);
             for (let i = 0; i < params.length; i++) {
                 statement.run(params[i], function (err) {
-                    if (err || this.changes == 0) reject(err);
+                    if (err || this.changes === 0) {
+                        reject(err);
+                        return;
+                    }
                 });
-
             }
+
             statement.finalize();
             resolve(true);
         });
@@ -975,8 +999,8 @@ class DbManager {
     // OUTPUT - true if successful else false
     updateRestockOrder(ro) {
         const sql = `UPDATE RestockOrder 
-                     SET state = ?, transportNote = ? 
-                     WHERE id = ?`;
+                     SET state=?, transportNote=? 
+                     WHERE id=?`;
 
         const params = [ro.getState(), ro.getTransportNoteString(), ro.getId()];
 
@@ -986,9 +1010,8 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else {
+                else 
                     resolve(this.changes > 0);
-                }
             });
         });
     };
@@ -998,7 +1021,7 @@ class DbManager {
     // OUTPUT - true if successful else false
     deleteRestockOrder(id) {
         const sql = `DELETE FROM RestockOrder 
-                     WHERE id = ?`;
+                     WHERE id=?`;
 
         const params = [id];
         return new Promise((resolve, reject) => {
@@ -1007,9 +1030,8 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else {
+                else
                     resolve(this.changes > 0);
-                }
             })
         });
     };
@@ -1018,7 +1040,8 @@ class DbManager {
     // INPUT - restock order id
     // OUTPUT - true if successful else false
     deleteRestockOrderSku(id) {
-        const sql = `DELETE FROM RestockOrderSku WHERE RestockOrderId = ?`;
+        const sql = `DELETE FROM RestockOrderSku 
+                     WHERE RestockOrderId = ?`;
         const params = [id];
 
         return new Promise((resolve, reject) => {
@@ -1037,7 +1060,8 @@ class DbManager {
     // INPUT - restock order id
     // OUTPUT - true if successful else false
     deleteRestockOrderSkuItems(id) {
-        const sql = `DELETE FROM RestockOrderSkuItem WHERE RestockOrderId = ?`;
+        const sql = `DELETE FROM RestockOrderSkuItem 
+                     WHERE RestockOrderId = ?`;
         const params = [id];
 
         return new Promise((resolve, reject) => {
@@ -1061,13 +1085,16 @@ class DbManager {
     // OUTPUT - array of return orders
     getAllReturnOrders() {
         return new Promise((resolve, reject) => {
-            let sql = `SELECT * FROM ReturnOrder`;
+            let sql = `SELECT * 
+                       FROM ReturnOrder`;
+
             this.#db.all(sql, (err, rows) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(order => new ReturnOrder(order.ReturnDate, [], order.RestockOrderId, order.ID)));
+                else resolve(rows.map(order => 
+                    new ReturnOrder(order.ReturnDate, [], order.RestockOrderId, order.ID)));
             })
         });
     };
@@ -1077,16 +1104,19 @@ class DbManager {
     // OUTPUT - return order
     getReturnOrder(id) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM ReturnOrder where ID = ?`;
+            const sql = `SELECT * 
+                         FROM ReturnOrder 
+                         where ID=?`;
+
             const params = [id];
             this.#db.get(sql, params, function (err, row) {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                if (row === undefined) {
-                    resolve(undefined);
-                } else
+                else if (!row) 
+                    resolve(null);
+                else
                     resolve(new ReturnOrder(row.ReturnDate, [], row.RestockOrderId, row.ID));
             })
         });
@@ -1097,14 +1127,17 @@ class DbManager {
     // OUTPUT - array of map{skuId, description, price, RFID}
     getReturnOrderSkuItems(id) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM ReturnOrderSkuItem WHERE ReturnOrderId = ?`;
+            const sql = `SELECT * 
+                         FROM ReturnOrderSkuItem 
+                         WHERE ReturnOrderId=?`;
+
             const params = [id];
             this.#db.all(sql, params, (err, rows) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(row => {
+                else resolve(rows.map(row => {
                     return {
                         SKUId: row.SkuId,
                         description: row.Description,
@@ -1120,7 +1153,9 @@ class DbManager {
     // INPUT - return order
     // OUTPUT - return order
     storeReturnOrder(ro) {
-        let sql = `INSERT INTO ReturnOrder (ReturnDate, RestockOrderId) VALUES (?,?)`;
+        let sql = `INSERT INTO ReturnOrder (ReturnDate, RestockOrderId) 
+                   VALUES (?,?)`;
+
         const params = [ro.getReturnDate(), ro.getRestockOrderId()];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
@@ -1128,7 +1163,8 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(new ReturnOrder(ro.getReturnDate(), ro.getProducts(), ro.getRestockOrderId(), this.lastID));
+                else 
+                    resolve(new ReturnOrder(ro.getReturnDate(), ro.getProducts(), ro.getRestockOrderId(), this.lastID));
             });
         });
     };
@@ -1137,18 +1173,25 @@ class DbManager {
     // INPUT - return orderId, {skuId, description, price, RFID}
     // OUTPUT - true if successful else false
     storeReturnOrderSkuItems(id, skuItems) {
-        let sql = `INSERT INTO ReturnOrderSkuItem (ReturnOrderId, SkuId, Description, Price, RFID) VALUES (?,?,?,?,?)`;
+        let sql = `INSERT INTO ReturnOrderSkuItem (ReturnOrderId, SkuId, Description, Price, RFID) 
+                   VALUES (?, ?, ?, ?, ?)`;
+
         const params = [];
         for (const skuItem of skuItems) {
-            params.push([id, skuItem.SkuID, skuItem.description, skuItem.price, skuItem.RFID]);
+            params.push([id, skuItem.SKUId, skuItem.description, skuItem.price, skuItem.RFID]);
         }
+
         return new Promise((resolve, reject) => {
             let statement = this.#db.prepare(sql);
             for (let i = 0; i < params.length; i++) {
                 statement.run(params[i], function (err) {
-                    if (err || this.changes == 0) reject(err);
+                    if (err || this.changes === 0) {
+                        reject(err);
+                        return;
+                    }
                 });
             }
+
             statement.finalize();
             resolve(true);
         });
@@ -1196,13 +1239,17 @@ class DbManager {
     // OUTPUT - array of internal orders
     getAllInternalOrders() {
         return new Promise((resolve, reject) => {
-            let sql = `SELECT * FROM InternalOrder`;
+            let sql = `SELECT * 
+                       FROM InternalOrder`;
+
             this.#db.all(sql, (err, rows) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(order => new InternalOrder(order.IssueDate, [], order.CustomerId, order.State, order.ID)));
+                else 
+                    resolve(rows.map(order => 
+                        new InternalOrder(order.IssueDate, [], order.CustomerId, order.State, order.ID)));
             })
         });
     };
@@ -1212,14 +1259,19 @@ class DbManager {
     // OUTPUT - array of internal orders
     getInternalOrdersInState(state) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM InternalOrder WHERE State LIKE ?`;
+            const sql = `SELECT * 
+                         FROM InternalOrder 
+                         WHERE State=?`;
+
             const params = [state];
             this.#db.all(sql, params, (err, rows) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(order => new InternalOrder(order.IssueDate, [], order.CustomerId, order.State, order.ID)));
+                else 
+                    resolve(rows.map(order => 
+                        new InternalOrder(order.IssueDate, [], order.CustomerId, order.State, order.ID)));
             })
         });
     }
@@ -1229,16 +1281,20 @@ class DbManager {
     // OUTPUT - internal order
     getInternalOrder(id) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM InternalOrder WHERE ID = ?`;
+            const sql = `SELECT * 
+                         FROM InternalOrder 
+                         WHERE ID=?`;
+
             const params = [id];
             this.#db.get(sql, params, (err, row) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                if (row === undefined) {
-                    resolve(undefined);
-                } else
+                else if (!row) {
+                    resolve(null);
+                } 
+                else
                     resolve(new InternalOrder(row.IssueDate, [], row.CustomerId, row.State, row.ID));
             })
         });
@@ -1249,14 +1305,17 @@ class DbManager {
     // OUTPUT - array of map{skuId, description, price, quantity}
     getInternalOrderSku(id) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM InternalOrderSku WHERE InternalOrderId = ?`;
+            const sql = `SELECT * 
+                         FROM InternalOrderSku 
+                         WHERE InternalOrderId=?`;
+
             const params = [id];
             this.#db.all(sql, params, (err, rows) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(row => {
+                else resolve(rows.map(row => {
                     return {
                         SKUId: row.SkuId,
                         description: row.Description,
@@ -1274,14 +1333,17 @@ class DbManager {
     // OUTPUT - array of map{skuId, RFID}
     getInternalOrderSkuItems(id) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM InternalOrderSkuItem WHERE InternalOrderId = ?`;
+            const sql = `SELECT * 
+                         FROM InternalOrderSkuItem 
+                         WHERE InternalOrderId=?`;
+
             const params = [id];
             this.#db.all(sql, params, (err, rows) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(rows.map(row => {
+                else resolve(rows.map(row => {
                     return {
                         SKUId: row.SkuId,
                         RFID: row.RFID,
@@ -1295,7 +1357,9 @@ class DbManager {
     // INPUT - internal order
     // OUTPUT - internal order
     storeInternalOrder(io) {
-        const sql = `INSERT INTO InternalOrder (IssueDate, CustomerId, State) VALUES (?,?,?)`;
+        const sql = `INSERT INTO InternalOrder (IssueDate, CustomerId, State) 
+                     VALUES (?,?,?)`;
+
         const params = [io.getIssueDate(), io.getCustomerId(), io.getState()];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
@@ -1303,7 +1367,8 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(new InternalOrder(io.getIssueDate(), io.getProducts(), io.getCustomerId(), io.getState(), this.lastID));
+                else 
+                    resolve(new InternalOrder(io.getIssueDate(), io.getProducts(), io.getCustomerId(), io.getState(), this.lastID));
             });
         });
     };
@@ -1312,18 +1377,26 @@ class DbManager {
     // INPUT - internal order id, {skuId, description, price, quantity}
     // OUTPUT - true if successful else false
     storeInternalOrderSku(id, products) {
-        const sql = `INSERT INTO internalOrderSku(internalOrderId, skuId, description, price, quantity) VALUES (?,?,?,?,?)`;
+        const sql = `INSERT INTO internalOrderSku(InternalOrderId, SkuId, Description, Price, Quantity) 
+                     VALUES (?, ?, ?, ?, ?)`;
+
         let params = [];
         for (const sku of products) {
             params.push([id, sku.SKUId, sku.description, sku.price, sku.qty]);
         }
+
         return new Promise((resolve, reject) => {
             let statement = this.#db.prepare(sql);
+
             for (let i = 0; i < params.length; i++) {
                 statement.run(params[i], function (err) {
-                    if (err || this.changes == 0) reject(err);
+                    if (err || !this.changes) {
+                        reject(err);
+                        return;
+                    }
                 });
             }
+
             statement.finalize();
             resolve(true);
         });
@@ -1333,17 +1406,25 @@ class DbManager {
     // INPUT - internal orderId, {skuId, RFID}
     // OUTPUT - true if successful else false
     storeInternalOrderSkuItems(id, skuItems) {
-        let sql = `INSERT INTO InternalOrderSkuItem (InternalOrderId, SkuId, RFID) VALUES (?,?,?)`;
+        let sql = `INSERT INTO InternalOrderSkuItem (InternalOrderId, SkuId, RFID) 
+                   VALUES (?, ?, ?)`;
+
         const params = [];
         for (const skuItem of skuItems) {
             params.push([id, skuItem.SkuID, skuItem.RFID]);
         }
+
         return new Promise((resolve, reject) => {
             let statement = this.#db.prepare(sql);
+
             for (let i = 0; i < params.length; i++) {
                 statement.run(params[i], function (err) {
-                    if (err || this.changes == 0) reject(err);
+                    if (err || !this.changes) {
+                        reject(err);
+                        return;
+                    }
                 });
+
             }
             statement.finalize();
             resolve(true);
@@ -1354,7 +1435,10 @@ class DbManager {
     // INPUT - internal order
     // OUTPUT - true if successful else false
     updateInternalOrder(io) {
-        const sql = `UPDATE InternalOrder SET State = ? WHERE ID = ?`;
+        const sql = `UPDATE InternalOrder 
+                     SET State=?
+                     WHERE ID=?`;
+
         const params = [io.getState(), io.getId()];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
@@ -1362,7 +1446,7 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(this.changes > 0);
+                else resolve(this.changes > 0);
             });
         });
     };
@@ -1371,7 +1455,9 @@ class DbManager {
     // INPUT - internal order id
     // OUTPUT - true if successful else false
     deleteInternalOrder(id) {
-        const sql = `DELETE FROM InternalOrder WHERE ID = ?`;
+        const sql = `DELETE FROM InternalOrder 
+                     WHERE ID=?`;
+
         const params = [id];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
@@ -1379,7 +1465,8 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(this.changes > 0);
+                else 
+                    resolve(this.changes > 0);
             })
         });
     };
@@ -1388,7 +1475,9 @@ class DbManager {
     // INPUT - internal order id
     // OUTPUT - true if successful else false
     deleteInternalOrderSku(id) {
-        const sql = `DELETE FROM InternalOrderSku WHERE InternalOrderId = ?`;
+        const sql = `DELETE FROM InternalOrderSku 
+                     WHERE InternalOrderId=?`;
+
         const params = [id];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
@@ -1396,7 +1485,8 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(this.changes > 0);
+                else 
+                    resolve(this.changes > 0);
             })
         });
     };
@@ -1405,7 +1495,9 @@ class DbManager {
     // INPUT - internal order id
     // OUTPUT - true if successful else false
     deleteInternalOrderSkuItems(id) {
-        const sql = `DELETE FROM InternalOrderSkuItem WHERE InternalOrderId = ?`;
+        const sql = `DELETE FROM InternalOrderSkuItem 
+                     WHERE InternalOrderId = ?`;
+
         const params = [id];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
@@ -1413,7 +1505,8 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                resolve(this.changes > 0);
+                else 
+                    resolve(this.changes > 0);
             })
         });
     }

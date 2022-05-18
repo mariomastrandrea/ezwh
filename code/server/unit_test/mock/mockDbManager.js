@@ -53,6 +53,7 @@ exports.getTestResult = jest.fn();
 exports.storeTestResult = jest.fn();
 exports.updateTestResult = jest.fn();
 exports.deleteTestResult = jest.fn();
+exports.getNegativeTestResultsOf = jest.fn();
 
 /**
  * Position

@@ -101,7 +101,7 @@ router.get('/internalOrders/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code, obj } = await internalService.getInternalOrderById(parseInt(req.params.id));
+        const { error, code, obj } = await internalService.getInternalOrderById(req.params.ids);
 
         if (error) {
             return res.status(code).send(error);
@@ -123,27 +123,25 @@ router.post('/internalOrders', async (req, res) => {
     try {
         // validate body
         const productSchema = Joi.object({
-            SKUId: Joi.number().integer().required(),
+            SKUId: Joi.number().integer().min(1).required(),
             description: Joi.string().required(),
             price: Joi.number().min(0).required(),
             qty: Joi.number().integer().min(0).required()
         })
+
         const schema = Joi.object({
             issueDate: Joi.date().required().format("YYYY/MM/DD HH:mm"),
             products: Joi.array().items(productSchema).required(),
             customerId: Joi.number().integer().min(1).required()
         });
 
-        const issueDate = dayjs(req.body.issueDate);
-
         const result = schema.validate(req.body);
-        if (result.error || dayjs().diff(issueDate, 'day') > 3) {
+        if (result.error) {
             return res.status(422).send('Unprocessable Entity')
         }
 
-        const { error, code, obj } = await internalService
-            .createInternalOrder(
-                issueDate.format('YYYY/MM/DD HH:mm'), req.body.products, req.body.customerId);
+        const { error, code, obj } = 
+            await internalService.createInternaOrder(issueDate, req.body.products, req.body.customerId);
 
         if (error) {
             return res.status(code).send(error);
@@ -166,11 +164,13 @@ router.put('/internalOrders/:id', async (req, res) => {
         // validate id
         if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Unprocessable entity');
+
         // validate body
         const productSchema = Joi.object({
             SkuID: Joi.number().integer().required(),
             RFID: Joi.string().regex(/^[0-9]{32}$/).required()
         })
+
         const schema = Joi.object({
             newState: Joi.string().valid(...internalStates).required(),
             products: Joi.alternatives().conditional('newState', { is: 'COMPLETED', then: Joi.array().items(productSchema).required(), otherwise: Joi.optional() })
@@ -180,7 +180,8 @@ router.put('/internalOrders/:id', async (req, res) => {
         if (result.error) {
             return res.status(422).send('Unprocessable Entity')
         }
-        const { error, code, obj } = await internalService.updateInternalOrder(parseInt(req.params.id), req.body);
+
+        const { error, code, obj } = await internalService.updateInternalOrder(req.params.id, req.body);
 
         if (error) {
             return res.status(code).send(error);
@@ -204,7 +205,7 @@ router.delete('/internalOrders/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code, obj } = await internalService.deleteInternalOrder(parseInt(req.params.id));
+        const { error, code, obj } = await internalService.deleteInternalOrder(req.params.id);
 
         if (error) {
             return res.status(code).send(error);
@@ -221,7 +222,6 @@ router.delete('/internalOrders/:id', async (req, res) => {
 /** Return Order
  *  routes for returning orders
  */
-
 
 router.get('/returnOrders', async (req, res) => {
     // TODO: add login check
@@ -254,7 +254,8 @@ router.get('/returnOrders/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code, obj } = await returnService.getReturnOrderById(parseInt(req.params.id));
+        const { error, code, obj } = 
+            await returnService.getReturnOrderById(req.params.id);
 
         if (error) {
             return res.status(code).send(error);
@@ -276,7 +277,7 @@ router.post('/returnOrder', async (req, res) => {
     try {
         // validate body
         const productSchema = Joi.object({
-            SKUId: Joi.number().integer().required(),
+            SKUId: Joi.number().integer().min(1).required(),
             description: Joi.string().required(),
             price: Joi.number().min(0).required(),
             RFID: Joi.string().regex(/^[0-9]{32}$/).required()
@@ -284,7 +285,7 @@ router.post('/returnOrder', async (req, res) => {
         const schema = Joi.object({
             returnDate: Joi.date().required().format("YYYY/MM/DD HH:mm"),
             products: Joi.array().items(productSchema).required(),
-            restockOrderId: Joi.number().integer().min(0).required()
+            restockOrderId: Joi.number().integer().min(1).required()
         });
 
         const result = schema.validate(req.body);
@@ -320,12 +321,12 @@ router.delete('/returnOrder/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code, obj } = await returnService.deleteReturnOrder(parseInt(req.params.id));
+        const { error, code } = await returnService.deleteReturnOrder(req.params.id);
 
         if (error) {
             return res.status(code).send(error);
         }
-        return res.status(code).json(obj);
+        return res.status(code).end();
     }
     catch (err) {
         console.log(err);
@@ -425,6 +426,7 @@ router.get('/restockOrders/:id/returnitems', async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
 router.post('/restockOrder', async (req, res) => {
     // TODO: add login check
     if (!true) {
@@ -434,7 +436,7 @@ router.post('/restockOrder', async (req, res) => {
     try {
         // validate body
         const productSchema = Joi.object({
-            SKUId: Joi.number().integer().required(),
+            SKUId: Joi.number().integer().min(1).required(),
             description: Joi.string().required(),
             price: Joi.number().min(0).required(),
             qty: Joi.number().integer().min(0).required()
@@ -448,7 +450,7 @@ router.post('/restockOrder', async (req, res) => {
         const issueDate = dayjs(req.body.issueDate);
 
         const result = schema.validate(req.body);
-        if (result.error || dayjs().diff(issueDate, 'day') > 3) {
+        if (result.error) {
             return res.status(422).send('Unprocessable Entity')
         }
 
@@ -466,6 +468,7 @@ router.post('/restockOrder', async (req, res) => {
         res.status(503).send("Service Unavailable");
     }
 });
+
 router.put('/restockOrder/:id', async (req, res) => {
     // TODO: add login check
     if (!true) {
@@ -485,7 +488,8 @@ router.put('/restockOrder/:id', async (req, res) => {
         if (result.error) {
             return res.status(422).send('Unprocessable Entity')
         }
-        const { error, code, obj } = await restockService.updateRestockOrder(restockUpdateType.state, parseInt(req.params.id), req.body);
+        const { error, code, obj } = 
+            await restockService.updateRestockOrder(restockUpdateType.state, req.params.id, req.body);
 
         if (error) {
             return res.status(code).send(error);
@@ -497,6 +501,7 @@ router.put('/restockOrder/:id', async (req, res) => {
         res.status(503).send("Service Unavailable");
     }
 });
+
 router.put('/restockOrder/:id/skuItems', async (req, res) => {
     // TODO: add login check
     if (!true) {
@@ -520,11 +525,14 @@ router.put('/restockOrder/:id/skuItems', async (req, res) => {
         if (result.error) {
             return res.status(422).send('Unprocessable Entity')
         }
-        const { error, code, obj } = await restockService.updateRestockOrder(restockUpdateType.skuItems, parseInt(req.params.id), req.body);
+
+        const { error, code, obj } = 
+            await restockService.updateRestockOrder(restockUpdateType.skuItems, req.params.id, req.body);
 
         if (error) {
             return res.status(code).send(error);
         }
+
         return res.status(code).json(obj);
     }
     catch (err) {
@@ -532,6 +540,7 @@ router.put('/restockOrder/:id/skuItems', async (req, res) => {
         res.status(503).send("Service Unavailable");
     }
 });
+
 router.put('/restockOrder/:id/transportNote', async (req, res) => {
     // TODO: add login check
     if (!true) {
@@ -542,16 +551,19 @@ router.put('/restockOrder/:id/transportNote', async (req, res) => {
         // validate id
         if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Unprocessable entity');
+
         // validate body
         if (!req.body.transportNote || !req.body.transportNote.deliveryDate ||
             !dayjs(req.body.transportNote.deliveryDate, 'YYYY/MM/DD HH:mm', true).isValid()) {
             return res.status(422).send('Unprocessable Entity')
         }
-        const { error, code, obj } = await restockService.updateRestockOrder(restockUpdateType.transportNote, parseInt(req.params.id), req.body);
+        const { error, code, obj } = 
+            await restockService.updateRestockOrder(restockUpdateType.transportNote, req.params.id, req.body);
 
         if (error) {
             return res.status(code).send(error);
         }
+
         return res.status(code).json(obj);
     }
     catch (err) {
@@ -559,6 +571,7 @@ router.put('/restockOrder/:id/transportNote', async (req, res) => {
         res.status(503).send("Service Unavailable");
     }
 });
+
 router.delete('/restockOrder/:id', async (req, res) => {
     // TODO: add login check
     if (!true) {
@@ -570,11 +583,12 @@ router.delete('/restockOrder/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code, obj } = await restockService.deleteRestockOrder(parseInt(req.params.id));
+        const { error, code, obj } = await restockService.deleteRestockOrder(req.params.id);
 
         if (error) {
             return res.status(code).send(error);
         }
+        
         return res.status(code).json(obj);
     }
     catch (err) {
