@@ -255,6 +255,56 @@ describe('create return order', () => {
         expect(res.error).toEqual(expect.stringContaining('Unprocessable Entity'));
         expect(res.code).toEqual(422);
     });
+
+    test('add return order with error 503 because of L74', async () => {
+        dao.storeReturnOrder.mockReset();
+        dao.storeReturnOrder.mockReturnValue(0);
+        let res = await returnOrderService.createReturnOrder(
+            "2021/11/30 09:33",
+            [
+                {
+                    SKUId: 1,
+                    description: "Product 1",
+                    price: 1.00,
+                    RFID: "123456789",
+                },
+                {
+                    SKUId: 2,
+                    description: "Product 2",
+                    price: 2.00,
+                    RFID: "123456779",
+                }
+            ],
+            1
+        );
+
+        expect(res.code).toEqual(503);
+    });
+
+    test('add return order with error 503 because of L78', async () => {
+        dao.storeReturnOrderSkuItems.mockReset();
+        dao.storeReturnOrderSkuItems.mockReturnValueOnce(0);
+        let res = await returnOrderService.createReturnOrder(
+            "2021/11/30 09:33",
+            [
+                {
+                    SKUId: 1,
+                    description: "Product 1",
+                    price: 1.00,
+                    RFID: "123456789",
+                },
+                {
+                    SKUId: 2,
+                    description: "Product 2",
+                    price: 2.00,
+                    RFID: "123456779",
+                }
+            ],
+            1
+        );
+
+        expect(res.code).toEqual(503);
+    });
 });
 
 describe('delete return order', () => {

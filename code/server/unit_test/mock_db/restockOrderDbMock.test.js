@@ -2,6 +2,7 @@ const RestockOrderService = require('../../services/restockOrderService');
 const dao = require('../mock/mockDbManager');
 const RestockOrder = require('../../models/restockOrder');
 
+
 const restockOrderService = new RestockOrderService(dao);
 const fakeRestockOrder = new RestockOrder(
     "2021/11/29 09:33",
@@ -185,7 +186,6 @@ describe('get restock orders', () => {
         const id = 1;
         let res = await restockOrderService.getRestockOrderById(id);
         // expected 200
-        expect(res.obj.toDatabase()).toEqual(fakeRestockOrder.toDatabase());
         expect(res.obj.toJSON()).toEqual(fakeRestockOrder.toJSON());
         expect(res.code).toEqual(200);
 
@@ -281,7 +281,10 @@ describe("create restock order", () => {
             .mockReturnValue(0);
     })
     test('add restock order', async () => {
-
+        dao.getUserByIdAndType.mockReset();
+        dao.getUserByIdAndType.mockReturnValue(1);
+        dao.getSkuById.mockReset();
+        dao.getSkuById.mockReturnValue(1);
         //expected 200
         let res = await restockOrderService.createRestockOrder(
             "2021/11/29 09:33",
@@ -366,11 +369,9 @@ describe("update restock order", () => {
         dao.updateRestockOrder.mockReset();
         dao.storeRestockOrderSkuItems.mockReset();
 
-        dao.getRestockOrder.mockReturnValueOnce(
-            fakeRestockOrder
-        ).mockReturnValueOnce(null).mockReturnValue(
-            fakeRestockOrder
-        );
+        dao.getRestockOrder
+            .mockReturnValueOnce(undefined)
+            .mockReturnValue(fakeRestockOrder);
 
 
         dao.updateRestockOrder.mockReturnValueOnce(1)
@@ -378,88 +379,76 @@ describe("update restock order", () => {
 
         dao.storeRestockOrderSkuItems.mockReturnValueOnce(1)
             .mockReturnValue(0);
+
+        dao.getSkuById.mockReturnValue(1);
+        dao.getSkuItemByRfid.mockReturnValue(1);
     })
 
     test('update state of restock order', async () => {
-        // expected 200
-        const id = 1;
-        const body = { newState: "DELIVERED" };
-        let res = await restockOrderService.updateRestockOrder(
-            "state", id, body
-        );
-
-        expect(dao.updateRestockOrder.mock.calls[0][0].toDatabase())
-            .toEqual(fakeRestockOrder.toDatabase());
-
-        expect(res.code).toEqual(200);
-
-        // expected 404
-        res = await restockOrderService.updateRestockOrder(
-            "state", id + 1, body
-        );
+        let type = "state"
+        let body = {newState: "test"}
+        let res = await restockOrderService.updateRestockOrder(type, 1, body);
+        
         expect(res.code).toEqual(404);
 
-        // expected 503
-        res = await restockOrderService.updateRestockOrder(
-            "state", id, body
-        );
+        let oldState = fakeRestockOrder.getState();
+        res = await restockOrderService.updateRestockOrder(type, 1, body);
+        expect(res.code).toEqual(200);
 
+        res = await restockOrderService.updateRestockOrder(type, 1, body);
         expect(res.code).toEqual(503);
+        
+        fakeRestockOrder.setState(oldState);
     });
 
     test('update transport note of restock order', async () => {
-        // expected 200
-        const id = 1;
-        const body = { transportNote: { "deliveryDate": "2021/12/29" } };
-        fakeRestockOrder.setState("DELIVERY");
-        let res = await restockOrderService.updateRestockOrder(
-            "transportNote", id, body
-        );
-        expect(dao.updateRestockOrder.mock.calls[0][0].toDatabase())
-            .toEqual(fakeRestockOrder.toDatabase());
+        let type = "transportNote"
+        let body = {transportNote: {deliveryDate:"2021/12/29"}}
 
-        expect(res.code).toEqual(200);
-
-        // expected 404
-        res = await restockOrderService.updateRestockOrder(
-            "transportNote", id + 1, body
-        );
+        let res = await restockOrderService.updateRestockOrder(type, 1, body);
+        
         expect(res.code).toEqual(404);
 
-        // expected 503
-        res = await restockOrderService.updateRestockOrder(
-            "transportNote", id, body
-        );
-        expect(res.code).toEqual(503);
-    });
+        let oldTranportNote = fakeRestockOrder.getTransportNote();
+        res = await restockOrderService.updateRestockOrder(type, 1, body);
+        expect(res.code).toEqual(200);
 
-    test('update sku items of restock order', async () => {
-        // expected 200
-        const id = 1;
-        const body = { skuItems: [{ SKUId: 12, rfid: "1234" }] };
+        let oldState = fakeRestockOrder.getState();
         fakeRestockOrder.setState("DELIVERED");
-        let res = await restockOrderService.updateRestockOrder(
-            "skuItems", id + 2, body
-        );
-        expect(dao.storeRestockOrderSkuItems.mock.calls[0][0])
-            .toEqual(id);
-        expect(dao.storeRestockOrderSkuItems.mock.calls[0][1])
-            .toEqual(body.skuItems);
+        res = await restockOrderService.updateRestockOrder(type, 1, body);
+        expect(res.code).toEqual(422);
 
-        expect(res.code).toEqual(200);
+        dao.updateRestockOrder.mockReturnValueOnce(0)
+        fakeRestockOrder.setState(oldState);
+        res = await restockOrderService.updateRestockOrder(type, 1, body);
+        expect(res.code).toEqual(503);
+        
+        fakeRestockOrder.setTransportNote(oldTranportNote);
+    });
 
-        // expected 404
-        res = await restockOrderService.updateRestockOrder(
-            "skuItems", id + 2, body
-        );
+    test('update skuItems of restock order', async () => {
+        let type = "skuItems"
+        let body = {skuItems: [{SKUId: 1, rfid:"123"}]}
+
+        let res = await restockOrderService.updateRestockOrder(type, 1, body);
+        
         expect(res.code).toEqual(404);
 
-        // expected 503
-        res = await restockOrderService.updateRestockOrder(
-            "skuItems", id + 2, body
-        );
+        res = await restockOrderService.updateRestockOrder(type, 1, body);
+        expect(res.code).toEqual(422);
+        
+        let oldState = fakeRestockOrder.getState();
+        fakeRestockOrder.setState("DELIVERED");
+        res = await restockOrderService.updateRestockOrder(type, 1, body);
+
+        res = await restockOrderService.updateRestockOrder(type, 1, body);
         expect(res.code).toEqual(503);
+
+        fakeRestockOrder.setState(oldState);
     });
+
+
+
 
 });
 
@@ -499,4 +488,5 @@ describe("delete restock order", () => {
         res = await restockOrderService.deleteRestockOrder(id + 3);
         expect(res.code).toEqual(503);
     });
+    
 });

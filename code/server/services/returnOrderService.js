@@ -69,7 +69,6 @@ class ReturnOrderService {
         );
 
         const roFromDb = await this.#dao.storeReturnOrder(ro);
-
         if (!roFromDb)
             return statusCodes.SERVICE_UNAVAILABLE(`There was an error creating the return order`);
 
