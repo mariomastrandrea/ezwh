@@ -117,12 +117,11 @@ class InternalOrderService {
                 for(let product of body.products){
                     const sku = await this.#dao.getSkuById(product.SkuID);
                     if(!sku) return statusCodes.UNPROCESSABLE_ENTITY(`sku ${product.SkuID} not found`);
-
+                    
                     const skuItem = await this.#dao.getSkuItemByRfid(product.RFID);
                     if(!skuItem || skuItem.getSkuId() !== product.SkuID)
                         return statusCodes.UNPROCESSABLE_ENTITY(`sku item ${product.RFID} not found`);
                 }
-
                 result = await this.#dao.storeInternalOrderSkuItems(io.getId(), body.products);
             default:
                 io.setState(body.newState);
