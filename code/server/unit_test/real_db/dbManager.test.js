@@ -4,6 +4,49 @@ const RestockOrder = require('../../models/restockOrder');
 const ReturnOrder = require('../../models/returnOrder');
 const InternalOrder = require('../../models/internalOrder');
 
+const TestDescriptor = require('../../models/testDescriptor');
+const TestResult = require('../../models/testResult');
+const User = require('../../models/user');
+
+//#region TestDescriptor
+describe('[DB] test descriptor functions', () => {
+
+    test('get all test descriptors', async () => {
+        const tds = await dao.getAllTestDescriptors();
+        for(const td of tds){
+            expect(td).toBeInstanceOf(TestDescriptor);
+        }
+    });
+
+    test('get test descriptor by id', async () => {
+        let id = 1;
+        let td = await dao.getTestDescriptor(id);
+        expect(td).toBeInstanceOf(TestDescriptor);
+        expect(td.getId()).toBe(id);
+
+        // id not in db
+        id = 999;
+        td = await dao.getTestDescriptor(id);
+        expect(td).toBe(null);
+    });
+
+    test('get test descriptors of a sku', async () => {
+        let skuId = 1;
+        const tds = await dao.getTestDescriptorsOf(skuId);
+        for (const td of tds) {
+            expect(td).toEqual(expect.any(Number));
+        }
+
+        // skuId not in db
+        skuId = 999;
+        const tds2 = await dao.getTestDescriptorsOf(skuId);
+        expect(tds2).toEqual([]);
+    });
+
+    
+})
+//#endregion
+
 describe('[DB] restock orders GET functions', () => {
     test('get all restock orders', async () => {
         const ros = await dao.getAllRestockOrders();
