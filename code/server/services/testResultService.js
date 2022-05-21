@@ -65,7 +65,7 @@ class TestResultService {
         const testdesc = await this.#dao.getTestDescriptor(idTestDescriptor);//.catch(err => "ErrorDB");
 
         if(testdesc === 'ErrorDB')
-            return SERVICE_UNAVAILABLE("Error DB"); 
+            return SERVICE_UNAVAILABLE("ErrorDB"); 
 
         if(!testdesc)
             return NOT_FOUND("Test descriptor not found");
@@ -79,7 +79,7 @@ class TestResultService {
             new TestResult(null, rfid, idTestDescriptor, date, testresult));//.catch(err => "ErrorDB");
 
         if (result === "ErrorDB") 
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
         
         return CREATED();
     }
@@ -90,7 +90,7 @@ class TestResultService {
         const testres = await this.#dao.getTestResult(id,rfid);//.catch(err => 'ErrorDB');
 
         if (testres === "ErrorDB") 
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         if(!testres)
             return NOT_FOUND("Test result not found for rfid");
@@ -98,7 +98,7 @@ class TestResultService {
         const skuitem = await this.#dao.getSkuItemByRfid(rfid);//.catch(err => "ErrorDB");
 
         if (skuitem === "ErrorDB") 
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         if(!skuitem)
             return NOT_FOUND("Sku item not found");
@@ -106,7 +106,7 @@ class TestResultService {
         const testdesc = await this.#dao.getTestDescriptor(newIdTestDescriptor);//.catch(err => "ErrorDB");
 
         if(testdesc === 'ErrorDB')
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         if(!testdesc)
             return NOT_FOUND("Test descriptor not found");
@@ -118,7 +118,7 @@ class TestResultService {
             new TestResult(id, rfid, newIdTestDescriptor, newDate, newTestresult));//.catch(err => "ErrorDB");
 
         if (result === "ErrorDB" || !result) 
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
         
         return OK();
     }
@@ -129,7 +129,7 @@ class TestResultService {
         const testres = await this.#dao.getTestResult(id, rfid);//.catch(err => 'ErrorDB');
 
         if (testres === "ErrorDB") 
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         if(!testres)
             return UNPROCESSABLE_ENTITY("Test result not found for rfid");
@@ -137,7 +137,7 @@ class TestResultService {
         const result = await this.#dao.deleteTestResult(id, rfid);//.catch(err => "ErrorDB");
 
         if (result === "ErrorDB" || !result) 
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
         
         return NO_CONTENT();
     }

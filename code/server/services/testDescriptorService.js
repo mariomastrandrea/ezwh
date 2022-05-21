@@ -39,7 +39,7 @@ class TestDescriptorService {
         const sku = await this.#dao.getSkuById(idSKU);//.catch(err => "ErrorDB");
 
         if (sku === "ErrorDB")
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         if (!sku)
             return NOT_FOUND("Sku not found");
@@ -48,7 +48,7 @@ class TestDescriptorService {
             new TestDescriptor(null, name, procedureDescription, idSKU));//.catch(err => "ErrorDB");
 
         if (result === "ErrorDB")
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         return CREATED();
     };
@@ -59,7 +59,7 @@ class TestDescriptorService {
         const testdesc = await this.#dao.getTestDescriptor(id);//.catch(err => "ErrorDB");
 
         if (testdesc === 'ErrorDB')
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         if (!testdesc)
             return NOT_FOUND("Test descriptor not found");
@@ -67,7 +67,7 @@ class TestDescriptorService {
         const sku = await this.#dao.getSkuById(newIdSKU);//.catch(err => "ErrorDB");
 
         if (sku === "ErrorDB")
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         if (!sku)
             return NOT_FOUND("Sku not found");
@@ -76,7 +76,7 @@ class TestDescriptorService {
             new TestDescriptor(id, newName, newProcedureDescription, newIdSKU));//.catch(err => "ErrorDB");
 
         if (result === "ErrorDB" || !result)
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         return OK();
     };
@@ -87,7 +87,7 @@ class TestDescriptorService {
         const testdesc = await this.#dao.getTestDescriptor(id);//.catch(err => "ErrorDB");
 
         if (testdesc === 'ErrorDB')
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         if (!testdesc)
             return UNPROCESSABLE_ENTITY("Test descriptor not found");
@@ -95,7 +95,7 @@ class TestDescriptorService {
         const result = await this.#dao.deleteTestDescriptor(id);//.catch(err => "ErrorDB");
 
         if (result === "ErrorDB" || !result)
-            return SERVICE_UNAVAILABLE("Error DB");
+            return SERVICE_UNAVAILABLE("ErrorDB");
 
         return NO_CONTENT();
     }
