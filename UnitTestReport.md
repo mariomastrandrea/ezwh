@@ -16,6 +16,10 @@ Version:
 
 # Black Box Unit Tests
 
+Because of complexity of the system, we have decided to test only some of the most significant functions through Black Box Unit Testing. We decided to omit the testing of the functions that don't have any effect on the system like the ones that are used to return data to the user.
+
+In particular we tested DAO functions of RestockOrder, Sku, and User.
+
     <Define here criteria, predicates and the combination of predicates for each function of each class.
     Define test cases to cover all equivalence classes and boundary conditions.
     In the table, report the description of the black box test case and (traceability) the correspondence with the Jest test case writing the 

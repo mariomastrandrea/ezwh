@@ -5,7 +5,7 @@ class RestockOrder {
     #state;
     #products;
     #supplierId;
-    transportNote;
+    #transportNote;
     #skuItems;
 
     constructor(issueDate, products, supplierId, transportNote = "", id = null, skuItems = [], state = 'ISSUED') {
