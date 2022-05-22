@@ -1528,7 +1528,7 @@ class DbManager {
                 else if (!row)
                     resolve(null);
                 else
-                    resolve(new User(row.Name, row.Surname, row.Email, row.Type, row.Password, row.ID));
+                    resolve(new User(row.ID, row.Name, row.Surname, row.Email, row.Type, row.Password));
             });
         });
     }

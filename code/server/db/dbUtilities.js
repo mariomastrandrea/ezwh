@@ -8,7 +8,7 @@ const dbConnection = new sqlite.Database(dbSource, (err) => {
         console.error(err.message);
         throw err;
     }
-    console.log('Connected to the SQLite database.');
+    //console.log('Connected to the SQLite database.');
 });
 
 dbConnection.get("PRAGMA foreign_keys=ON");

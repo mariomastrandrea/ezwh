@@ -14,7 +14,7 @@ const NO_CONTENT = () => ({
 
 const UNAUTHORIZED = (message) => ({
     error: `Unauthorized${message ? ` - ${message}` : ""}`,
-    code: 404
+    code: 401
 });
 
 const NOT_FOUND = (message) => ({
