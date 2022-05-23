@@ -97,16 +97,16 @@ Because of complexity of the system, we have decided to test only some of the mo
 *A Well Formed Position (WFP) is an instance of Position in which attributes satisfy ALL the following constraints:*
 
 
-| Attribute                  | Constraints    |
-| -------------------------- | -------------- |
-| newPosition.positionId     | === 12         |
-| newPosition.aisle          | === 4          |
-| newPosition.row            | === 4          |
-| newPosition.col            | === 4          |
-| newPosition.maxWeight      | 0 to maxDouble |
-| newPosition.maxVolume      | 0 to maxDouble |
-| newPosition.OccupiedWeight | 0 to maxDouble |
-| newPosition.OccupiedVolume | 0 to maxDouble |
+| Attribute                     | Constraints    |
+| ----------------------------- | -------------- |
+| newPosition.positionId.length | === 12         |
+| newPosition.aisle.length      | === 4          |
+| newPosition.row.length        | === 4          |
+| newPosition.col.length        | === 4          |
+| newPosition.maxWeight         | 0 to maxDouble |
+| newPosition.maxVolume         | 0 to maxDouble |
+| newPosition.OccupiedWeight    | 0 to maxDouble |
+| newPosition.OccupiedVolume    | 0 to maxDouble |
 
 **Predicates for method updatePosition(oldPositionId, newPosition):**
 
@@ -378,6 +378,12 @@ Services with real db will be tested during the API integration tests.
 |                       | [DB] user CREATE UPDATE DELETE functions            | create user                                   |
 |                       |                                                     | update user                                   |
 |                       |                                                     | delete user                                   |
+|                       | [DB] position functions                             | get all positions                             |
+|                       |                                                     | get position by id                            |
+|                       |                                                     | store position                                |
+|                       |                                                     | update position                               |
+|                       |                                                     | delete position                               |
+|                       | [DB] get occupied capacities of a position          | get occupied capacities of a position         |
 |                       | *other DB test suite* ...                           | *other DB test*    ...                        |
 | InternalOrderService  | get internal orders                                 | get all internal orders                       |
 |                       |                                                     | get internal order                            |

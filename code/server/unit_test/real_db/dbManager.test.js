@@ -9,6 +9,8 @@ const TestResult = require('../../models/testResult');
 const User = require('../../models/user');
 const encryption = require("../../utilityEncryption");
 
+const Position = require('../../models/position');
+
 describe('[DB] restock orders GET functions', () => {
     test('get all restock orders', async () => {
         const ros = await dao.getAllRestockOrders();
@@ -577,4 +579,128 @@ describe('[DB] user CREATE UPDATE DELETE functions', () => {
         expect(result).toEqual(true);
     });
 })
+//#endregion
+
+//#region Position
+describe('[DB] position functions', () => {
+    let id = "123412341234"; // id of testing position
+    let fakeP = new Position(id, "1234", "1234", "1234", 100., 100., 0., 0.);
+    test('get all positions', async () => {
+        const positions = await dao.getAllPositions();
+        for (const p of positions) {
+            aisle = p.getAisle();
+            row = p.getRow();
+            col = p.getCol();
+            expect(p).toBeInstanceOf(Position);
+            expect(aisle).toMatch(/^[0-9]{4}$/);
+            expect(row).toMatch(/^[0-9]{4}$/);
+            expect(col).toMatch(/^[0-9]{4}$/);
+            expect(p.getPositionId()).toEqual(aisle + row + col);
+            expect(p.getMaxWeight()).toBeGreaterThan(0.);
+            expect(p.getMaxVolume()).toBeGreaterThan(0.);
+            expect(p.getOccupiedWeight()).toBeLessThanOrEqual(p.getMaxWeight());
+            expect(p.getOccupiedVolume()).toBeLessThanOrEqual(p.getMaxVolume());
+        }
+    });
+
+    test('get position by id', async () => {
+        // position with id 800234523415 exists
+        let id = "800234523415";
+        let p = await dao.getPosition(id);
+
+        aisle = p.getAisle();
+        row = p.getRow();
+        col = p.getCol();
+        expect(p).toBeInstanceOf(Position);
+        expect(aisle).toMatch(/^[0-9]{4}$/);
+        expect(row).toMatch(/^[0-9]{4}$/);
+        expect(col).toMatch(/^[0-9]{4}$/);
+        expect(p.getPositionId()).toEqual(aisle + row + col);
+        expect(p.getMaxWeight()).toBeGreaterThan(0.);
+        expect(p.getMaxVolume()).toBeGreaterThan(0.);
+        expect(p.getOccupiedWeight()).toBeLessThanOrEqual(p.getMaxWeight());
+        expect(p.getOccupiedVolume()).toBeLessThanOrEqual(p.getMaxVolume());
+
+        // position with id 111 does not exist
+        id = "111";
+        p = await dao.getPosition(id);
+        expect(p).toBe(null);
+
+        // position with id 800234523415 (as number) exists
+        id = 800234523415;
+        p = await dao.getPosition(id);
+        expect(p).toBeInstanceOf(Position);
+
+    });
+
+    test('storePosition', async () => {
+        let p = fakeP
+        let result = await dao.storePosition(p);
+        expect(result).toBeInstanceOf(Position);
+        expect(result.toJSON()).toEqual(p.toJSON());
+
+        // unique constraint violation
+        await expect(dao.storePosition(p)).rejects.toThrow();
+    });
+
+    test('update position', async () => {
+        let p = new Position(fakeP.getPositionId(), fakeP.getAisle(), fakeP.getRow(), fakeP.getCol(), 100., 100., 0., 0.);
+
+        p.setAisle("2345");
+        p.setRow("2345");
+        p.setCol("2345");
+        p.setPositionId("234523452345");
+        p.setMaxWeight(120.);
+        p.setMaxVolume(140.);
+        p.setOccupiedWeight(10.);
+        p.setOccupiedVolume(11.);
+
+        result = await dao.updatePosition(fakeP.getPositionId(), p);
+        expect(result).toBe(true);
+
+        result = await dao.updatePosition(fakeP.getPositionId(), p);
+        expect(result).toBe(false);
+
+        // restore original values
+        result = await dao.updatePosition(p.getPositionId(), fakeP);
+        expect(result).toBe(true);
+    });
+
+    test('delete position', async () => {
+        let result = await dao.deletePosition(fakeP.getPositionId());
+        expect(result).toBe(true);
+
+        // already deleted
+        result = await dao.deletePosition(fakeP.getPositionId());
+        expect(result).toBe(false);
+    });
+})
+
+describe('[DB] get occupied capacities of a position', () => {
+
+    // TO DO
+    test('get occupied capacities of position', async => {
+        let result = await dao.getOccupiedCapacitiesOf(fakeP.getPositionId());
+        expect(result.weight).toEqual(fakeP.getOccupiedWeight());
+        expect(result.volume).toEqual(fakeP.getOccupiedVolume());
+
+        // position with id 111 does not exist
+        let id = "111";
+        result = await dao.getOccupiedCapacitiesOf(id);
+        expect(result).toBe(null);
+    });
+
+});
+//#endregion
+
+//#region Sku
+// TO DO
+//#endregion
+
+//#region SkuItems
+// TO DO
+//#endregion
+
+//#region Items
+// TO DO
 //#endregion
