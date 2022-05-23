@@ -40,18 +40,19 @@ The proposed architecture for EzWh software is based on the high level **layered
 
 The high level design is composed by a set of **layers**: *GUI (front-end), Application Logic and Data(DB)*
 
-<img src="./assets/design/high_level_diagram.png" alt="EzWh High Level Design" style="background-color:#eee">
+<img src="./assets/coding/high_level_diagram.png" alt="EzWh High Level Design" style="background-color:#eee">
 
 The application is composed of a main package and a set of subpackages, described by the following bulleted list:
 
 * it.polito.ezwh (the main package) contains the main application, in particular the façade
 * it.polito.ezwh.data contains the data structures used by the application and the database access
+* it.polito.ezwh.service contains the services used by the application
 * it.polito.ezwh.exceptions contains the code used by the application to handle exceptions triggered by the user
 
 The EzWh application follows the **MVC** (Model-View-Controller) architectural pattern consisting of:
 - Model -> all the classes in *data* subpackage where are represented the data structures
 - View -> GUI (front-end)
-- Controller -> *EzWh* - the class exposing the APIs of the app back-end, that performs interaction on the data objects and manages user inputs from the *View*.
+- Controller -> *EzWh* - the class exposing the APIs of the app back-end, that performs interaction on the data objects through *services classes* and manages user inputs from the *View*.
 
 Note that GUI is not part of the *EzWh* package, but it is **a separate project**, so that can be developed independently of the *EzWh* package out of the *EzWh* repository. 
 
@@ -67,6 +68,12 @@ The *DbManager* class complies with **Repository Pattern**, so it represents the
 
 *All data types (class attributes, method parameters and method return types) refers to Java primitive types or Java main classes, and are expressed according to Java language conventions. Regarding the collections we used interfaces like List instead of specific classes in order to increase the level of abstraction and give to developers the possibility of choosing the best implementation*
 
+**UPDATE:**
+In the following diagram the *EzWh class* is split in all the services that it implements, to better understand low level interactions.
+
+<img src="./assets/coding/DesignDiagram.png" alt="EzWh Low Level Design - UML class diagram" style="background-color:#eee">
+
+*Data types have been omitted because of in Javascript they are not necessary, and the code is more readable. Constructor methods have been omitted too for the previous reason*
 
 # Verification traceability matrix
 
