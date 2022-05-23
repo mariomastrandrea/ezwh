@@ -209,7 +209,7 @@ describe('[DB] return orders functions', () => {
         expect(fakeOrder.getId()).toBeGreaterThan(exOder.getId());
 
     });
-    test('add sku items of a return order', async () => {
+    test('add sku items to a return order', async () => {
         let result = await dao.storeReturnOrderSkuItems(fakeOrder.getId(), fakeProducts);
         expect(result).toBe(true);
     });
@@ -527,7 +527,7 @@ describe('[DB] user GET functions', () => {
         expect(u).toBe(null);
     })
 
-    test('get test all users of type', async () => {
+    test('get all users of type', async () => {
         let type = 'supplier';
         let users = await dao.getAllUsersOfType(type);
         for (let u of users) {
@@ -552,7 +552,7 @@ describe('[DB] user GET functions', () => {
 describe('[DB] user CREATE UPDATE DELETE functions', () => {
 
     let exUser;
-    let newUser; 
+    let newUser;
     beforeAll(async () => {
         exUser = await dao.getUser('e1@gmail.com', 'supplier');
         newUser = new User(null, 'N8', 'S8', 'e8@gmail.com', 'clerk', await encryption.hashPassword('pass8'));
