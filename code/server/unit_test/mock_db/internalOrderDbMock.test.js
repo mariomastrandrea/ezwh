@@ -338,12 +338,12 @@ describe('create edit delete internal orders', () => {
 
         dao.getInternalOrder.mockReturnValue(undefined);
         res = await internalOrderService.deleteInternalOrder(1);
-        expect(res.code).toBe(404);
+        expect(res.code).toBe(422);
 
     });
 });
 
-describe('forcing L111, L122-123 of internal order', () => {
+describe('specific internal order errors', () => {
     beforeEach(() => {
         dao.getInternalOrder.mockReset();
         dao.getInternalOrderSkuItems.mockReset();
@@ -361,12 +361,12 @@ describe('forcing L111, L122-123 of internal order', () => {
             ));
         dao.getSkuItemByRfid.mockReturnValue(0);
     });
-    test('force 111', async () => {
+    test('io not found during update', async () => {
         let res = await internalOrderService.updateInternalOrder(1, 1);
         expect(res.code).toBe(404);
     })
 
-    test('force 122-123', async () => {
+    test('sku not found during update', async () => {
         let res = await internalOrderService.updateInternalOrder(1, 2);
         expect(res.code).toBe(404);
 

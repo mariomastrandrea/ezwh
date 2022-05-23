@@ -478,7 +478,7 @@ describe("delete restock order", () => {
 
         // expected 404
         res = await restockOrderService.deleteRestockOrder(id + 1);
-        expect(res.code).toEqual(404);
+        expect(res.code).toEqual(422);
 
         // expected 503
         res = await restockOrderService.deleteRestockOrder(id + 2);

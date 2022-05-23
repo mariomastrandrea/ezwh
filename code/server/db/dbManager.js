@@ -39,12 +39,13 @@ class DbManager {
 
     // returns the required position, or 'null' if it is not found
     getPosition(positionId) {
+        const parsedId = positionId.toString()
         return new Promise((resolve, reject) => {
             const sqlQuery = `SELECT *
                               FROM Position
                               WHERE ID=?`;
 
-            this.#db.get(sqlQuery, [positionId], (err, row) => {
+            this.#db.get(sqlQuery, [parsedId], (err, row) => {
                 if (err)
                     reject(err);
                 else if (!row)  // position not found
@@ -94,7 +95,7 @@ class DbManager {
                     if (err)
                         reject(err);
                     else
-                        resolve(new Position(this.lastID, aisle, row, col, maxWeight, maxVolume,
+                        resolve(new Position(positionId, aisle, row, col, maxWeight, maxVolume,
                             occupiedWeight, occupiedVolume));
                 });
         });
@@ -102,6 +103,7 @@ class DbManager {
 
     // returns 'true' if the position was successfully updated; 'false' otherwise
     updatePosition(oldPositionId, newPosition) {
+        const parsedId = oldPositionId.toString()
         const positionId = newPosition.getPositionId();
         const aisle = newPosition.getAisle();
         const row = newPosition.getRow();
@@ -118,7 +120,7 @@ class DbManager {
                                   WHERE  ID=?`;
 
             const params = [positionId, aisle, row, col, maxWeight, maxVolume,
-                occupiedWeight, occupiedVolume, oldPositionId];
+                occupiedWeight, occupiedVolume, parsedId];
 
             this.#db.run(sqlStatement, params, function (err) {
                 if (err)
@@ -131,11 +133,12 @@ class DbManager {
 
     // returns 'true' if the position has been deleted, 'false' otherwise
     deletePosition(positionId) {
+        const parsedId = positionId.toString()
         return new Promise((resolve, reject) => {
             const sqlStatement = `DELETE FROM Position
                                   WHERE ID=?`;
 
-            this.#db.run(sqlStatement, [positionId], function (err) {
+            this.#db.run(sqlStatement, [parsedId], function (err) {
                 if (err)
                     reject(err);
                 else
@@ -147,14 +150,17 @@ class DbManager {
     // return an object with 'weight' and 'volume' properties, corresponding to the position's 
     // actual weight and volume occupied
     getOccupiedCapacitiesOf(positionId) {
+        const parsedId = positionId.toString()
         return new Promise((resolve, reject) => {
             const sqlQuery = `SELECT SUM(Weight) AS weight, SUM(Volume) AS volume
                               FROM SkuItem SI, Sku S
                               WHERE SI.SkuId = S.ID AND S.Position=?`;
 
-            this.#db.get(sqlQuery, [positionId], (err, row) => {
+            this.#db.get(sqlQuery, [parsedId], (err, row) => {
                 if (err)
                     reject(err);
+                else if (!row)
+                    resolve(null);
                 else
                     resolve({
                         weight: row.weight ?? 0,
@@ -728,12 +734,12 @@ class DbManager {
             const sqlQuery = `SELECT *
                               FROM TestResult
                               WHERE RFID=? AND Result=0`;
-            
+
             this.#db.all(sqlQuery, [rfid], (err, rows) => {
-                if(err)
+                if (err)
                     reject(err);
-                else 
-                    resolve(rows.map(row => 
+                else
+                    resolve(rows.map(row =>
                         new TestResult(row.ID, row.RFID, row.TestDescriptorId, row.Date, row.Result)));
             });
         });
@@ -1010,7 +1016,7 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else 
+                else
                     resolve(this.changes > 0);
             });
         });
@@ -1093,7 +1099,7 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else resolve(rows.map(order => 
+                else resolve(rows.map(order =>
                     new ReturnOrder(order.ReturnDate, [], order.RestockOrderId, order.ID)));
             })
         });
@@ -1114,7 +1120,7 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else if (!row) 
+                else if (!row)
                     resolve(null);
                 else
                     resolve(new ReturnOrder(row.ReturnDate, [], row.RestockOrderId, row.ID));
@@ -1163,7 +1169,7 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else 
+                else
                     resolve(new ReturnOrder(ro.getReturnDate(), ro.getProducts(), ro.getRestockOrderId(), this.lastID));
             });
         });
@@ -1247,8 +1253,8 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else 
-                    resolve(rows.map(order => 
+                else
+                    resolve(rows.map(order =>
                         new InternalOrder(order.IssueDate, [], order.CustomerId, order.State, order.ID)));
             })
         });
@@ -1269,8 +1275,8 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else 
-                    resolve(rows.map(order => 
+                else
+                    resolve(rows.map(order =>
                         new InternalOrder(order.IssueDate, [], order.CustomerId, order.State, order.ID)));
             })
         });
@@ -1293,7 +1299,7 @@ class DbManager {
                 }
                 else if (!row) {
                     resolve(null);
-                } 
+                }
                 else
                     resolve(new InternalOrder(row.IssueDate, [], row.CustomerId, row.State, row.ID));
             })
@@ -1367,7 +1373,7 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else 
+                else
                     resolve(new InternalOrder(io.getIssueDate(), io.getProducts(), io.getCustomerId(), io.getState(), this.lastID));
             });
         });
@@ -1465,7 +1471,7 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else 
+                else
                     resolve(this.changes > 0);
             })
         });
@@ -1485,7 +1491,7 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else 
+                else
                     resolve(this.changes > 0);
             })
         });
@@ -1505,7 +1511,7 @@ class DbManager {
                     console.error(err.message);
                     reject(err);
                 }
-                else 
+                else
                     resolve(this.changes > 0);
             })
         });

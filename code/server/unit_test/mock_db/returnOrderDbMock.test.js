@@ -326,8 +326,7 @@ describe('delete return order', () => {
 
         // expect 404
         res = await returnOrderService.deleteReturnOrder(id + 1);
-        expect(res.error).toEqual(expect.stringContaining('Not Found'));
-        expect(res.code).toEqual(404);
+        expect(res.code).toEqual(422);
 
         // expect 503
         res = await returnOrderService.deleteReturnOrder(id);
