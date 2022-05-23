@@ -68,12 +68,14 @@ class PositionsService {
         if (newOccupiedWeight > newMaxWeight || newOccupiedVolume > newMaxVolume)
             return UNPROCESSABLE_ENTITY("no enough volume/weight");
 
+        /*
         // check if the occupied weight and volume are consistent with the already present SkuItems (?)
         const { weight, volume } = await this.#dao.getOccupiedCapacitiesOf(oldPositionID);
 
         if (weight !== newOccupiedWeight || volume !== newOccupiedVolume)
             return UNPROCESSABLE_ENTITY("new capacities are inconsistent with the existing SkuItems");
-
+        */
+        
         // * update the position *
         const newPosition = new Position(newPositionID, newAisleID, newRow, newCol,
             newMaxWeight, newMaxVolume, newOccupiedWeight, newOccupiedVolume);
@@ -84,11 +86,6 @@ class PositionsService {
             return SERVICE_UNAVAILABLE();
 
         // * cascading updates on Sku(Position) made by sqlite *
-        
-        /* if (oldPositionID !== newPositionID) { 
-            this.#dao.updateSkuPosition(oldPositionID, newPositionID); // update Sku table
-        } */
-
         return OK(); // position successfully updated
     }
 
@@ -98,7 +95,8 @@ class PositionsService {
         // check if already exist the specific position
         const oldPosition = await this.#dao.getPosition(oldPositionID);
 
-        if (!oldPosition) return NOT_FOUND();
+        if (!oldPosition) 
+            return NOT_FOUND(`position ${oldPositionID} is not found`);
 
         // * Q: Has to be properly checked the case in which the new positionId already exists?
         //      (and it cannot be duplicated) *
@@ -126,8 +124,10 @@ class PositionsService {
     async deletePosition(positionID) {
         const position = await this.#dao.getPosition(positionID);
 
-        if (!position) return NOT_FOUND();
+        if (!position)  // position not found
+            return UNPROCESSABLE_ENTITY(`position ${positionID} is not found`);
 
+        /*
         // cannot delete a position that is not free
         if (position.getOccupiedWeight() > 0 || position.getOccupiedVolume() > 0)
             return UNPROCESSABLE_ENTITY("Position is not free");
@@ -137,6 +137,7 @@ class PositionsService {
 
         if (tempSku)
             return UNPROCESSABLE_ENTITY(`Existing sku associated to ${positionID}`);
+        */
 
         // * delete the Position *
         const positionWasDeleted = await this.#dao.deletePosition(positionID);

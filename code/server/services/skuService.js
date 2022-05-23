@@ -151,13 +151,15 @@ class SkuService {
     async deleteSku(skuId) {
         // check sku existence
         const sku = await this.#dao.getSkuById(skuId);
-        if (!sku) return NOT_FOUND();   // sku not found
+        if (!sku) return UNPROCESSABLE_ENTITY(`sku ${skuId} not found`);   // sku not found
 
+        /*
         // check related SkuItems existence
         const relatedSkuItems = await this.#dao.getSkuItemsOf(skuId);
 
         if (relatedSkuItems?.length > 0) // there are still SkuItems
             return UNPROCESSABLE_ENTITY("related SkuItems still present");
+        */
 
         // * delete sku *
         const skuWasDeleted = await this.#dao.deleteSku(skuId);

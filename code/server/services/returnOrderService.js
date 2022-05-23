@@ -49,10 +49,10 @@ class ReturnOrderService {
             const rfid = product.RFID;
 
             const sku = await this.#dao.getSkuById(skuId);
-            if (!sku) return statusCodes.NOT_FOUND(`sku ${skuId} was not found`);
+            if (!sku) return statusCodes.UNPROCESSABLE_ENTITY(`sku ${skuId} was not found`);
 
             const skuItem = await this.#dao.getSkuItemByRfid(rfid);
-            if (!skuItem) return statusCodes.NOT_FOUND(`sku item ${rfid} not found`);
+            if (!skuItem) return statusCodes.UNPROCESSABLE_ENTITY(`sku item ${rfid} not found`);
 
             // check if that skuItem has at least one negative test result associated
             const negativeTestResults = await this.#dao.getNegativeTestResultsOf(rfid);
@@ -84,7 +84,7 @@ class ReturnOrderService {
 
         const ro = await this.#dao.getReturnOrder(parsedId);
         if (!ro) 
-            return statusCodes.NOT_FOUND(`No return order found with id: ${id}`);
+            return statusCodes.UNPROCESSABLE_ENTITY(`No return order found with id: ${id}`);
 
         let deleted = await this.#dao.deleteReturnOrder(parsedId);
         // * cascading delete of restock order's sku items made by sqlite *

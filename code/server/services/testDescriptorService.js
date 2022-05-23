@@ -1,6 +1,15 @@
 const TestDescriptor = require("../models/testDescriptor");
-const { OK, CREATED, NO_CONTENT, UNAUTHORIZED, NOT_FOUND, CONFLICT, 
-        UNPROCESSABLE_ENTITY, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE } = require("../statusCodes");
+
+const { 
+    OK, 
+    CREATED, 
+    NO_CONTENT, 
+    NOT_FOUND, 
+    UNPROCESSABLE_ENTITY, 
+    INTERNAL_SERVER_ERROR, 
+    SERVICE_UNAVAILABLE 
+} = require("../statusCodes");
+
 const { int } = require("../utilities");
 
 class TestDescriptorService {
@@ -15,7 +24,7 @@ class TestDescriptorService {
         const result = await this.#dao.getAllTestDescriptors();//.catch(err => "ErrorDB");
 
         //if (result === "ErrorDB")
-            //return INTERNAL_SERVER_ERROR("ErrorDB");
+        //return INTERNAL_SERVER_ERROR("ErrorDB");
 
         return OK(result);
     };
@@ -26,7 +35,7 @@ class TestDescriptorService {
         const result = await this.#dao.getTestDescriptor(id);//.catch(err => "ErrorDB");
 
         //if (result === "ErrorDB")
-            //return INTERNAL_SERVER_ERROR("ErrorDB");
+        //return INTERNAL_SERVER_ERROR("ErrorDB");
 
         if (!result)
             return NOT_FOUND("Test descriptor not found");
@@ -39,7 +48,7 @@ class TestDescriptorService {
         const sku = await this.#dao.getSkuById(idSKU);//.catch(err => "ErrorDB");
 
         //if (sku === "ErrorDB")
-            //return SERVICE_UNAVAILABLE("ErrorDB");
+        //return SERVICE_UNAVAILABLE("ErrorDB");
 
         if (!sku)
             return NOT_FOUND("Sku not found");
@@ -48,7 +57,7 @@ class TestDescriptorService {
             new TestDescriptor(null, name, procedureDescription, idSKU));//.catch(err => "ErrorDB");
 
         //if (result === "ErrorDB")
-            //return SERVICE_UNAVAILABLE("ErrorDB");
+        //return SERVICE_UNAVAILABLE("ErrorDB");
 
         return CREATED();
     };
@@ -59,7 +68,7 @@ class TestDescriptorService {
         const testdesc = await this.#dao.getTestDescriptor(id);//.catch(err => "ErrorDB");
 
         //if (testdesc === 'ErrorDB')
-            //return SERVICE_UNAVAILABLE("ErrorDB");
+        //return SERVICE_UNAVAILABLE("ErrorDB");
 
         if (!testdesc)
             return NOT_FOUND("Test descriptor not found");
@@ -67,7 +76,7 @@ class TestDescriptorService {
         const sku = await this.#dao.getSkuById(newIdSKU);//.catch(err => "ErrorDB");
 
         //if (sku === "ErrorDB")
-            //return SERVICE_UNAVAILABLE("ErrorDB");
+        //return SERVICE_UNAVAILABLE("ErrorDB");
 
         if (!sku)
             return NOT_FOUND("Sku not found");
@@ -87,7 +96,7 @@ class TestDescriptorService {
         const testdesc = await this.#dao.getTestDescriptor(id);//.catch(err => "ErrorDB");
 
         //if (testdesc === 'ErrorDB')
-            //return SERVICE_UNAVAILABLE("ErrorDB");
+        //return SERVICE_UNAVAILABLE("ErrorDB");
 
         if (!testdesc)
             return UNPROCESSABLE_ENTITY("Test descriptor not found");

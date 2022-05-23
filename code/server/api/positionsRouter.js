@@ -22,9 +22,9 @@ router.get("/positions", async (req, res) => {
     }
 
     try {
-        const {error, code, obj} = await positionsService.getAllPositions();
-        
-        if(error) {
+        const { error, code, obj } = await positionsService.getAllPositions();
+
+        if (error) {
             return res.status(code).send(error);
         }
 
@@ -33,7 +33,7 @@ router.get("/positions", async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal server error");
+        return res.status(500).send("Internal server error");
     }
 });
 
@@ -46,7 +46,7 @@ router.post("/position", async (req, res) => {
     try {
         // validate request body
         const schema = Joi.object({
-            positionID: Joi.string().min(12).max(12).required().valid(req.body.aisleID+req.body.row+req.body.col),
+            positionID: Joi.string().min(12).max(12).required().valid(req.body.aisleID + req.body.row + req.body.col),
             aisleID: Joi.string().min(4).max(4).required(),
             row: Joi.string().min(4).max(4).required(),
             col: Joi.string().min(4).max(4).required(),
@@ -59,11 +59,11 @@ router.post("/position", async (req, res) => {
         if (result.error) {
             return res.status(422).send('Unprocessable Entity');
         }
-        
-        const {positionID, aisleID, row, col, maxWeight, maxVolume} = req.body;
-        const {error, code} = await positionsService.createPosition(positionID, aisleID, row, col, maxWeight, maxVolume);
 
-        if(error) {
+        const { positionID, aisleID, row, col, maxWeight, maxVolume } = req.body;
+        const { error, code } = await positionsService.createPosition(positionID, aisleID, row, col, maxWeight, maxVolume);
+
+        if (error) {
             return res.status(code).send(error);
         }
 
@@ -71,7 +71,7 @@ router.post("/position", async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -90,10 +90,10 @@ router.put("/position/:positionID", async (req, res) => {
         }
 
         const aisleID = positionID.slice(0, 4);
-        const row     = positionID.slice(4, 8);
-        const col     = positionID.slice(8, 12);
+        const row = positionID.slice(4, 8);
+        const col = positionID.slice(8, 12);
 
-        if(!isInt(aisleID) || !isInt(row) || !isInt(col)) {
+        if (!isInt(aisleID) || !isInt(row) || !isInt(col)) {
             return res.status(422).send('Unprocessable Entity');
         }
 
@@ -113,25 +113,25 @@ router.put("/position/:positionID", async (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const { newAisleID, newRow, newCol, newMaxWeight, newMaxVolume, 
+        const { newAisleID, newRow, newCol, newMaxWeight, newMaxVolume,
             newOccupiedWeight, newOccupiedVolume } = req.body;
 
-        if(!isInt(newAisleID) || !isInt(newRow) || !isInt(newCol)) {
+        if (!isInt(newAisleID) || !isInt(newRow) || !isInt(newCol)) {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const {error, code} = await positionsService.updatePosition(positionID, newAisleID, 
+        const { error, code } = await positionsService.updatePosition(positionID, newAisleID,
             newRow, newCol, newMaxWeight, newMaxVolume, newOccupiedWeight, newOccupiedVolume);
 
         if (error) {
             return res.status(code).send(error);
         }
-        
+
         return res.status(code).end();
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -150,10 +150,10 @@ router.put("/position/:positionID/changeID", async (req, res) => {
         }
 
         const aisleID = positionID.slice(0, 4);
-        const row     = positionID.slice(4, 8);
-        const col     = positionID.slice(8, 12);
+        const row = positionID.slice(4, 8);
+        const col = positionID.slice(8, 12);
 
-        if(!isInt(aisleID) || !isInt(row) || !isInt(col)) {
+        if (!isInt(aisleID) || !isInt(row) || !isInt(col)) {
             return res.status(422).send('Unprocessable Entity');
         }
 
@@ -166,14 +166,14 @@ router.put("/position/:positionID/changeID", async (req, res) => {
 
         // this http method must update also the aisleID, row and col, according to the new PositionID (see API.md)
         const newAisleID = newPositionID.slice(0, 4);
-        const newRow     = newPositionID.slice(4, 8);
-        const newCol     = newPositionID.slice(8, 12);
+        const newRow = newPositionID.slice(4, 8);
+        const newCol = newPositionID.slice(8, 12);
 
-        if(!isInt(newAisleID) || !isInt(newRow) || !isInt(newCol)) {
+        if (!isInt(newAisleID) || !isInt(newRow) || !isInt(newCol)) {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const {error, code} = await positionsService.updatePositionId(positionID, newPositionID, newAisleID, newRow, newCol);
+        const { error, code } = await positionsService.updatePositionId(positionID, newPositionID, newAisleID, newRow, newCol);
 
         if (error) {
             return res.status(code).send(error);
@@ -183,7 +183,7 @@ router.put("/position/:positionID/changeID", async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -202,22 +202,22 @@ router.delete("/position/:positionID", async (req, res) => {
         }
 
         const aisleID = positionID.slice(0, 4);
-        const row     = positionID.slice(4, 8);
-        const col     = positionID.slice(8, 12);
+        const row = positionID.slice(4, 8);
+        const col = positionID.slice(8, 12);
 
-        if(!isInt(aisleID) || !isInt(row) || !isInt(col)) {
+        if (!isInt(aisleID) || !isInt(row) || !isInt(col)) {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const {error, code} = await positionsService.deletePosition(positionID);
+        const { error, code } = await positionsService.deletePosition(positionID);
 
-        return error ? 
+        return error ?
             res.status(code).send(error) :
             res.status(code).end();
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 

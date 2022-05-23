@@ -46,7 +46,7 @@ router.get('/internalOrders', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error");
     }
 });
 
@@ -66,7 +66,7 @@ router.get('/internalOrdersIssued', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error");
     }
 });
 
@@ -86,7 +86,7 @@ router.get('/internalOrdersAccepted', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error");
     }
 });
 
@@ -110,7 +110,7 @@ router.get('/internalOrders/:id', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error");
     }
 });
 
@@ -150,7 +150,7 @@ router.post('/internalOrders', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -190,7 +190,7 @@ router.put('/internalOrders/:id', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -214,7 +214,7 @@ router.delete('/internalOrders/:id', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -239,7 +239,7 @@ router.get('/returnOrders', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error");
     }
 });
 
@@ -264,7 +264,7 @@ router.get('/returnOrders/:id', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error");
     }
 });
 
@@ -306,7 +306,7 @@ router.post('/returnOrder', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -330,7 +330,7 @@ router.delete('/returnOrder/:id', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -355,7 +355,7 @@ router.get('/restockOrders', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error");
     }
 });
 
@@ -375,7 +375,7 @@ router.get('/restockOrdersIssued', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error");
     }
 });
 
@@ -399,7 +399,7 @@ router.get('/restockOrders/:id', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error");
     }
 });
 
@@ -423,7 +423,7 @@ router.get('/restockOrders/:id/returnitems', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).send("Internal Server Error");
     }
 });
 
@@ -465,7 +465,7 @@ router.post('/restockOrder', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -498,7 +498,7 @@ router.put('/restockOrder/:id', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -537,7 +537,7 @@ router.put('/restockOrder/:id/skuItems', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -568,7 +568,7 @@ router.put('/restockOrder/:id/transportNote', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 
@@ -593,7 +593,7 @@ router.delete('/restockOrder/:id', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.status(503).send("Service Unavailable");
+        return res.status(503).send("Service Unavailable");
     }
 });
 

@@ -139,7 +139,7 @@ class InternalOrderService {
 
         const io = await this.#dao.getInternalOrder(parsedId);
         if (!io) 
-            return statusCodes.NOT_FOUND(`No internal order found with id: ${id}`);
+            return statusCodes.UNPROCESSABLE_ENTITY(`No internal order found with id: ${id}`);
         
         let result = await this.#dao.deleteInternalOrder(io.getId());
 

@@ -50,7 +50,7 @@ class ItemService {
         const supplier = this.#dao.getUserByIdAndType(supplierId, 'SUPPLIER');
 
         if (!supplier)
-            return NOT_FOUND(`supplier ${supplierId} not found`);
+            return UNPROCESSABLE_ENTITY(`supplier ${supplierId} not found`);
 
         // check if supplier already sells this sku
         tempItem = await this.#dao.getItemBySkuIdAndSupplier(skuId, supplierId);
@@ -63,7 +63,7 @@ class ItemService {
         const itemWasCreated = await this.#dao.storeItem(newItem);
 
         if (!itemWasCreated)    // generic error during creation
-            SERVICE_UNAVAILABLE();
+            return SERVICE_UNAVAILABLE();
 
         return CREATED();
     };
@@ -90,7 +90,7 @@ class ItemService {
         const item = await this.#dao.getItemById(itemId);
 
         if (!item)
-            return NOT_FOUND(`item ${itemId} not found`);
+            return UNPROCESSABLE_ENTITY(`item ${itemId} not found`);
 
         // * delete item *
         const itemWasDeleted = await this.#dao.deleteItem(itemId);

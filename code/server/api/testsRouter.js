@@ -107,7 +107,6 @@ router.post('/testDescriptor', async (req, res) => {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
-
 });
 
 // PUT /api/testDescriptor/:id - updateTestDescriptor
@@ -215,7 +214,6 @@ router.get('/skuitems/:rfid/testResults', async (req, res) => {
         console.log(err);
         return res.status(500).send('Internal Server Error');
     }
-
 });
 
 // GET /api/skuitems/:rfid/testResults/:id - getTestResult

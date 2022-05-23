@@ -87,7 +87,7 @@ class DbManager {
         return new Promise((resolve, reject) => {
             const sqlStatement =
                 `INSERT INTO Position (ID, Aisle, Row, Col, MaxWeight, MaxVolume, OccupiedWeight, OccupiedVolume)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
             this.#db.run(sqlStatement, [positionId, aisle, row, col, maxWeight, maxVolume,
                 occupiedWeight, occupiedVolume], function (err) {

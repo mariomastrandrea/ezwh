@@ -89,7 +89,6 @@ class SkuItemService {
         const skuItemWasUpdated = await this.#dao.updateSkuItem(oldRfid, newSkuItem);
 
         // * cascading updates on TestResults made by sqlite * 
-        // * cascading updates on Orders' tables * ???
 
         if (!skuItemWasUpdated) // generic error during creation
             return SERVICE_UNAVAILABLE();
@@ -102,7 +101,7 @@ class SkuItemService {
         const skuItem = await this.#dao.getSkuItemByRfid(rfid);
 
         if (!skuItem) 
-            return NOT_FOUND(`rfid ${rfid} not found`);
+            return UNPROCESSABLE_ENTITY(`rfid ${rfid} not found`);
 
         // * delete sku item *
         const skuItemWasDeleted = await this.#dao.deleteSkuItem(rfid);

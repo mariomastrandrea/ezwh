@@ -77,13 +77,14 @@ class RestockOrderService {
             const sku = await this.#dao.getSkuById(skuId);
 
             if (!sku) // an SKU id was not found
-                return statusCodes.NOT_FOUND(`sku ${skuId} is not found`);
+                return statusCodes.UNPROCESSABLE_ENTITY(`sku ${skuId} is not found`);
         }
 
         // check existence of the supplier
         const supplier = await this.#dao.getUserByIdAndType(supplierId, 'supplier');
 
-        if (!supplier) return statusCodes.NOT_FOUND(`supplier ${supplierId} is not found`);
+        if (!supplier) 
+            return statusCodes.UNPROCESSABLE_ENTITY(`supplier ${supplierId} is not found`);
 
         // * create the restock order *
         const ro = new RestockOrder(
@@ -125,10 +126,10 @@ class RestockOrderService {
                     const rfid = s.rfid;
 
                     const sku = await this.#dao.getSkuById(skuId);
-                    if (!sku) return statusCodes.NOT_FOUND(`sku ${skuId} not found`);
+                    if (!sku) return statusCodes.UNPROCESSABLE_ENTITY(`sku ${skuId} not found`);
 
                     const skuItem = await this.#dao.getSkuItemByRfid(rfid);
-                    if (!skuItem) return statusCodes.NOT_FOUND(`skuItem ${rfid} not found`);
+                    if (!skuItem) return statusCodes.UNPROCESSABLE_ENTITY(`skuItem ${rfid} not found`);
                 }
 
                 result = await this.#dao.storeRestockOrderSkuItems(ro.getId(), body.skuItems);
@@ -142,7 +143,7 @@ class RestockOrderService {
                     ro.getState() !== 'DELIVERY' ||
                     dayjs(body.transportNote.deliveryDate) < dayjs(ro.getIssueDate())
                 )
-                    return statusCodes.UNPROCESSABLE_ENTITY(`Restock order with id: ${id} is not in DELIVERY state or delivery date is before issue date`);
+                return statusCodes.UNPROCESSABLE_ENTITY(`Restock order with id: ${id} is not in DELIVERY state or delivery date is before issue date`);
 
                 ro.setTransportNote(body.transportNote);
                 result = await this.#dao.updateRestockOrder(ro);
@@ -159,7 +160,7 @@ class RestockOrderService {
         const parsedId = typeof id === 'number' ? id : int(id);
 
         const ro = await this.#dao.getRestockOrder(parsedId);
-        if (!ro) return statusCodes.NOT_FOUND(`No restock order found with id: ${id}`);
+        if (!ro) return statusCodes.UNPROCESSABLE_ENTITY(`No restock order found with id: ${id}`);
 
         /*
         if (ro.getState() !== 'ISSUED')

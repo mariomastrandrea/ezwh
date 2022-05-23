@@ -1,6 +1,15 @@
 const TestResult = require("../models/testResult");
-const { OK, CREATED, NO_CONTENT, UNAUTHORIZED, NOT_FOUND, CONFLICT, 
-        UNPROCESSABLE_ENTITY, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE } = require("../statusCodes");
+
+const { 
+    OK, 
+    CREATED, 
+    NO_CONTENT,
+    NOT_FOUND, 
+    UNPROCESSABLE_ENTITY,
+    INTERNAL_SERVER_ERROR,
+    SERVICE_UNAVAILABLE
+} = require("../statusCodes");
+
 const { int } = require("../utilities");
 
 class TestResultService {

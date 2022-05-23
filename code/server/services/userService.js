@@ -1,7 +1,16 @@
 const User = require("../models/user");
 const encryption = require("../utilityEncryption");
-const { OK, CREATED, NO_CONTENT, UNAUTHORIZED, NOT_FOUND, CONFLICT, 
-    UNPROCESSABLE_ENTITY, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE } = require("../statusCodes");
+const { 
+    OK, 
+    CREATED, 
+    NO_CONTENT, 
+    UNAUTHORIZED,
+    NOT_FOUND, 
+    CONFLICT, 
+    UNPROCESSABLE_ENTITY, 
+    INTERNAL_SERVER_ERROR, 
+    SERVICE_UNAVAILABLE 
+} = require("../statusCodes");
 
 
 class UserService {
