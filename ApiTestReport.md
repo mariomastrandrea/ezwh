@@ -1,14 +1,24 @@
 # Integration and API Test Report
 
-Date:
+Date: 25/05/2022
 
-Version:
+Version: 0.9
 
 # Contents
 
-- [Dependency graph](#dependency graph)
-
-- [Integration approach](#integration)
+- [Integration and API Test Report](#integration-and-api-test-report)
+- [Contents](#contents)
+- [Dependency graph](#dependency-graph)
+- [Integration approach](#integration-approach)
+- [Integration Tests](#integration-tests)
+  - [Step 1](#step-1)
+  - [Step 2](#step-2)
+  - [Step n](#step-n)
+- [API testing - Scenarios](#api-testing---scenarios)
+  - [Scenario UCx.y](#scenario-ucxy)
+- [Coverage of Scenarios and FR](#coverage-of-scenarios-and-fr)
+- [Coverage of Non Functional Requirements](#coverage-of-non-functional-requirements)
+    - [](#)
 
 - [Tests](#tests)
 
@@ -20,10 +30,19 @@ Version:
 
 
 # Dependency graph 
-
+<img src="./assets/coding/dependency.png" alt="EzWh Dependency graph">
+    
      <report the here the dependency graph of the classes in EzWH, using plantuml or other tool>
      
 # Integration approach
+
+We followed the bottom up integration sequence.
+First of all we tested dbManager and Services classes as Unit with Jest.
+
+*For dbManager we used the real database, for Services we used the mock database to remove the dependency on the database.*
+
+Then we did API testing with Mocha and Chai. In this phase we tested also services classes with real interaction with dbManager.
+
 
     <Write here the integration sequence you adopted, in general terms (top down, bottom up, mixed) and as sequence
     (ex: step1: class A, step 2: class A+B, step 3: class A+B+C, etc)> 
@@ -38,23 +57,23 @@ Version:
      Jest test cases applied to them, and the mock ups used, if any> Jest test cases should be here code/server/unit_test
 
 ## Step 1
-| Classes  | mock up used |Jest test cases |
-|--|--|--|
-||||
+| Classes | mock up used | Jest test cases |
+| ------- | ------------ | --------------- |
+|         |              |                 |
 
 
 ## Step 2
-| Classes  | mock up used |Jest test cases |
-|--|--|--|
-||||
+| Classes | mock up used | Jest test cases |
+| ------- | ------------ | --------------- |
+|         |              |                 |
 
 
 ## Step n 
 
    
-| Classes  | mock up used |Jest test cases |
-|--|--|--|
-||||
+| Classes | mock up used | Jest test cases |
+| ------- | ------------ | --------------- |
+|         |              |                 |
 
 
 
@@ -67,13 +86,13 @@ Version:
 
 ## Scenario UCx.y
 
-| Scenario |  name |
-| ------------- |:-------------:| 
-|  Precondition     |  |
-|  Post condition     |   |
-| Step#        | Description  |
-|  1     |  ... |  
-|  2     |  ... |
+| Scenario       |    name     |
+| -------------- | :---------: |
+| Precondition   |             |
+| Post condition |             |
+| Step#          | Description |
+| 1              |     ...     |
+| 2              |     ...     |
 
 
 
@@ -86,14 +105,14 @@ Report also for each of the scenarios the (one or more) API Mocha tests that cov
 
 
 
-| Scenario ID | Functional Requirements covered | Mocha  Test(s) | 
-| ----------- | ------------------------------- | ----------- | 
-|  ..         | FRx                             |             |             
-|  ..         | FRy                             |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
+| Scenario ID | Functional Requirements covered | Mocha  Test(s) |
+| ----------- | ------------------------------- | -------------- |
+| ..          | FRx                             |                |
+| ..          | FRy                             |                |
+| ...         |                                 |                |
+| ...         |                                 |                |
+| ...         |                                 |                |
+| ...         |                                 |                |
 
 
 

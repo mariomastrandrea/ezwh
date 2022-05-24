@@ -30,11 +30,11 @@ class RestockOrder {
     getSupplierId = () => this.#supplierId;
     getTransportNote = () => this.transportNote;
     getTransportNoteString = () => {
-        if (this.transportNote.deliveryDate) {
+        if (this.transportNote && this.transportNote.deliveryDate) {
             return `deliveryDate: ${this.transportNote.deliveryDate}`;
         }
     };
-    getSkuItems = () => [this.#skuItems];
+    getSkuItems = () => this.#skuItems;
 
     // setters
     setState = (state) => this.#state = state;

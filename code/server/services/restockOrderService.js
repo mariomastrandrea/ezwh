@@ -169,8 +169,8 @@ class RestockOrderService {
         */
 
         let result = await this.#dao.deleteRestockOrderSku(ro.getId());
-        result = result && await this.#dao.deleteRestockOrder(ro.getId());
-        result = result && await this.#dao.deleteRestockOrderSkuItems(ro.getId());
+        result += await this.#dao.deleteRestockOrder(ro.getId());
+        result += await this.#dao.deleteRestockOrderSkuItems(ro.getId());
 
         if (result) 
             return statusCodes.NO_CONTENT();

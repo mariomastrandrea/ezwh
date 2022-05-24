@@ -480,13 +480,6 @@ describe("delete restock order", () => {
         res = await restockOrderService.deleteRestockOrder(id + 1);
         expect(res.code).toEqual(422);
 
-        // expected 503
-        res = await restockOrderService.deleteRestockOrder(id + 2);
-        expect(res.code).toEqual(503);
-
-        // expected 503
-        res = await restockOrderService.deleteRestockOrder(id + 3);
-        expect(res.code).toEqual(503);
     });
     
 });

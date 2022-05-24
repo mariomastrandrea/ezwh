@@ -1,8 +1,8 @@
 # Unit Testing Report
 
-Date:
+Date: 25/05/2022
 
-Version:
+Version: 0.9
 
 # Contents
 
@@ -384,6 +384,20 @@ Services with real db will be tested during the API integration tests.
 |                       |                                                     | update position                               |
 |                       |                                                     | delete position                               |
 |                       | [DB] get occupied capacities of a position          | get occupied capacities of a position         |
+|                       | [DB] sku functions                                  | get sku by id                                 |
+|                       |                                                     | get all skus                                  |
+|                       |                                                     | get sku of position                           |
+|                       |                                                     | store sku                                     |
+|                       |                                                     | update sku                                    |
+|                       |                                                     | update position of sku                        |
+|                       |                                                     | delete sku                                    |
+|                       | [DB] SkuItems functions                             | get sku item by rfid                          |
+|                       |                                                     | get all sku items                             |
+|                       |                                                     | get sku item of sku                           |
+|                       |                                                     | get available sku items of sku                |
+|                       |                                                     | store sku item                                |
+|                       |                                                     | update sku item                               |
+|                       |                                                     | delete sku item                               |
 |                       | *other DB test suite* ...                           | *other DB test*    ...                        |
 | InternalOrderService  | get internal orders                                 | get all internal orders                       |
 |                       |                                                     | get internal order                            |
