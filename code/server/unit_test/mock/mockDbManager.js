@@ -7,6 +7,7 @@ exports.getSkuById = jest.fn();
 exports.getAllSkus = jest.fn();
 exports.storeSku = jest.fn();
 exports.updateSku = jest.fn();
+exports.deleteSku = jest.fn();
 exports.updateSkuPosition = jest.fn();
 exports.getSkuOfPosition = jest.fn();
 
@@ -16,6 +17,7 @@ exports.getSkuOfPosition = jest.fn();
 
 exports.getAllSkuItems = jest.fn();
 exports.getSkuItemByRfid = jest.fn();
+exports.getSkuItem = jest.fn();
 exports.getSkuItemsOf = jest.fn();
 exports.getAvailableSkuItemsOf = jest.fn();
 exports.storeSkuItem = jest.fn();
