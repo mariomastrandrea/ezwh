@@ -1650,6 +1650,21 @@ class DbManager {
             });
         })
     }
+
+    //#region JUST FOR TESTING PURPOSES
+    deleteTable(tableName) {
+        let sql = `DELETE FROM ${tableName}`;
+
+        return new Promise((resolve, reject) => {
+            this.#db.run(sql, (err) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(this.changes > 0);
+            });
+        })
+    }
+    //#endregion
 }
 
 module.exports = DbManager.getInstance;
