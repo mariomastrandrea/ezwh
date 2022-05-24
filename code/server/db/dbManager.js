@@ -402,7 +402,7 @@ class DbManager {
                 if (err)
                     reject(err);
                 else
-                    resolve(new SkuItem(this.ID, skuId, dateOfStock, available));
+                    resolve(new SkuItem(rfid, skuId, dateOfStock, available));
             });
         });
     }

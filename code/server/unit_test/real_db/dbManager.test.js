@@ -10,6 +10,8 @@ const User = require('../../models/user');
 const encryption = require("../../utilityEncryption");
 
 const Position = require('../../models/position');
+const Sku = require('../../models/sku');
+const SkuItem = require('../../models/skuItem');
 
 describe('[DB] restock orders GET functions', () => {
     test('get all restock orders', async () => {
@@ -677,9 +679,9 @@ describe('[DB] position functions', () => {
 })
 
 describe('[DB] get occupied capacities of a position', () => {
-
+    let fakeP = new Position("123412341234", "1234", "1234", "1234", 100., 100., 0., 0.);
     // TO DO
-    test('get occupied capacities of position', async => {
+    test('get occupied capacities of position', async () => {
         let result = await dao.getOccupiedCapacitiesOf(fakeP.getPositionId());
         expect(result.weight).toEqual(fakeP.getOccupiedWeight());
         expect(result.volume).toEqual(fakeP.getOccupiedVolume());
@@ -687,18 +689,303 @@ describe('[DB] get occupied capacities of a position', () => {
         // position with id 111 does not exist
         let id = "111";
         result = await dao.getOccupiedCapacitiesOf(id);
-        expect(result).toBe(null);
+        expect(result).toEqual({ "volume": 0, "weight": 0 });
     });
 
 });
 //#endregion
 
 //#region Sku
-// TO DO
+describe('[DB] sku functions', () => {
+    let fakeId
+    let fakeP = new Position("345634563456", "3456", "3456", "3456", 100., 100., 0., 0.);
+    let secondFakeP = new Position("456745674567", "4567", "4567", "4567", 100., 100., 0., 0.);
+    let fakeSku = new Sku("test", 20., 20., "notes", 234., 0, fakeP.getPositionId(), [], null);
+
+    beforeAll(async () => {
+        await dao.storePosition(fakeP);
+        await dao.storePosition(secondFakeP);
+    });
+
+    afterAll(async () => {
+        await dao.deletePosition(fakeP.getPositionId());
+        await dao.deletePosition(secondFakeP.getPositionId());
+    });
+
+    test('get all skus', async () => {
+        const skus = await dao.getAllSkus();
+        for (const sku of skus) {
+            expect(sku).toBeInstanceOf(Sku);
+            expect(sku.getId()).toBeGreaterThan(0.);
+            expect(sku.getDescription()).toBeDefined();
+            expect(sku.getWeight()).toBeGreaterThan(0.);
+            expect(sku.getVolume()).toBeGreaterThan(0.);
+            expect(sku.getNotes()).toBeDefined();
+            expect(sku.getAvailableQuantity()).toBeGreaterThan(-1);
+            expect(sku.getPrice()).toBeGreaterThan(0.);
+            expect(sku.getPosition()).toMatch(/^[0-9]{12}$/);
+            expect(sku.getTestDescriptors()).toEqual([])
+        }
+    });
+
+    test('get sku by id', async () => {
+        // sku with id 1 exists
+        let id = 1;
+        let sku = await dao.getSkuById(id);
+
+        expect(sku).toBeInstanceOf(Sku);
+        expect(sku.getId()).toBeGreaterThan(0.);
+        expect(sku.getDescription()).toBeDefined();
+        expect(sku.getWeight()).toBeGreaterThan(0.);
+        expect(sku.getVolume()).toBeGreaterThan(0.);
+        expect(sku.getNotes()).toBeDefined();
+        expect(sku.getAvailableQuantity()).toBeGreaterThan(-1);
+        expect(sku.getPrice()).toBeGreaterThan(0.);
+        expect(sku.getPosition()).toMatch(/^[0-9]{12}$/);
+        expect(sku.getTestDescriptors()).toEqual([])
+
+        // sku with id 9999 does not exist
+        id = 9999;
+        sku = await dao.getSkuById(id);
+        expect(sku).toBe(null);
+    });
+
+    test('get sku of position', async () => {
+        // there is not a row
+        let id = "123412341235";
+        let result = await dao.getSkuOfPosition(id);
+        expect(result).toBe(null);
+
+        // there is a sku with id = 1
+        let sku = await dao.getSkuById(1);
+        result = await dao.getSkuOfPosition(sku.getPosition());
+        expect(result).toBeInstanceOf(Sku);
+        expect(result.toJSON()).toEqual(sku.toJSON());
+    })
+
+    test('store sku', async () => {
+        let fakeSkuStored = await dao.storeSku(fakeSku);
+        fakeId = fakeSkuStored.getId();
+
+        expect(fakeSkuStored).toBeInstanceOf(Sku);
+        expect(fakeSkuStored.getId()).toBeGreaterThan(0);
+        expect(fakeSkuStored.getDescription()).toEqual(fakeSku.getDescription());
+        expect(fakeSkuStored.getWeight()).toEqual(fakeSku.getWeight());
+        expect(fakeSkuStored.getVolume()).toEqual(fakeSku.getVolume());
+        expect(fakeSkuStored.getNotes()).toEqual(fakeSku.getNotes());
+        expect(fakeSkuStored.getAvailableQuantity()).toEqual(fakeSku.getAvailableQuantity());
+        expect(fakeSkuStored.getPrice()).toEqual(fakeSku.getPrice());
+        expect(fakeSkuStored.getPosition()).toEqual(fakeSku.getPosition());
+        expect(fakeSkuStored.getTestDescriptors()).toEqual(fakeSku.getTestDescriptors());
+
+
+        // foreign key on position violation
+        let sku = new Sku("test", 20., 20., "notes", 234., 0, "1", [], null);
+        expect(dao.storeSku(sku)).rejects.toThrow();
+    });
+
+    test('update sku', async () => {
+        let sku = new Sku(
+            fakeSku.getDescription(),
+            fakeSku.getWeight(),
+            fakeSku.getVolume(),
+            fakeSku.getNotes(),
+            fakeSku.getPrice(),
+            fakeSku.getAvailableQuantity(),
+            fakeSku.getPosition(),
+            fakeSku.getTestDescriptors(),
+            5000);
+        // not found sku, no update
+        expect(await dao.updateSku(sku)).toBe(false);
+
+
+        sku = new Sku(
+            "update test",
+            fakeSku.getWeight() + 10,
+            fakeSku.getVolume() + 10,
+            "update note",
+            fakeSku.getPrice() + 10,
+            fakeSku.getAvailableQuantity() + 2,
+            fakeSku.getPosition(),
+            fakeSku.getTestDescriptors(),
+            fakeId);
+        // update sku
+        let oldDesc = fakeSku.getDescription();
+        let oldW = fakeSku.getWeight();
+        let oldV = fakeSku.getVolume();
+        let oldNotes = fakeSku.getNotes();
+        let oldAvQ = fakeSku.getAvailableQuantity();
+        let oldPrice = fakeSku.getPrice();
+        let oldPos = fakeSku.getPosition();
+
+        // check update
+        expect(await dao.updateSku(sku)).toBe(true);
+
+        // check updated data
+        let dbSku = await dao.getSkuById(fakeId);
+        expect(dbSku.toJSON()).toEqual(sku.toJSON());
+
+        // reset data
+        sku = new Sku(
+            fakeSku.getDescription(),
+            fakeSku.getWeight(),
+            fakeSku.getVolume(),
+            fakeSku.getNotes(),
+            fakeSku.getPrice(),
+            fakeSku.getAvailableQuantity(),
+            fakeSku.getPosition(),
+            fakeSku.getTestDescriptors(),
+            fakeId);
+        expect(await dao.updateSku(sku)).toBe(true);
+
+        expect(sku).toBeInstanceOf(Sku);
+        expect(sku.getId()).toBeGreaterThan(0.);
+        expect(sku.getDescription()).toBeDefined();
+        expect(sku.getWeight()).toBeGreaterThan(0.);
+        expect(sku.getVolume()).toBeGreaterThan(0.);
+        expect(sku.getNotes()).toBeDefined();
+        expect(sku.getAvailableQuantity()).toBeGreaterThan(-1);
+        expect(sku.getPrice()).toBeGreaterThan(0.);
+        expect(sku.getPosition()).toMatch(/^[0-9]{12}$/);
+        expect(sku.getTestDescriptors()).toEqual([])
+
+    });
+
+    test('update position of sku', async () => {
+        // no existing position
+        let oldPos = fakeSku.getPosition();
+        expect(dao.updateSkuPosition(oldPos, "1")).rejects.toThrow();
+
+        // update position
+        result = await dao.updateSkuPosition(oldPos, secondFakeP.getPositionId());
+        expect(result).toBe(true);
+
+        // restore position
+        expect(await dao.updateSkuPosition(secondFakeP.getPositionId(), oldPos)).toBe(true);
+    });
+
+    test('delete sku', async () => {
+        // not found sku, no delete
+        expect(await dao.deleteSku(999999)).toBe(false);
+
+        // delete sku
+        expect(await dao.deleteSku(fakeId)).toBe(true);
+    });
+
+});
 //#endregion
 
 //#region SkuItems
-// TO DO
+describe('[DB] SkuItems functions', () => {
+    let fakeP = new Position("345634563456", "3456", "3456", "3456", 100., 100., 0., 0.);
+    let fakeSku = new Sku("test", 20., 20., "notes", 234., 0, fakeP.getPositionId(), [], null);
+    let fakeRFID = "09876543217654327654345678987612"
+
+    beforeAll(async () => {
+        await dao.storePosition(fakeP);
+        fakeSku = await dao.storeSku(fakeSku);
+    });
+
+    afterAll(async () => {
+        await dao.deleteSku(fakeSku.getId());
+        await dao.deletePosition(fakeP.getPositionId());
+    });
+
+    test('get sku item by rfid', async () => {
+        // not found sku item, no get
+        expect(await dao.getSkuItemByRfid("1")).toBe(null);
+
+        // get sku item of id 12345678901234567890123456789011
+        let skuItem = await dao.getSkuItemByRfid("12345678901234567890123456789011");
+        expect(skuItem).toBeInstanceOf(SkuItem);
+        expect(skuItem.getSkuId()).toBeGreaterThan(0.);
+        expect(skuItem.getAvailable()).toBeGreaterThanOrEqual(0);
+        expect(skuItem.getAvailable()).toBeLessThanOrEqual(1);
+        expect(skuItem.getDateOfStock()).toBeDefined();
+    });
+
+    test('get all sku items', async () => {
+        // get all sku items
+        let skuItems = await dao.getAllSkuItems();
+        for (skuItem of skuItems) {
+            expect(skuItem).toBeInstanceOf(SkuItem);
+            expect(skuItem.getRfid()).toMatch(/^[0-9]{32}$/);
+            expect(skuItem.getSkuId()).toBeGreaterThan(0.);
+            expect(skuItem.getAvailable()).toBeGreaterThanOrEqual(0);
+            expect(skuItem.getAvailable()).toBeLessThanOrEqual(1);
+            expect(skuItem.getDateOfStock()).toBeDefined();
+        }
+    });
+
+    test('get sku items of sku', async () => {
+        // not found sku, no get
+        expect(await dao.getSkuItemsOf(999999)).toEqual([]);
+
+        // get sku items of sku
+        let skuItems = await dao.getSkuItemsOf(1);
+        for (skuItem of skuItems) {
+            expect(skuItem).toBeInstanceOf(SkuItem);
+            expect(skuItem.getRfid()).toMatch(/^[0-9]{32}$/);
+            expect(skuItem.getSkuId()).toEqual(1);
+            expect(skuItem.getAvailable()).toBeGreaterThanOrEqual(0);
+            expect(skuItem.getAvailable()).toBeLessThanOrEqual(1);
+            expect(skuItem.getDateOfStock()).toBeDefined();
+        }
+    });
+
+    test('get available sku items of sku', async () => {
+        // not found sku, no get
+        expect(await dao.getAvailableSkuItemsOf(999999)).toEqual([]);
+
+        // get sku items of sku
+        let skuItems = await dao.getAvailableSkuItemsOf(1);
+        for (skuItem of skuItems) {
+            expect(skuItem).toBeInstanceOf(SkuItem);
+            expect(skuItem.getRfid()).toMatch(/^[0-9]{32}$/);
+            expect(skuItem.getSkuId()).toEqual(1);
+            expect(skuItem.getAvailable()).toEqual(1);
+            expect(skuItem.getDateOfStock()).toBeDefined();
+        }
+    });
+
+    test('store sku item', async () => {
+        let fakeSI = new SkuItem(fakeRFID, fakeSku.getId(), "2022/05/22");
+        // store sku item
+        let skuItem = await dao.storeSkuItem(fakeSI);
+        expect(skuItem).toBeInstanceOf(SkuItem);
+        expect(skuItem.getRfid()).toEqual(fakeSI.getRfid());
+        expect(skuItem.getSkuId()).toEqual(fakeSI.getSkuId());
+        expect(skuItem.getAvailable()).toEqual(fakeSI.getAvailable());
+        expect(skuItem.getDateOfStock()).toBe(fakeSI.getDateOfStock());
+    });
+
+    test('update sku item', async () => {
+        let fakeSI = new SkuItem(fakeRFID, fakeSku.getId(), "2022/05/22", 1);
+        // no existing sku item
+        let oldRfid = fakeSI.getRfid();
+        expect(await dao.updateSkuItem(123, fakeSI)).toBe(false);
+
+        let newSI = new SkuItem("88887777666655554444333311110000", 1, "2022/05/21", 0);
+
+        // update sku item
+        result = await dao.updateSkuItem(oldRfid, newSI);
+        expect(result).toBe(true);
+
+        let newFromDb = await dao.getSkuItemByRfid(newSI.getRfid());
+        expect(newFromDb.toJSON()).toEqual(newSI.toJSON());
+
+        // restore sku item
+        expect(await dao.updateSkuItem(newSI.getRfid(), fakeSI)).toBe(true);
+    });
+
+    test('delete sku item', async () => {
+        // not found sku item, no delete
+        expect(await dao.deleteSkuItem("1")).toBe(false);
+
+        // delete sku item
+        expect(await dao.deleteSkuItem(fakeRFID)).toBe(true);
+    });
+})
 //#endregion
 
 //#region Items
