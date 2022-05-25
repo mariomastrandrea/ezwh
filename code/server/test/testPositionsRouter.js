@@ -16,7 +16,7 @@ describe('test position apis', function () {
     postPosition(422, "800234543412", "8002", "3454", "3412", 1000, 1000); // position id already exists
     postPosition(422, "cane", "8002", "3454", "3412", 1000, 1000); // invalid position id
     postPosition(201, "800234543411", "8002", "3454", "3411", 1000, 1000);
-    
+
     putPosition(404, "800234543410", "1234", "3454", "3410", 1000, 1000, 0, 0); // position id does not exist
     putPosition(422, "800234543412", "pane", "3454", "3412", 1000, 1000, 0, 0); // invalid aisle
     putPosition(200, "800234543412", "8002", "3454", "3412", 1000, 1000, 10, 10);
@@ -150,4 +150,12 @@ function deletePosition(expectedHTTPStatus, positionId) {
                 done();
             }).catch(err => done(err));
     });
+}
+
+module.exports = {
+    postPosition,
+    getAllPosition,
+    putPosition,
+    putChangeId,
+    deletePosition,
 }
