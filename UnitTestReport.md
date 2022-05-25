@@ -2,7 +2,7 @@
 
 Date: 25/05/2022
 
-Version: 0.9
+Version: 1.0
 
 # Contents
 
@@ -323,7 +323,7 @@ Services with real db will be tested during the API integration tests.
 
 *Where is not specified, the test cases consider errors that functions could produce*
 
-| Unit name             | Jest test suite                                     | Jest test case                                |
+| Unit name             | Jest test group                                     | Jest test case                                |
 | --------------------- | --------------------------------------------------- | --------------------------------------------- |
 | DBManager             | [DB] restock orders GET functions                   | get all restock orders                        |
 |                       |                                                     | get restock order in state: delivered         |
@@ -331,8 +331,7 @@ Services with real db will be tested during the API integration tests.
 |                       |                                                     | get sku of a restock order                    |
 |                       |                                                     | get sku items of a restock order              |
 |                       |                                                     | get return items of a restock order           |
-|                       | [DB] restock orders CREATE UPDATE DELETE functions  |                                               |
-|                       |                                                     | create restock order                          |
+|                       | [DB] restock orders CREATE UPDATE DELETE functions  | create restock order                          |
 |                       |                                                     | add restock order sku                         |
 |                       |                                                     | add sku items of a restock order              |
 |                       |                                                     | update state of restock order                 |
@@ -340,6 +339,8 @@ Services with real db will be tested during the API integration tests.
 |                       |                                                     | delete restock order sku items                |
 |                       |                                                     | delete restock order sku                      |
 |                       |                                                     | delete restock order                          |
+|                       | [DB] restock model return checkers                  | get transport note as string                  |
+|                       |                                                     | get correct skuItems according to state       |
 |                       | [DB] return orders functions                        | get all return orders                         |
 |                       |                                                     | get return order by id                        |
 |                       |                                                     | get sku items of a return order               |
@@ -398,7 +399,27 @@ Services with real db will be tested during the API integration tests.
 |                       |                                                     | store sku item                                |
 |                       |                                                     | update sku item                               |
 |                       |                                                     | delete sku item                               |
-|                       | *other DB test suite* ...                           | *other DB test*    ...                        |
+|                       | [DB] Items functions                                | get all items test                            |
+|                       |                                                     | get item by id                                |
+|                       |                                                     | get item by sku id and supplier               |
+|                       |                                                     | store item test                               |
+|                       |                                                     | update item test                              |
+|                       |                                                     | delete item test                              |
+|                       | [DB] close db and testing functions                 | getPosition reject                            |
+|                       |                                                     | storeInternalOrder reject                     |
+|                       |                                                     | get all positions reject                      |
+|                       |                                                     | delete position reject                        |
+|                       |                                                     | get occupied capacity of position reject      |
+|                       |                                                     | get sku by id reject                          |
+|                       |                                                     | getSkuOfPosition reject                       |
+|                       |                                                     | getAllSkuItems reject                         |
+|                       |                                                     | getSkuItemByRfid reject                       |
+|                       |                                                     | getSkuItemsOf reject                          |
+|                       |                                                     | getAvailableSkuItemsOf reject                 |
+|                       |                                                     | deleteSkuItem reject                          |
+|                       |                                                     | getAllItems reject                            |
+|                       |                                                     | getItemById reject                            |
+|                       |                                                     | deleteItem reject                             |
 | InternalOrderService  | get internal orders                                 | get all internal orders                       |
 |                       |                                                     | get internal order                            |
 |                       |                                                     | get issued internal orders                    |
@@ -442,26 +463,35 @@ Services with real db will be tested during the API integration tests.
 |                       | logout                                              | logout                                        |
 |                       | update user rights                                  | update user rights                            |
 |                       | delete user                                         | delete user                                   |
-| *other service class* | *other suite*...                                    | *other test*    ...                           |
-| *other service class* | *other suite*...                                    | *other test*    ...                           |
-| *other service class* | *other suite*...                                    | *other test*    ...                           |
-| *other service class* | *other suite*...                                    | *other test*    ...                           |
-
-
+| SkuService            | get all sku                                         | get all sku                                   |
+|                       | get sku by id                                       | get sku by id                                 |
+|                       | create sku                                          | create sku                                    |
+|                       | update sku                                          | update sku                                    |
+|                       | update sku position                                 | update sku position                           |
+|                       | delete sku                                          | delete sku                                    |
+|                       | update sku forcing 503                              | update sku with errors                        |
+| SkuItemService        | get all sku items                                   | get all sku items                             |
+|                       | get sku items of skuid                              | get sku item of skuid                         |
+|                       | get skuItem                                         | get skuItem                                   |
+|                       | create skuItem                                      | create skuItem                                |
+|                       | update skuItem                                      | update skuItem                                |
+|                       | delete skuItem                                      | delete skuItem                                |
+| PositionService       | get all positions                                   | get all positions                             |
+|                       | create position                                     | create position                               |
+|                       | update position                                     | update position                               |
+|                       | update position id                                  | update position id                            |
+|                       | delete position                                     | delete position                               |
+| ItemService           | get all items                                       | get all items                                 |
+|                       | get item by id                                      | get item by id                                |
+|                       | create item                                         | create item                                   |
+|                       | update item                                         | update item                                   |
+|                       | delete item                                         | delete item                                   |
 
 ### Code coverage report
+<img src="./assets/coding/coverage.png" alt="EzWh Unit Test coverage">
 
-    <Add here the screenshot report of the statement and branch coverage obtained using
-    the coverage tool. >
 
+Note: dbManager has a lower % branch coverage because all queries are explicited, so it's difficult for the test to cover rejected queries. The idea is to force a reject and this is possible only closing the database connection. We did for some of the functions, but to cover all functions we would have to copy paste the test for each function.
 
 ### Loop coverage analysis
-
-    <Identify significant loops in the units and reports the test cases
-    developed to cover zero, one or multiple iterations >
-
-| Unit name | Loop rows | Number of iterations | Jest test case |
-| --------- | --------- | -------------------- | -------------- |
-|           |           |                      |                |
-|           |           |                      |                |
-|           |           |                      |                |
+In our project there aren't significant loops so we didn't do a loop coverage analysis.

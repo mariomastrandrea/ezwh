@@ -1,3 +1,5 @@
+/*istanbul ignore file*/
+
 const sqlite = require('sqlite3').verbose();
 const dbSource = './db/EZWHDB.sqlite';
 

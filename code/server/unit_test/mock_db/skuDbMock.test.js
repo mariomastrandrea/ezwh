@@ -237,3 +237,32 @@ describe('delete sku', () => {
         expect(res.code).toBe(204);
     });
 })
+
+describe('update sku forcing 503', () => {
+
+    beforeEach(() => {
+        dao.getSkuById.mockReset()
+            .mockReturnValue(new Sku('a sku', 100, 50, 'first sku', 9.99, 2, '800234523417', [], 1))
+
+        dao.getPosition.mockReset()
+            .mockReturnValueOnce() //503
+            .mockReturnValue(new Position('800234523417', '8002', '3452', '3417', 1000, 2000, 0, 0))
+
+        dao.updatePosition.mockReset()
+            .mockReturnValueOnce(true) //503
+            .mockReturnValueOnce(true) //200
+
+        dao.updateSku.mockReset()
+            .mockReturnValueOnce(false) //503
+    });
+
+    test('update sku with errors', async () => {
+        let res = await skuService.updateSku(1, 'new desc', 20, 50, 'new note', 19.99, 5);
+
+        res = await skuService.updateSku(1, 'new desc', 20, 50, 'new note', 19.99, 5);
+        expect(res.code).toBe(503);
+
+        res = await skuService.updateSku(1, 'new desc', 20, 50, 'new note', 19.99, 5);
+        expect(res.code).toBe(503);
+    })
+})

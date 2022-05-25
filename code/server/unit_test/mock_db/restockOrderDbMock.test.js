@@ -21,7 +21,7 @@ const fakeRestockOrder = new RestockOrder(
         },
     ],
     1,
-    {deliveryDate: "2021/11/30"},
+    { deliveryDate: "2021/11/30" },
     1,
     [
         {
@@ -64,7 +64,7 @@ describe('get restock orders', () => {
                 "2021/11/29 09:33",
                 [],
                 1,
-                {deliveryDate: "2021/11/30"},
+                { deliveryDate: "2021/11/30" },
                 1,
                 [],
                 "DELIVERY"
@@ -386,9 +386,9 @@ describe("update restock order", () => {
 
     test('update state of restock order', async () => {
         let type = "state"
-        let body = {newState: "test"}
+        let body = { newState: "test" }
         let res = await restockOrderService.updateRestockOrder(type, 1, body);
-        
+
         expect(res.code).toEqual(404);
 
         let oldState = fakeRestockOrder.getState();
@@ -397,16 +397,16 @@ describe("update restock order", () => {
 
         res = await restockOrderService.updateRestockOrder(type, 1, body);
         expect(res.code).toEqual(503);
-        
+
         fakeRestockOrder.setState(oldState);
     });
 
     test('update transport note of restock order', async () => {
         let type = "transportNote"
-        let body = {transportNote: {deliveryDate:"2021/12/29"}}
+        let body = { transportNote: { deliveryDate: "2021/12/29" } }
 
         let res = await restockOrderService.updateRestockOrder(type, 1, body);
-        
+
         expect(res.code).toEqual(404);
 
         let oldTranportNote = fakeRestockOrder.getTransportNote();
@@ -422,21 +422,21 @@ describe("update restock order", () => {
         fakeRestockOrder.setState(oldState);
         res = await restockOrderService.updateRestockOrder(type, 1, body);
         expect(res.code).toEqual(503);
-        
+
         fakeRestockOrder.setTransportNote(oldTranportNote);
     });
 
     test('update skuItems of restock order', async () => {
         let type = "skuItems"
-        let body = {skuItems: [{SKUId: 1, rfid:"123"}]}
+        let body = { skuItems: [{ SKUId: 1, rfid: "123" }] }
 
         let res = await restockOrderService.updateRestockOrder(type, 1, body);
-        
+
         expect(res.code).toEqual(404);
 
         res = await restockOrderService.updateRestockOrder(type, 1, body);
         expect(res.code).toEqual(422);
-        
+
         let oldState = fakeRestockOrder.getState();
         fakeRestockOrder.setState("DELIVERED");
         res = await restockOrderService.updateRestockOrder(type, 1, body);
@@ -481,5 +481,26 @@ describe("delete restock order", () => {
         expect(res.code).toEqual(422);
 
     });
-    
+
+});
+
+describe('restock model return checkers', () => {
+    beforeAll(() => {
+        dao.getRestockOrder.mockReset();
+        dao.getRestockOrderSkuItems.mockReset();
+
+        dao.getRestockOrder.mockReturnValue(fakeRestockOrder)
+
+        dao.getRestockOrderSkuItems.mockReturnValueOnce([])
+            .mockReturnValue([{ SKUId: 123, rfid: "123" }])
+    })
+    test('get transport note as string', async () => {
+        let ro = await dao.getRestockOrder(1);
+        expect(ro.getTransportNoteString()).toEqual(`deliveryDate: ${fakeRestockOrder.getTransportNote().deliveryDate}`);
+    });
+    test('get correct skuItems according to state', async () => {
+        let ro = await dao.getRestockOrder(1);
+        ro.setState("DELIVERED");
+        expect(ro.toJSON().skuItems).toEqual(fakeRestockOrder.getSkuItems());
+    })
 });
