@@ -94,15 +94,18 @@ describe('[DB] restock orders CREATE UPDATE DELETE functions', () => {
         price: 10.99,
         qty: 2,
     }];
+
     let exSkuItem = [{
         SKUId: 1,
         RFID: "123456789",
     }];
+
     let newOrder;
+
     beforeAll(async () => {
-        exOrder = await dao.getRestockOrder(1);
+        //exOrder = await dao.getRestockOrder(1);
         newOrder = new RestockOrder(
-            exOrder.getIssueDate(),
+            "2021/03/03 09:33",
             exProducts,
             1,
             "test"
@@ -112,7 +115,7 @@ describe('[DB] restock orders CREATE UPDATE DELETE functions', () => {
     test('create restock order', async () => {
         newOrder = await dao.storeRestockOrder(newOrder);
         expect(newOrder).toBeInstanceOf(RestockOrder);
-        expect(newOrder.getId()).toBeGreaterThan(exOrder.getId());
+        //expect(newOrder.getId()).toBeGreaterThan(exOrder.getId());
     });
 
     test('add restock order sku', async () => {
@@ -216,7 +219,6 @@ describe('[DB] return orders functions', () => {
         fakeOrder = await dao.storeReturnOrder(fakeOrder);
         expect(fakeOrder).toBeInstanceOf(ReturnOrder);
         expect(fakeOrder.getId()).toBeGreaterThan(exOder.getId());
-
     });
     test('add sku items to a return order', async () => {
         let result = await dao.storeReturnOrderSkuItems(fakeOrder.getId(), fakeProducts);
@@ -383,6 +385,15 @@ describe('[DB] test descriptor GET functions', () => {
         expect(td).toBeInstanceOf(TestDescriptor);
         expect(td.getId()).toBe(id);
 
+        // test setters
+        td.setName('0abc');
+        td.setProcedureDescription('descdesc');
+        td.setSkuId(123);
+
+        expect(td.getName()).toEqual('0abc');
+        expect(td.getProcedureDescription()).toEqual('descdesc');
+        expect(td.getSkuId()).toEqual(123);
+
         // id not in db
         id = 999;
         td = await dao.getTestDescriptor(id);
@@ -456,6 +467,15 @@ describe('[DB] test result GET functions', () => {
         expect(tr.getId()).toBe(id);
         expect(tr.getRfid()).toBe(rfid);
 
+        // test setters
+        tr.setTestDescriptorId(23)
+        tr.setDate("2022/03/03");
+        tr.setResult(false);
+
+        expect(tr.getTestDescriptorId()).toEqual(23)
+        expect(tr.getDate()).toEqual("2022/03/03")
+        expect(tr.getResult()).toEqual(false)
+
         // id not in db
         id = 999;
         tr = await dao.getTestResult(id, rfid);
@@ -519,6 +539,19 @@ describe('[DB] user GET functions', () => {
         expect(u.getId()).toEqual(id);
         expect(u.getType()).toEqual(type);
 
+        u.setPassword('newPassword');
+        expect(u.getPassword()).toEqual('newPassword');
+
+        expect(u.toJSON()).toEqual({
+            id: u.getId(),
+            name: u.getName(),
+            surname: u.getSurname(),
+            email: u.getEmail(),
+            type: u.getType(),
+            password: u.getPassword()
+        });
+
+        // user not found
         id = 111;;
         u = await dao.getUserByIdAndType(id, type);
         expect(u).toBe(null);
@@ -593,6 +626,7 @@ describe('[DB] user CREATE UPDATE DELETE functions', () => {
 describe('[DB] position functions', () => {
     let id = "123412341234"; // id of testing position
     let fakeP = new Position(id, "1234", "1234", "1234", 100., 100., 0., 0.);
+
     test('get all positions', async () => {
         const positions = await dao.getAllPositions();
         for (const p of positions) {
@@ -685,19 +719,40 @@ describe('[DB] position functions', () => {
 })
 
 describe('[DB] get occupied capacities of a position', () => {
-    let fakeP = new Position("123412341234", "1234", "1234", "1234", 100., 100., 0., 0.);
-    // TO DO
+    let fakeP = new Position("123412341234", "1234", "1234", "1234", 100., 100., 20, 20);
+    let fakeP2 = new Position("999", "9", "9", "9", 100., 100., 20, 20);
+
     test('get occupied capacities of position', async () => {
+        // insert new position, associated Sku and a SkuItem
+        expect(await dao.storePosition(fakeP)).toBeInstanceOf(Position);
+        const newSku = await dao.storeSku(new Sku('', 20, 20, '', 10, 1, fakeP.getPositionId(), [], null));
+        expect(newSku).toBeInstanceOf(Sku);
+        expect(await dao.storeSkuItem(new SkuItem('1234', newSku.getId(), '', 1, []))).toBeInstanceOf(SkuItem);
+
+        // test getOccupiedCapacitiesOf
         let result = await dao.getOccupiedCapacitiesOf(fakeP.getPositionId());
-        expect(result.weight).toEqual(fakeP.getOccupiedWeight());
-        expect(result.volume).toEqual(fakeP.getOccupiedVolume());
+        expect(result.weight).toEqual(newSku.getWeight());
+        expect(result.volume).toEqual(newSku.getVolume());
 
         // position with id 111 does not exist
         let id = "111";
         result = await dao.getOccupiedCapacitiesOf(id);
         expect(result).toEqual({ "volume": 0, "weight": 0 });
-    });
 
+        // add an empty position with its sku
+        expect(await dao.storePosition(fakeP2)).toBeInstanceOf(Position);
+        const newSku2 = await dao.storeSku(new Sku('', 20, 20, '', 10, 1, fakeP2.getPositionId(), [], null));
+        expect(newSku2).toBeInstanceOf(Sku);
+        // verify emptiness
+        expect(await dao.getOccupiedCapacitiesOf(fakeP2.getPositionId())).toEqual({ "volume": 0, "weight": 0 });
+
+        // restore positions, skus and SkuItems
+        expect(await dao.deleteSkuItem('1234')).toBe(true);
+        expect(await dao.deleteSku(newSku.getId())).toBe(true);
+        expect(await dao.deletePosition(fakeP.getPositionId())).toBe(true);
+        expect(await dao.deleteSku(newSku2.getId())).toBe(true);
+        expect(await dao.deletePosition(fakeP2.getPositionId())).toBe(true);
+    });
 });
 //#endregion
 
@@ -749,6 +804,28 @@ describe('[DB] sku functions', () => {
         expect(sku.getPrice()).toBeGreaterThan(0.);
         expect(sku.getPosition()).toMatch(/^[0-9]{12}$/);
         expect(sku.getTestDescriptors()).toEqual([])
+
+        // test setters
+        sku.setDescription('alleluia');
+        sku.setWeight(289);
+        sku.setVolume(289);
+        sku.setNotes('notesnotes');
+        sku.setPosition('123123');
+        sku.setAvailableQuantity(99);
+        sku.setPrice(118);
+        sku.setTestDescriptors([1, 22]);
+
+        expect(sku.toJSON()).toEqual({
+            id: sku.getId(),
+            description: 'alleluia',
+            weight: 289,
+            volume: 289,
+            notes: 'notesnotes',
+            position: '123123',
+            availableQuantity: 99,
+            price: 118,
+            testDescriptors: [1, 22]
+        });
 
         // sku with id 9999 does not exist
         id = 9999;
@@ -907,6 +984,17 @@ describe('[DB] SkuItems functions', () => {
         expect(skuItem.getAvailable()).toBeGreaterThanOrEqual(0);
         expect(skuItem.getAvailable()).toBeLessThanOrEqual(1);
         expect(skuItem.getDateOfStock()).toBeDefined();
+
+        // test setters
+        skuItem.setRfid('abcd');
+        skuItem.setAvailable(1);
+        skuItem.setDateOfStock('data');
+        skuItem.setTestResults([22, 66]);
+
+        expect(skuItem.getRfid()).toEqual('abcd');
+        expect(skuItem.getAvailable()).toEqual(1);
+        expect(skuItem.getDateOfStock()).toEqual('data');
+        expect(skuItem.getTestResults()).toEqual([22, 66]);
     });
 
     test('get all sku items', async () => {
@@ -1121,6 +1209,7 @@ describe('[DB] Items functions', () => {
         expect(await dao.storeItem(storedItem1)).toBeInstanceOf(Item);
     });
 });
+//#endregion
 
 //#region FORCING to reject
 describe('[DB] close db and testing functions', () => {
@@ -1238,7 +1327,7 @@ describe('[DB] close db and testing functions', () => {
 
 
 //#region TESTING FUNCTIONS
-describe('[DB] delete and fill', () =>{
+describe('[DB] delete and fill', () => {
     let tables = [
         "ReturnOrderSkuItem",
         "ReturnOrder",
@@ -1246,7 +1335,7 @@ describe('[DB] delete and fill', () =>{
         "RestockOrderSku",
         "RestockOrder",
     ]
-    for(const table of tables){
+    for (const table of tables) {
         test(`delete ${table}`, async () => {
             let result = await dao.deleteTable(table);
             expect(typeof result === 'boolean').toBeTruthy();

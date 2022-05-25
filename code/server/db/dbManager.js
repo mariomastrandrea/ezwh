@@ -150,18 +150,16 @@ class DbManager {
     // return an object with 'weight' and 'volume' properties, corresponding to the position's 
     // actual weight and volume occupied
     getOccupiedCapacitiesOf(positionId) {
-        const parsedId = positionId.toString()
+        //const parsedId = positionId.toString()
         return new Promise((resolve, reject) => {
             const sqlQuery = `SELECT SUM(Weight) AS weight, SUM(Volume) AS volume
                               FROM SkuItem SI, Sku S
                               WHERE SI.SkuId = S.ID AND S.Position=?`;
 
-            this.#db.get(sqlQuery, [parsedId], (err, row) => {
+            this.#db.get(sqlQuery, [positionId], (err, row) => {
                 if (err)
                     reject(err);
-                else if (!row)
-                    resolve(null);
-                else
+                else 
                     resolve({
                         weight: row.weight ?? 0,
                         volume: row.volume ?? 0
@@ -494,12 +492,8 @@ class DbManager {
                     reject(err);
                 else if (!row)
                     resolve(null);
-                else {
-                    const inserted = new Item(row.ID, row.Description, row.Price, row.SkuId, row.SupplierId);
-                    console.log(inserted);
-                    console.log(inserted.getId());
-                    resolve(inserted);
-                }
+                else 
+                    resolve(new Item(row.ID, row.Description, row.Price, row.SkuId, row.SupplierId));
             });
         });
     }
