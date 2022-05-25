@@ -11,8 +11,6 @@ var agent = chai.request.agent(app);
 describe('test user apis', function () {
     deleteAll(200);
 
-    getAllUsers(200, []);
-
     postUser(201, "dog@ezwh.com", "Dog", "Labrador", "puppy1234567", "customer");
     postCustomerS(200, "dog@ezwh.com", "puppy1234567", {
         "username": "dog@ezwh.com",
@@ -33,12 +31,53 @@ describe('test user apis', function () {
     });
     getAllUsers(200, [
         {
+            id: 95,
+            name: "John",
+            surname: "Smith",
+            email: "user1@ezwh.com",
+            type: "customer"
+        },
+        {
+            id: 96,
+            name: "John",
+            surname: "Smith",
+            email: "qualityEmployee1@ezwh.com",
+            type: "qualityEmployee"
+        },
+        {
+            id: 97,
+            name: "John",
+            surname: "Smith",
+            email: "clerk1@ezwh.com",
+            type: "clerk"
+        },
+        {
+            id: 98,
+            name: "John",
+            surname: "Smith",
+            email: "deliveryEmployee1@ezwh.com",
+            type: "deliveryEmployee"
+        },
+        {
+            id: 99,
+            name: "John",
+            surname: "Smith",
+            email: "supplier1@ezwh.com",
+            type: "supplier"
+        },
+        {
             id: 101,
-            email: 'dog@ezwh.com', name: 'Dog', surname: 'Labrador', type: 'customer',
+            email: 'dog@ezwh.com',
+            name: 'Dog',
+            surname: 'Labrador',
+            type: 'customer',
         },
         {
             id: 102,
-            email: 'e1@gmail.com', name: 'Thomas', surname: 'Christmas', type: 'clerk',
+            email: 'e1@gmail.com',
+            name: 'Thomas',
+            surname: 'Christmas',
+            type: 'clerk',
         },
         {
             id: 103,
@@ -67,6 +106,12 @@ describe('test user apis', function () {
     deleteUser(422, "e1@gmail.com", "wrong");  //type not valid
 
     getSupplier(200, [
+        {
+            id: 99,
+            name: "John",
+            surname: "Smith",
+            email: "supplier1@ezwh.com"
+        },
         {
             id: 103,
             name: "Leo",
