@@ -70,7 +70,7 @@ describe('get skuItem', () => {
             .mockReturnValueOnce(null); //404
     });
 
-    test('get skuItem kristi', async () => {
+    test('get skuItem', async () => {
         let res = await skuItemService.getSkuItem('12345678901234567890123456789011');
 
         // expect 200
@@ -142,7 +142,7 @@ describe('update skuItem', () => {
             .mockReturnValueOnce(true) //200
     });
 
-    test('update skuItem kristi', async () => {
+    test('update skuItem', async () => {
         let res = await skuItemService.updateSkuItem('12345678901234567890123456789011', '12345678901234567890123456789012', 1, '2022/11/29');
 
         //expect 404
@@ -170,7 +170,7 @@ describe('delete skuItem', () => {
 
     beforeEach(() => {
         dao.getSkuItemByRfid.mockReset()
-            .mockReturnValueOnce(null) //404
+            .mockReturnValueOnce(null) //422
             .mockReturnValueOnce(new SkuItem('12345678901234567890123456789011', 1, '2021/11/29', 1)) //503
             .mockReturnValueOnce(new SkuItem('12345678901234567890123456789011', 1, '2021/11/29', 1)); //204
 
