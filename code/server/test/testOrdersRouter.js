@@ -272,7 +272,7 @@ describe('test return order api', () => {
             price: 10.99,
             RFID: "12345678901234567890123456789011"
         }],
-        102
+        2
     ); // any of the skuItems has negative result
     getReturn(422, "abc"); // id is not a number
     getReturn(404, 99999); // id does not exist
@@ -283,7 +283,7 @@ describe('test return order api', () => {
             price: 10.99,
             RFID: "12345678901234567890123456789011"
         }],
-        102
+        2
     );
     deleteReturn(204, 1);
     deleteReturn(422, "abc");

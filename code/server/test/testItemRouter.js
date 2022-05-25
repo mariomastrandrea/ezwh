@@ -144,7 +144,7 @@ describe('Item API tests', () => {
         "description": "a new second item",
         "price": 1.89,
         "SKUId": 2,
-        "supplierId": 1
+        "supplierId": 101
     });
 
     deleteItemTest(204, 12);
