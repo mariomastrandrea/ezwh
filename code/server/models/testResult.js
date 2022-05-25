@@ -33,7 +33,7 @@ class TestResult {
         //rfid: this.getRfid(),
         idTestDescriptor: this.getTestDescriptorId(),
         Date: this.getDate(),
-        Result: this.getResult()
+        Result: this.getResult() === 1 ? true : false
     });
 }
 
