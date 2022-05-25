@@ -553,7 +553,7 @@ router.delete('/items/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code } = await itemService.deleteItem(itemId);
+        const { error, code } = await itemService.deleteItem(id);
 
         return error ?
             res.status(code).send(error) : 
