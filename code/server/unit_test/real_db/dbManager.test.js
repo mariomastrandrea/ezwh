@@ -1,5 +1,6 @@
 const DbManagerFactory = require('../../db/dbManager');
 const dao = DbManagerFactory();
+const {deleteAll, insertSamples } = require('../../db/dbUtilities');
 
 const RestockOrder = require('../../models/restockOrder');
 const ReturnOrder = require('../../models/returnOrder');
@@ -17,6 +18,13 @@ const Item = require("../../models/item");
 
 //#region RestockOrder
 describe('[DB] restock orders GET functions', () => {
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     test('get all restock orders', async () => {
         const ros = await dao.getAllRestockOrders();
         for (const ro of ros) {
@@ -87,6 +95,13 @@ describe('[DB] restock orders GET functions', () => {
 });
 
 describe('[DB] restock orders CREATE UPDATE DELETE functions', () => {
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     let exOrder;
     let exProducts = [{
         SKUId: 1,
@@ -165,6 +180,13 @@ describe('[DB] restock orders CREATE UPDATE DELETE functions', () => {
 
 //#region ReturnOrder
 describe('[DB] return orders functions', () => {
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     let exOder;
     let fakeProducts = [{
         SKUId: 1,
@@ -237,6 +259,13 @@ describe('[DB] return orders functions', () => {
 
 //#region InternalOrder
 describe('[DB] internal orders GET functions', () => {
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     test('get all internal orders', async () => {
         const orders = await dao.getAllInternalOrders();
         for (const order of orders) {
@@ -292,6 +321,13 @@ describe('[DB] internal orders GET functions', () => {
 });
 
 describe('[DB] internal orders CREATE UPDATE DELETE functions', () => {
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     let exOrder;
     let fakeProducts = [{
         SKUId: 1,
@@ -371,7 +407,13 @@ describe('[DB] internal orders CREATE UPDATE DELETE functions', () => {
 
 //#region TestDescriptor
 describe('[DB] test descriptor GET functions', () => {
-
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     test('get all test descriptors', async () => {
         const tds = await dao.getAllTestDescriptors();
         for (const td of tds) {
@@ -415,7 +457,13 @@ describe('[DB] test descriptor GET functions', () => {
 })
 
 describe('[DB] test descriptor CREATE UPDATE DELETE functions', () => {
-
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     let exTest;
     let newTest;
     beforeAll(async () => {
@@ -446,7 +494,13 @@ describe('[DB] test descriptor CREATE UPDATE DELETE functions', () => {
 
 //#region TestResult
 describe('[DB] test result GET functions', () => {
-
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     test('get all test result of a skuItem', async () => {
         let rfid = '12345678901234567890123456789015';
         const trs = await dao.getAllTestResultsBySkuItem(rfid);
@@ -499,7 +553,13 @@ describe('[DB] test result GET functions', () => {
 })
 
 describe('[DB] test result CREATE UPDATE DELETE functions', () => {
-
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     let exTest;
     let newTest;
     beforeAll(async () => {
@@ -530,7 +590,13 @@ describe('[DB] test result CREATE UPDATE DELETE functions', () => {
 
 //#region User
 describe('[DB] user GET functions', () => {
-
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     test('get user by id and type', async () => {
         let id = 1;
         let type = 'supplier';
@@ -593,7 +659,13 @@ describe('[DB] user GET functions', () => {
 })
 
 describe('[DB] user CREATE UPDATE DELETE functions', () => {
-
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     let exUser;
     let newUser;
     beforeAll(async () => {
@@ -624,6 +696,13 @@ describe('[DB] user CREATE UPDATE DELETE functions', () => {
 
 //#region Position
 describe('[DB] position functions', () => {
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     let id = "123412341234"; // id of testing position
     let fakeP = new Position(id, "1234", "1234", "1234", 100., 100., 0., 0.);
 
@@ -719,6 +798,13 @@ describe('[DB] position functions', () => {
 })
 
 describe('[DB] get occupied capacities of a position', () => {
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     let fakeP = new Position("123412341234", "1234", "1234", "1234", 100., 100., 20, 20);
     let fakeP2 = new Position("999", "9", "9", "9", 100., 100., 20, 20);
 
@@ -758,6 +844,13 @@ describe('[DB] get occupied capacities of a position', () => {
 
 //#region Sku
 describe('[DB] sku functions', () => {
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     let fakeId
     let fakeP = new Position("345634563456", "3456", "3456", "3456", 100., 100., 0., 0.);
     let secondFakeP = new Position("456745674567", "4567", "4567", "4567", 100., 100., 0., 0.);
@@ -959,6 +1052,13 @@ describe('[DB] sku functions', () => {
 
 //#region SkuItems
 describe('[DB] SkuItems functions', () => {
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     let fakeP = new Position("345634563456", "3456", "3456", "3456", 100., 100., 0., 0.);
     let fakeSku = new Sku("test", 20., 20., "notes", 234., 0, fakeP.getPositionId(), [], null);
     let fakeRFID = "09876543217654327654345678987612"
@@ -1083,6 +1183,13 @@ describe('[DB] SkuItems functions', () => {
 
 //#region Items
 describe('[DB] Items functions', () => {
+    beforeAll(async () => {
+        await deleteAll();
+        await insertSamples();
+    });
+    afterAll(async () => {
+        await deleteAll();
+    });
     const fakeItem1 = new Item(99991, "desc", 88.0, 3, 1);
     const fakeItem2 = new Item(99992, "desc", 177.0, 5, 1);
     let storedItem1, storedItem2;
@@ -1322,26 +1429,4 @@ describe('[DB] close db and testing functions', () => {
         }
     })
 });
-//#endregion
-
-
-
-//#region TESTING FUNCTIONS
-/*
-describe('[DB] delete and fill', () =>{
-    let tables = [
-        "ReturnOrderSkuItem",
-        "ReturnOrder",
-        "RestockOrderSkuItem",
-        "RestockOrderSku",
-        "RestockOrder",
-    ]
-    for (const table of tables) {
-        test(`delete ${table}`, async () => {
-            let result = await dao.deleteTable(table);
-            expect(typeof result === 'boolean').toBeTruthy();
-        });
-    }
-})
-*/
 //#endregion

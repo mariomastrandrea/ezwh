@@ -8,9 +8,9 @@ const app = require('../server');
 var agent = chai.request.agent(app);
 
 describe('test restock order apis', () => {
-
-    deleteOrders(204);
+    deleteAll(200);
     getAllRestock(200, []);
+    //insert position, sku
     postRestock(201, "2021/11/29 09:33",
         [{
             SKUId: 1,
@@ -125,6 +125,7 @@ describe('test restock order apis', () => {
     putRestockState(200, 1, "DELIVERY");
     putRestockNote(200, 1, { "deliveryDate": "2021/12/29" });
     putRestockState(200, 1, "DELIVERED");
+    // insert sku items
     putRestockSkuItems(200, 1, [{ SKUId: 1, rfid: "12345678901234567890123456789011" }]);
     getAllRestock(200, [
 
@@ -175,12 +176,12 @@ describe('test restock order apis', () => {
     deleteRestock(422, "abc");
     deleteRestock(422, 901);
 
-    deleteOrders(204);
-    insertOrders(201);
+    deleteAll(200);
+    insertSamples(200);
 });
 
 describe('test return order api', () => {
-    deleteOrders(204);
+    deleteAll(200);
     //#region restock order for return test
     postRestock(201, "2021/11/29 09:33",
         [{
@@ -251,12 +252,12 @@ describe('test return order api', () => {
     deleteReturn(422, "abc");
     deleteReturn(422, 901);
 
-    deleteOrders(204);
-    insertOrders(201);
+    deleteAll(200);
+    insertSamples(200);
 });
 
 describe('test internal order api', () => {
-    deleteOrders(204);
+    deleteAll(200);
     getAllInternal(200, []);
     getIssuedInternal(200, []);
     getAcceptedInternal(200, []);
@@ -372,13 +373,13 @@ describe('test internal order api', () => {
     deleteInternal(422, "abc"); // id is not a number
     deleteInternal(422, 901); // id does not exist
 
-    deleteOrders(204);
-    insertOrders(201);
+    deleteAll(200);
+    insertSamples(200);
 })
 
-function deleteOrders(expectedHTTPStatus) {
-    it('deleting orders', function (done) {
-        agent.delete('/api/allOrders')
+function deleteAll(expectedHTTPStatus) {
+    it('deleting data', function (done) {
+        agent.get('/test/deleteAll')
             .then(function (res) {
                 res.should.have.status(expectedHTTPStatus);
                 done();
@@ -386,9 +387,9 @@ function deleteOrders(expectedHTTPStatus) {
     });
 }
 
-function insertOrders(expectedHTTPStatus) {
-    it('adding sample orders', function (done) {
-        agent.post('/api/allOrders')
+function insertSamples(expectedHTTPStatus) {
+    it('adding samples', function (done) {
+        agent.get('/test/insertSamples')
             .then(function (res) {
                 res.should.have.status(expectedHTTPStatus);
                 done();
