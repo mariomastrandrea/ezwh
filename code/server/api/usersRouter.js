@@ -166,6 +166,13 @@ async function session(req, res, type) {
         }
 
         const { username, password } = req.body;
+
+        //hardcoded accounts
+        if (['user1@ezwh.com', 'qualityEmployee1@ezwh.com', 'clerk1@ezwh.com', 'deliveryEmployee1@ezwh.com',
+            'supplier1@ezwh.com', 'manager1@ezwh.com'].includes(username) && password === 'testpassword') {
+                return res.status(200).send();
+        }
+
         const { code, obj, error } = await userService.login(username, password, type);
 
         if (error) {
@@ -188,7 +195,8 @@ router.post('/logout', async (req, res) => {
     }
 
     try {
-        // TODO: perform logout       
+        // TODO: perform logout
+        return res.status(200).send();       
     }
     catch (err) {
         console.log(err);
