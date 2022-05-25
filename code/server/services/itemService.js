@@ -47,10 +47,11 @@ class ItemService {
             return NOT_FOUND(`sku ${skuId} not found`);
 
         // check supplier existence
-        const supplier = this.#dao.getUserByIdAndType(supplierId, 'SUPPLIER');
+        const supplier = await this.#dao.getUserByIdAndType(supplierId, 'supplier');
 
-        if (!supplier)
+        if (!supplier) {
             return UNPROCESSABLE_ENTITY(`supplier ${supplierId} not found`);
+        }
 
         // check if supplier already sells this sku
         tempItem = await this.#dao.getItemBySkuIdAndSupplier(skuId, supplierId);

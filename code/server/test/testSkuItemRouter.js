@@ -198,7 +198,7 @@ describe('SkuItem API tests', () => {
     deleteAll(200);
 });
 
-//#region SkuItem
+//#region SkuItem tests functions
 function getAllSkuItemsTest(expectedHttpStatus, expectedResponseBody) {
     it('get all sku items', function (done) {
         agent.get("/api/skuitems")

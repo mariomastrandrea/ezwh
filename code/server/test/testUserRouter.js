@@ -54,7 +54,7 @@ describe('test user apis', function () {
         "name": "Martin",
         "id": 4
     });
-    
+
     postUser(409, "testa@gmail.com", "Martin", "Scorsese", "martino1234567", "deliveryEmployee");  //email already exists
     postUser(422, "testa@gmail.com", "Martin", "Scorsese", "martino1234567", "manager"); //type not valid
     postUser(422, "dogTest@gmail.com", 123, "Scorsese", "martino1234567", "customer"); //username not valid
@@ -65,7 +65,7 @@ describe('test user apis', function () {
     deleteUser(204, "dog@ezwh.com", "customer");
     deleteUser(422, "dogezwh.com", "customer");  //username not valid
     deleteUser(422, "e1@gmail.com", "wrong");  //type not valid
-    
+
     getSupplier(200, [
         {
             id: 3,
@@ -369,4 +369,20 @@ function deleteUser(expectedHTTPStatus, username, type) {
                 }).catch(err => done(err));
         }
     });
+}
+
+module.exports = {
+    getUserInfo,
+    getSupplier,
+    getAllUsers,
+    postUser,
+    postManagerS,
+    postCustomerS,
+    postSupplierS,
+    postClerkS,
+    postQualityEmployeeS,
+    postDeliveryEmployeeSessions,
+    postLogout,
+    putType,
+    deleteUser
 }
