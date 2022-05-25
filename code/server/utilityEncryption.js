@@ -22,6 +22,3 @@ const comparePassword = async (password, hash) => {
 module.exports = {
     hashPassword, comparePassword
 }
-
-//console.log(await hashPassword('pass1'));
-//console.log(await comparePassword('pass1',await hashPassword('pass1')));
