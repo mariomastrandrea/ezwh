@@ -59,9 +59,6 @@ function getTestDesc(expectedHTTPStatus, id, name, procedureDescription, idSKU) 
                     done();
                 });
         }
-
-
-
     });
 }
 
