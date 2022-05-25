@@ -1105,7 +1105,7 @@ describe('[DB] Items functions', () => {
 
         // throw err
         expect(dao.updateItem(new Item(storedItem1.getId(), '', '', '', ''))).rejects.toThrow();
-        
+
         // restore item
         await dao.updateItem(storedItem1);
     });
@@ -1121,6 +1121,121 @@ describe('[DB] Items functions', () => {
         expect(await dao.storeItem(storedItem1)).toBeInstanceOf(Item);
     });
 });
+
+//#region FORCING to reject
+describe('[DB] close db and testing functions', () => {
+    beforeAll(async () => {
+        dao.closeDb();
+    })
+    test(' getPosition reject', async () => {
+        try {
+            await dao.getPosition(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test(' storeInternalOrder reject', async () => {
+        try {
+            await dao.storeInternalOrder(new InternalOrder("123", [1, 2], 1));
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test(' get all positions reject', async () => {
+        try {
+            await dao.getAllPositions();
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('delete position reject', async () => {
+        try {
+            await dao.deletePosition(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('get occupied capacity of position reject', async () => {
+        try {
+            await dao.getOccupiedCapacitiesOf(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('get sku by id reject', async () => {
+        try {
+            await dao.getSkuById(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('getSkuOfPosition reject', async () => {
+        try {
+            await dao.getSkuOfPosition(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('getAllSkuItems reject', async () => {
+        try {
+            await dao.getAllSkuItems();
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('getSkuItemByRfid reject', async () => {
+        try {
+            await dao.getSkuItemByRfid(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('getSkuItemsOf reject', async () => {
+        try {
+            await dao.getSkuItemsOf(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('getAvailableSkuItemsOf reject', async () => {
+        try {
+            await dao.getAvailableSkuItemsOf(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('deleteSkuItem reject', async () => {
+        try {
+            await dao.deleteSkuItem(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('getAllItems reject', async () => {
+        try {
+            await dao.getAllItems();
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('getItemById reject', async () => {
+        try {
+            await dao.getItemById(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    });
+    test('deleteItem reject', async () => {
+        try {
+            await dao.deleteItem(1);
+        } catch (err) {
+            expect(err.message).toMatch(/SQLITE_MISUSE/);
+        }
+    })
+});
+//#endregion
+
+
 
 //#region TESTING FUNCTIONS
 describe('[DB] delete and fill', () =>{

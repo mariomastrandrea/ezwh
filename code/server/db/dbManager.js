@@ -521,7 +521,7 @@ class DbManager {
             this.#db.run(sqlStatement, params, function (err) {
                 if (err)
                     reject(err);
-                else 
+                else
                     resolve(new Item(this.lastID, newDescription, newPrice, newSkuId, newSupplierId));
             });
         });
@@ -562,7 +562,7 @@ class DbManager {
                 if (err)
                     reject(err);
                 else
-                    resolve(this.changes > 0); 
+                    resolve(this.changes > 0);
             });
         });
     }
@@ -1371,10 +1371,8 @@ class DbManager {
         const params = [io.getIssueDate(), io.getCustomerId(), io.getState()];
         return new Promise((resolve, reject) => {
             this.#db.run(sql, params, function (err) {
-                if (err) {
-                    console.error(err.message);
+                if (err)
                     reject(err);
-                }
                 else
                     resolve(new InternalOrder(io.getIssueDate(), io.getProducts(), io.getCustomerId(), io.getState(), this.lastID));
             });
