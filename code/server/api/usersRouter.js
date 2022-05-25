@@ -188,7 +188,8 @@ router.post('/logout', async (req, res) => {
     }
 
     try {
-        // TODO: perform logout       
+        // TODO: perform logout
+        return res.status(200).send();       
     }
     catch (err) {
         console.log(err);

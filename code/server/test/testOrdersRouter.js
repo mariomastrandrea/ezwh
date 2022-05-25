@@ -10,7 +10,7 @@ var agent = chai.request.agent(app);
 describe('test restock order apis', () => {
     deleteAll(200);
     getAllRestock(200, []);
-    //insert position, sku
+    //insert position, sku, supplier
     postRestock(201, "2021/11/29 09:33",
         [{
             SKUId: 1,
@@ -177,7 +177,6 @@ describe('test restock order apis', () => {
     deleteRestock(422, 901);
 
     deleteAll(200);
-    insertSamples(200);
 });
 
 describe('test return order api', () => {
@@ -218,6 +217,7 @@ describe('test return order api', () => {
     //#endregion
 
     getAllReturn(200, []);
+    // insert restock order, sku, skuItem, position
     postReturn(422, "2021/11/29 09:33"); // missing body
     postReturn(404, "2021/11/30 09:33",
         [{
@@ -253,7 +253,6 @@ describe('test return order api', () => {
     deleteReturn(422, 901);
 
     deleteAll(200);
-    insertSamples(200);
 });
 
 describe('test internal order api', () => {
@@ -263,7 +262,7 @@ describe('test internal order api', () => {
     getAcceptedInternal(200, []);
     getInternal(422, "abc"); // id is not a number
     getInternal(404, 99999); // id does not exist
-
+    // insert sku, customer
     postInternal(422, "2021/11/29 09:33"); // missing body
     postInternal(201,
         "2021/11/29 09:33",
@@ -354,6 +353,7 @@ describe('test internal order api', () => {
         }],
         customerId: 5
     }]);
+    // insert skuItem
     putInternal(200, 1, "COMPLETED",
         [{ SkuID: 1, RFID: "12345678901234567890123456789011" }]
     );
@@ -761,3 +761,18 @@ function deleteInternal(expectedHTTPStatus, id) {
 }
 
 //#endregion
+
+//#region dependency api
+function postSkuTest(expectedHttpStatus, requestBody) {
+    it('create sku', function(done) {
+        agent.post("/api/sku")
+            .send(requestBody)
+            .then(function(res) {
+                res.should.have.status(expectedHttpStatus);
+                done();
+            })
+            .catch(err => done(err));
+    });
+}
+//#endregion
+

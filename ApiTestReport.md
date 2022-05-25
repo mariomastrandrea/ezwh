@@ -148,6 +148,7 @@ The db used for testing is code/server/db/EZWHDB.sqlite
 | ReturnOrder    | test return order apis    |
 | InternalOrder  | test internal order apis  |
 | Position       | test position apis        |
+| User           | test user apis            |
 | TestDescriptor | test test descriptor apis |
 
 
