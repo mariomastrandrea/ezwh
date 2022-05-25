@@ -26,13 +26,6 @@ Because of complexity of the system, we have decided to test only some of the mo
   - storeInternalOrder(io)
 
 
-        <Define here criteria, predicates and the combination of predicates for each function of each class.
-        Define test cases to cover all equivalence classes and boundary conditions.
-        In the table, report the description of the black box test case and (traceability) the correspondence with the Jest test case writing the 
-        class and method name that contains the test case>
-        <Jest tests  must be in code/server/unit_test  >
-
-
  ### **Class DbManager - method getUser(username, type)**
 
 **Criteria for method getUser(username, type):**
@@ -316,10 +309,6 @@ Unit tests are divided in two folders:
 Services with real db will be tested during the API integration tests. 
 
 ### Test cases definition
-    
-    
-    <Report here all the created Jest test cases, and the units/classes under test >
-    <For traceability write the class and method name that contains the test case>
 
 *Where is not specified, the test cases consider errors that functions could produce*
 
