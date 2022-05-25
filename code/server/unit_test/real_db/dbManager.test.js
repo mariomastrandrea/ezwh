@@ -1,5 +1,6 @@
 const DbManagerFactory = require('../../db/dbManager');
 const dao = DbManagerFactory();
+
 const RestockOrder = require('../../models/restockOrder');
 const ReturnOrder = require('../../models/returnOrder');
 const InternalOrder = require('../../models/internalOrder');
@@ -12,7 +13,9 @@ const encryption = require("../../utilityEncryption");
 const Position = require('../../models/position');
 const Sku = require('../../models/sku');
 const SkuItem = require('../../models/skuItem');
+const Item = require("../../models/item");
 
+//#region RestockOrder
 describe('[DB] restock orders GET functions', () => {
     test('get all restock orders', async () => {
         const ros = await dao.getAllRestockOrders();
@@ -155,7 +158,9 @@ describe('[DB] restock orders CREATE UPDATE DELETE functions', () => {
     });
 
 });
+//#endregion
 
+//#region ReturnOrder
 describe('[DB] return orders functions', () => {
     let exOder;
     let fakeProducts = [{
@@ -226,7 +231,9 @@ describe('[DB] return orders functions', () => {
         expect(result).toBe(true);
     });
 });
+//#endregion
 
+//#region InternalOrder
 describe('[DB] internal orders GET functions', () => {
     test('get all internal orders', async () => {
         const orders = await dao.getAllInternalOrders();
@@ -280,7 +287,6 @@ describe('[DB] internal orders GET functions', () => {
             });
         }
     });
-
 });
 
 describe('[DB] internal orders CREATE UPDATE DELETE functions', () => {
@@ -358,8 +364,8 @@ describe('[DB] internal orders CREATE UPDATE DELETE functions', () => {
         let result = await dao.deleteInternalOrder(fakeOrder.getId());
         expect(result).toBe(true);
     });
-
 });
+//#endregion
 
 //#region TestDescriptor
 describe('[DB] test descriptor GET functions', () => {
@@ -848,7 +854,6 @@ describe('[DB] sku functions', () => {
         expect(sku.getPrice()).toBeGreaterThan(0.);
         expect(sku.getPosition()).toMatch(/^[0-9]{12}$/);
         expect(sku.getTestDescriptors()).toEqual([])
-
     });
 
     test('update position of sku', async () => {
@@ -989,5 +994,132 @@ describe('[DB] SkuItems functions', () => {
 //#endregion
 
 //#region Items
-// TO DO
+describe('[DB] Items functions', () => {
+    const fakeItem1 = new Item(99991, "desc", 88.0, 3, 1);
+    const fakeItem2 = new Item(99992, "desc", 177.0, 5, 1);
+    let storedItem1, storedItem2;
+
+    beforeAll(async () => {
+        storedItem1 = await dao.storeItem(fakeItem1);
+        storedItem2 = await dao.storeItem(fakeItem2);
+    });
+
+    afterAll(async () => {
+        await dao.deleteItem(storedItem1.getId());
+        await dao.deleteItem(storedItem2.getId());
+    });
+
+    test('get all items test', async () => {
+        const allItems = await dao.getAllItems();
+
+        for (let item of allItems) {
+            expect(item).toBeInstanceOf(Item);
+            expect(item.getId()).toBeGreaterThan(0);
+            expect(item.getDescription()).toBeDefined();
+            expect(item.getPrice()).toBeGreaterThanOrEqual(0);
+            expect(item.getSkuId()).toBeGreaterThan(0);
+            expect(item.getSupplierId()).toBeGreaterThan(0);
+        }
+    });
+
+    test('get item by id', async () => {
+        // item not found
+        expect(await dao.getItemById(11110000)).toBe(null);
+
+        const item1 = await dao.getItemById(fakeItem1.getId());
+        expect(item1).toBeInstanceOf(Item);
+        expect(item1.getId()).toBeGreaterThan(0);
+        expect(item1.getDescription()).toBeDefined();
+        expect(item1.getPrice()).toBeGreaterThanOrEqual(0);
+        expect(item1.getSkuId()).toBeGreaterThan(0);
+        expect(item1.getSupplierId()).toBeGreaterThan(0);
+
+        expect(item1.toJSON()).toEqual(storedItem1.toJSON());
+
+        // test references
+        const relatedSku = await dao.getSkuById(item1.getSkuId());
+        expect(relatedSku).toBeInstanceOf(Sku);
+        expect(relatedSku.getId()).toEqual(item1.getSkuId());
+
+        const relatedSupplier = await dao.getUserByIdAndType(item1.getSupplierId(), 'supplier');
+        expect(relatedSupplier).toBeInstanceOf(User);
+        expect(relatedSupplier.getId()).toEqual(item1.getSupplierId());
+
+        // test setters
+        item1.setDescription('modified desc');
+        item1.setPrice(9);
+        item1.setSkuId(2);
+
+        expect(item1.getDescription()).toEqual('modified desc');
+        expect(item1.getPrice()).toEqual(9);
+        expect(item1.getSkuId()).toEqual(2);
+    });
+
+    test('get item by sku id and supplier', async () => {
+        // item not found
+        expect(await dao.getItemBySkuIdAndSupplier(10, 100)).toBe(null);
+
+        const item1 = await dao.getItemBySkuIdAndSupplier(storedItem1.getSkuId(), storedItem1.getSupplierId());
+        expect(item1).toBeInstanceOf(Item);
+        expect(item1.toJSON()).toEqual(storedItem1.toJSON());
+        expect(item1.toJSON()).not.toBe(storedItem1.toJSON());
+        expect(item1.getSkuId()).toEqual(storedItem1.getSkuId());
+        expect(item1.getSupplierId()).toEqual(storedItem1.getSupplierId());
+    });
+
+    test('store item test', async () => {
+        const fakeNewItem = new Item(2222, 'pappa', 99, 5, 2);
+        const createdItem = await dao.storeItem(fakeNewItem);
+
+        expect(createdItem).toBeInstanceOf(Item);
+        expect(createdItem).not.toBe(fakeNewItem);
+        expect(createdItem.toJSON()).toEqual(fakeNewItem.toJSON());
+
+        expect(dao.storeItem(fakeNewItem)).rejects.toThrow();   // insert the same item the 2nd time
+        await dao.deleteItem(createdItem.getId());
+    });
+
+
+    test('update item test', async () => {
+        // item not found
+        const itemToNotUpdate = new Item(200 * storedItem1.getId(), 'mod desc', 10000, storedItem1.getSkuId(), storedItem1.getSupplierId());
+        let wasItemUpdated = await dao.updateItem(itemToNotUpdate);
+        expect(wasItemUpdated).toBe(false);
+
+        // update item
+        const itemToUpdate = new Item(storedItem1.getId(), 'mod desc', 10000, storedItem1.getSkuId(), storedItem1.getSupplierId());
+
+        wasItemUpdated = await dao.updateItem(itemToUpdate);
+        expect(wasItemUpdated).toBe(true);
+
+        const itemUpdated = await dao.getItemById(storedItem1.getId());
+        expect(itemUpdated).toBeInstanceOf(Item);
+        expect(itemUpdated).not.toEqual(storedItem1);
+        expect(itemUpdated.getId()).toEqual(storedItem1.getId());
+        expect(itemUpdated.getDescription()).not.toEqual(storedItem1.getDescription());
+        expect(itemUpdated.getDescription()).toEqual('mod desc');
+        expect(itemUpdated.getPrice()).not.toEqual(storedItem1.getPrice());
+        expect(itemUpdated.getPrice()).toEqual(10000);
+        expect(itemUpdated.getSkuId()).toEqual(storedItem1.getSkuId());
+        expect(itemUpdated.getSupplierId()).toEqual(storedItem1.getSupplierId());
+
+        // throw err
+        expect(dao.updateItem(new Item(storedItem1.getId(), '', '', '', ''))).rejects.toThrow();
+        
+        // restore item
+        await dao.updateItem(storedItem1);
+    });
+
+    test('delete item test', async () => {
+        // delete item
+        expect(await dao.deleteItem(storedItem1.getId())).toBe(true);
+
+        // not found item, no delete
+        expect(await dao.deleteItem(storedItem1.getId())).toBe(false);
+
+        // restore item
+        expect(await dao.storeItem(storedItem1)).toBeInstanceOf(Item);
+    });
+});
+
 //#endregion

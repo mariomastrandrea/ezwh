@@ -298,8 +298,6 @@ class DbManager {
         })
     }
 
-    /* Start of Restock Order */
-
     deleteSku(id) {
         return new Promise((resolve, reject) => {
             const sqlStatement = `DELETE FROM Sku
@@ -496,8 +494,12 @@ class DbManager {
                     reject(err);
                 else if (!row)
                     resolve(null);
-                else
-                    resolve(new Item(row.ID, row.Description, row.Price, row.SkuId, row.SupplierId));
+                else {
+                    const inserted = new Item(row.ID, row.Description, row.Price, row.SkuId, row.SupplierId);
+                    console.log(inserted);
+                    console.log(inserted.getId());
+                    resolve(inserted);
+                }
             });
         });
     }
@@ -519,8 +521,8 @@ class DbManager {
             this.#db.run(sqlStatement, params, function (err) {
                 if (err)
                     reject(err);
-                else
-                    resolve(new Item(this.ID, newDescription, newPrice, newSkuId, newSupplierId));
+                else 
+                    resolve(new Item(this.lastID, newDescription, newPrice, newSkuId, newSupplierId));
             });
         });
     }
@@ -560,7 +562,7 @@ class DbManager {
                 if (err)
                     reject(err);
                 else
-                    resolve(this.changes > 0); s
+                    resolve(this.changes > 0); 
             });
         });
     }

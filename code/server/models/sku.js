@@ -57,13 +57,4 @@ class Sku {
     });
 }
 
-Number.prototype.pad = function (size) {
-    const actualSize = String(this).length;
-
-    if(!(size > 0 && actualSize < size)) 
-        return String(this);    // return the same Number
-
-    return "0".repeat(size - actualSize) + String(this);
-}
-
 module.exports = Sku;
