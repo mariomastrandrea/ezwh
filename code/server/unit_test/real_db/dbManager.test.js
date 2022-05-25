@@ -598,7 +598,7 @@ describe('[DB] user GET functions', () => {
         await deleteAll();
     });
     test('get user by id and type', async () => {
-        let id = 1;
+        let id = 101;
         let type = 'supplier';
         let u = await dao.getUserByIdAndType(id, type);
         expect(u).toBeInstanceOf(User);
@@ -1184,8 +1184,8 @@ describe('[DB] Items functions', () => {
     afterAll(async () => {
         await deleteAll();
     });
-    const fakeItem1 = new Item(99991, "desc", 88.0, 3, 1);
-    const fakeItem2 = new Item(99992, "desc", 177.0, 5, 1);
+    const fakeItem1 = new Item(99991, "desc", 88.0, 3, 101);
+    const fakeItem2 = new Item(99992, "desc", 177.0, 5, 101);
     let storedItem1, storedItem2;
 
     beforeAll(async () => {

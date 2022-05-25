@@ -17,31 +17,31 @@ describe('test user apis', function () {
     postCustomerS(200, "dog@ezwh.com", "puppy1234567", {
         "username": "dog@ezwh.com",
         "name": "Dog",
-        "id": 1
+        "id": 101
     });
     postUser(201, 'e1@gmail.com', "Thomas", "Christmas", "testP1234567", 'clerk');
     postClerkS(200, 'e1@gmail.com', 'testP1234567', {
         "username": "e1@gmail.com",
         "name": "Thomas",
-        "id": 2
+        "id": 102
     });
     postUser(201, "cat@gmail.com", "Leo", "Nardo", "cat1234567", 'supplier');
     postSupplierS(200, "cat@gmail.com", "cat1234567", {
         username: "cat@gmail.com",
         name: "Leo",
-        id: 3
+        id: 103
     });
     getAllUsers(200, [
         {
-            id: 1,
+            id: 101,
             email: 'dog@ezwh.com', name: 'Dog', surname: 'Labrador', type: 'customer',
         },
         {
-            id: 2,
+            id: 102,
             email: 'e1@gmail.com', name: 'Thomas', surname: 'Christmas', type: 'clerk',
         },
         {
-            id: 3,
+            id: 103,
             name: "Leo",
             surname: "Nardo",
             email: "cat@gmail.com",
@@ -52,7 +52,7 @@ describe('test user apis', function () {
     postDeliveryEmployeeSessions(200, "testa@gmail.com", "martino1234567", {
         "username": "testa@gmail.com",
         "name": "Martin",
-        "id": 4
+        "id": 104
     });
 
     postUser(409, "testa@gmail.com", "Martin", "Scorsese", "martino1234567", "deliveryEmployee");  //email already exists
@@ -68,7 +68,7 @@ describe('test user apis', function () {
 
     getSupplier(200, [
         {
-            id: 3,
+            id: 103,
             name: "Leo",
             surname: "Nardo",
             email: "cat@gmail.com",
@@ -83,7 +83,7 @@ describe('test user apis', function () {
     postQualityEmployeeS(200, 'e1@gmail.com', 'testP1234567', {
         "username": "e1@gmail.com",
         "name": "Thomas",
-        "id": 2
+        "id": 102
     });
     postLogout(200);
     deleteAll(200);

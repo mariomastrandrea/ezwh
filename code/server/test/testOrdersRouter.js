@@ -15,7 +15,7 @@ describe('test restock order apis', () => {
         await agent.post('/api/sku')
             .send({ description: 'another product', weight: 100, volume: 50, notes: 'sku2', price: 20.99, availableQuantity: 100 });
         await agent.post('/api/newUser')
-            .send({ username: 'supplier1@ezwh.com', name: 'John', surname: 'Smith', password: 'testpassword', type: 'supplier' })
+            .send({ username: 'supplier11@ezwh.com', name: 'John', surname: 'Smith', password: 'testpassword', type: 'supplier' })
         await agent.post('/api/skuItem')
             .send({ RFID: '12345678901234567890123456789011', SKUId: 1, DateOfStock: '2021/11/29 12:30' });
     })
@@ -39,7 +39,7 @@ describe('test restock order apis', () => {
             price: 20.99,
             qty: 20
         }],
-        1
+        101
     );
     postRestock(422); // missing body
     postRestock(422,
@@ -56,7 +56,7 @@ describe('test restock order apis', () => {
             price: 20.99,
             qty: 20
         }],
-        1
+        101
     ); // invalid issueDate
     postRestock(422,
         "2021/11/29 09:33",
@@ -76,7 +76,7 @@ describe('test restock order apis', () => {
             price: 20.99,
             qty: 20
         }],
-        1
+        101
     ); // invalid SKUId
     getRestock(422, "abc"); // id is not a number
     getRestock(404, 99999); // id does not exist
@@ -96,7 +96,7 @@ describe('test restock order apis', () => {
             price: 20.99,
             qty: 20
         }],
-        1,
+        101,
         []
     );
     getIssuedRestock(200, [
@@ -116,7 +116,7 @@ describe('test restock order apis', () => {
                 price: 20.99,
                 qty: 20
             }],
-            supplierId: 1,
+            supplierId: 101,
             skuItems: [],
         }
     ]);
@@ -133,7 +133,7 @@ describe('test restock order apis', () => {
             price: 20.99,
             qty: 20
         }],
-        1
+        101
     );
     putRestockState(422, "abc", "DELIVERED"); // id is not a number
     putRestockNote(422, 1, { "deliveryDate": "2021/12/29" }); // state not delivery
@@ -160,7 +160,7 @@ describe('test restock order apis', () => {
                 price: 20.99,
                 qty: 20
             }],
-            supplierId: 1,
+            supplierId: 101,
             transportNote: { "deliveryDate": "2021/12/29" },
             skuItems: [{ SKUId: 1, rfid: "12345678901234567890123456789011" }],
         },
@@ -180,7 +180,7 @@ describe('test restock order apis', () => {
                 price: 20.99,
                 qty: 20
             }],
-            supplierId: 1,
+            supplierId: 101,
             skuItems: [],
         }
     ]);
@@ -201,9 +201,9 @@ describe('test return order api', () => {
         await agent.post('/api/sku')
             .send({ description: 'another product', weight: 100, volume: 50, notes: 'sku2', price: 20.99, availableQuantity: 100 });
         await agent.post('/api/newUser')
-            .send({ username: 'supplier1@ezwh.com', name: 'John', surname: 'Smith', password: 'testpassword', type: 'supplier' })
+            .send({ username: 'supplier11@ezwh.com', name: 'John', surname: 'Smith', password: 'testpassword', type: 'supplier' })
         await agent.post('/api/newUser')
-            .send({ username: 'supplier2@ezwh.com', name: 'Mario', surname: 'Rossi', password: 'testpassword', type: 'supplier' })
+            .send({ username: 'supplier12@ezwh.com', name: 'Mario', surname: 'Rossi', password: 'testpassword', type: 'supplier' })
         await agent.post('/api/skuItem')
             .send({ RFID: '12345678901234567890123456789011', SKUId: 1, DateOfStock: '2021/11/29 12:30' });
         await agent.post('/api/testDescriptor')
@@ -225,7 +225,7 @@ describe('test return order api', () => {
                     price: 20.99,
                     qty: 20
                 }],
-                supplierId: 1
+                supplierId: 101
             });
         await agent.post('/api/restockOrder')
             .send({
@@ -242,7 +242,7 @@ describe('test return order api', () => {
                     price: 20.99,
                     qty: 20
                 }],
-                supplierId: 1
+                supplierId: 101
             });
         await agent.put('/api/restockOrder/2')
             .send({ newState: "DELIVERED" });
@@ -272,7 +272,7 @@ describe('test return order api', () => {
             price: 10.99,
             RFID: "12345678901234567890123456789011"
         }],
-        2
+        102
     ); // any of the skuItems has negative result
     getReturn(422, "abc"); // id is not a number
     getReturn(404, 99999); // id does not exist
@@ -283,7 +283,7 @@ describe('test return order api', () => {
             price: 10.99,
             RFID: "12345678901234567890123456789011"
         }],
-        2
+        102
     );
     deleteReturn(204, 1);
     deleteReturn(422, "abc");
@@ -299,9 +299,9 @@ describe('test internal order api', () => {
         await agent.post('/api/sku')
             .send({ description: 'another product', weight: 100, volume: 50, notes: 'sku2', price: 20.99, availableQuantity: 100 });
         await agent.post('/api/newUser')
-            .send({ username: 'customer1@ezwh.com', name: 'John', surname: 'Smith', password: 'testpassword', type: 'customer' })
+            .send({ username: 'customer11@ezwh.com', name: 'John', surname: 'Smith', password: 'testpassword', type: 'customer' })
         await agent.post('/api/newUser')
-            .send({ username: 'supplier2@ezwh.com', name: 'Mario', surname: 'Rossi', password: 'testpassword', type: 'supplier' })
+            .send({ username: 'supplier12@ezwh.com', name: 'Mario', surname: 'Rossi', password: 'testpassword', type: 'supplier' })
         await agent.post('/api/skuItem')
             .send({ RFID: '12345678901234567890123456789011', SKUId: 1, DateOfStock: '2021/11/29 12:30' });
     })
@@ -331,7 +331,7 @@ describe('test internal order api', () => {
             price: 20.99,
             qty: 2
         }],
-        1);
+        101);
     postInternal(201,
         "2021/11/29 09:33",
         [{
@@ -346,7 +346,7 @@ describe('test internal order api', () => {
             price: 20.99,
             qty: 2
         }],
-        1);
+        101);
     getIssuedInternal(200, [
         {
             id: 1,
@@ -364,7 +364,7 @@ describe('test internal order api', () => {
                 price: 20.99,
                 qty: 2
             }],
-            customerId: 1
+            customerId: 101
         },
         {
             id: 2,
@@ -382,7 +382,7 @@ describe('test internal order api', () => {
                 price: 20.99,
                 qty: 2
             }],
-            customerId: 1
+            customerId: 101
         },
     ]);
     putInternal(422, "abc", "ACCEPTED"); // id is not a number
@@ -404,7 +404,7 @@ describe('test internal order api', () => {
             price: 20.99,
             qty: 2
         }],
-        customerId: 1
+        customerId: 101
     }]);
     // insert skuItem
     putInternal(200, 1, "COMPLETED",
@@ -419,7 +419,7 @@ describe('test internal order api', () => {
             price: 10.99,
             RFID: "12345678901234567890123456789011",
         }],
-        1);
+        101);
     putInternal(422, 2, "COMPLETED", [{ as: 1, rat: "12345678901234567890123456789011" }]); // wrong body
 
     deleteInternal(204, 1);

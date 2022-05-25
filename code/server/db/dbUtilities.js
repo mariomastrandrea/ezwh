@@ -35,7 +35,7 @@ const tables = ['InternalOrderSkuItem',
 const tablesReverse = [...tables].reverse();
 
 function deleteTable(tableName) {
-    let sql = `DELETE FROM ${tableName}`;
+    let sql = `DELETE FROM ${tableName}` + (tableName === 'User' ? ' WHERE ID>100' : ' ');
 
     return new Promise((resolve, reject) => {
         dbConnection.run(sql, function (err) {
@@ -133,17 +133,17 @@ function insertIntoTable(tableName) {
             break;
         case 'User':
             sql=`INSERT INTO User (Password, Type, Email, Surname, Name, ID)
-            VALUES ('$2b$10$DpP7/.UA1BBIJh1HLIzfEuL9i76YtSNRFqxI2jOSzdd7JZjeooBqK', 'supplier', 'e1@gmail.com', 'S1', 'N1', 1),
-                   ('$2b$10$scv95TLAb32Q48PEazMzm.D4F7tPskbFuoYQKBDHDdYLvqsIflaw6', 'supplier', 'e2@gmail.com', 'S4', 'N4', 2),
-                   ('$2b$10$DpP7/.UA1BBIJh1HLIzfEuL9i76YtSNRFqxI2jOSzdd7JZjeooBqK', 'manager', 'e3@gmail.com', 'S3', 'N3', 3),
-                   ('$2b$10$do5Y76EDsWuJGhX71mT/QO5kcSKxLyLZUInZObN9lWhIDm6Ybk/xa', 'customer', 'e5@gmail.com', 'S5', 'N5', 5),
-                   ('$2b$10$lXCmmtWjPWUZNOeuDKN4tuCoY2SNyM7pS48CJjZMSPi.oksxH3PhG', 'clerk', 'e6@gmail.com', 'S6', 'N6', 6),
-                   ('$2b$10$DpJJBjSIhHrUIeqN6DGjQO6HElIWkW0EUv0M/.eDXehvsnoUH4AWW', 'customer', 'user1@ezwh.com', 'ezwh', 'user1', 10),
-                   ('$2b$10$8ifkqdltPnGcmtM1L78.u.d0dadJOfC8Gzo9xO96zo7y09KO7LTM6', 'qualityEmployee', 'qualityEmployee1@ezwh.com', 'ezwh', 'qualityEmployee1', 11),
-                   ('$2b$10$Ck3wFm8A1OuRZoWYmUoFd.dbIfzBajcwyPQoeEvRyPY3jboCClbGi', 'clerk', 'clerk1@ezwh.com', 'ezwh', 'clerk1', 12),
-                   ('$2b$10$ltVGctpeT1WmH2eDNS4.yeLXYywbOO9RFtiUQyCP8KqXSwwd5MzU.', 'deliveryEmployee', 'deliveryEmployee1@ezwh.com', 'ezwh', 'deliveryEmployee1', 13),
-                   ('$2b$10$BuNuZgCIaTdEqK6.5vDVx.TF97zrcyDcRxaEt7BLNEZ9Kze/BlS1y', 'supplier', 'supplier1@ezwh.com', 'ezwh', 'supplier1', 14),
-                   ('$2b$10$w6ssb3.pV/HiWEHYr9btM.IA5J..eaHP3JEFBRy2AeCsyUz9N1hp.', 'manager', 'manager1@ezwh.com', 'ezwh', 'manager1', 16);`;
+            VALUES ('$2b$10$DpP7/.UA1BBIJh1HLIzfEuL9i76YtSNRFqxI2jOSzdd7JZjeooBqK', 'supplier', 'e1@gmail.com', 'S1', 'N1', 101),
+                   ('$2b$10$scv95TLAb32Q48PEazMzm.D4F7tPskbFuoYQKBDHDdYLvqsIflaw6', 'supplier', 'e2@gmail.com', 'S4', 'N4', 102),
+                   ('$2b$10$DpP7/.UA1BBIJh1HLIzfEuL9i76YtSNRFqxI2jOSzdd7JZjeooBqK', 'manager', 'e3@gmail.com', 'S3', 'N3', 103),
+                   ('$2b$10$do5Y76EDsWuJGhX71mT/QO5kcSKxLyLZUInZObN9lWhIDm6Ybk/xa', 'customer', 'e5@gmail.com', 'S5', 'N5', 105),
+                   ('$2b$10$lXCmmtWjPWUZNOeuDKN4tuCoY2SNyM7pS48CJjZMSPi.oksxH3PhG', 'clerk', 'e6@gmail.com', 'S6', 'N6', 106),
+                   ('$2b$10$DpJJBjSIhHrUIeqN6DGjQO6HElIWkW0EUv0M/.eDXehvsnoUH4AWW', 'customer', 'user11@ezwh.com', 'ezwh', 'user1', 110),
+                   ('$2b$10$8ifkqdltPnGcmtM1L78.u.d0dadJOfC8Gzo9xO96zo7y09KO7LTM6', 'qualityEmployee', 'qualityEmployee11@ezwh.com', 'ezwh', 'qualityEmployee1', 111),
+                   ('$2b$10$Ck3wFm8A1OuRZoWYmUoFd.dbIfzBajcwyPQoeEvRyPY3jboCClbGi', 'clerk', 'clerk11@ezwh.com', 'ezwh', 'clerk1', 112),
+                   ('$2b$10$ltVGctpeT1WmH2eDNS4.yeLXYywbOO9RFtiUQyCP8KqXSwwd5MzU.', 'deliveryEmployee', 'deliveryEmployee11@ezwh.com', 'ezwh', 'deliveryEmployee1', 113),
+                   ('$2b$10$BuNuZgCIaTdEqK6.5vDVx.TF97zrcyDcRxaEt7BLNEZ9Kze/BlS1y', 'supplier', 'supplier11@ezwh.com', 'ezwh', 'supplier1', 114),
+                   ('$2b$10$w6ssb3.pV/HiWEHYr9btM.IA5J..eaHP3JEFBRy2AeCsyUz9N1hp.', 'manager', 'manager11@ezwh.com', 'ezwh', 'manager1', 116);`;
             break;
     }
 

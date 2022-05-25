@@ -52,8 +52,8 @@ describe('Item API tests', () => {
     });
 
     // create the supplier
-    postUser(201, 'supplier1@ezwh.com', 'supplierName1', 'supplierSurname1', 'testpassword', 'supplier'); // has ID 1
-    postUser(201, 'supplier2@ezwh.com', 'supplierName2', 'supplierSurname2', 'testpassword', 'supplier'); // has ID 2
+    postUser(201, 'supplier11@ezwh.com', 'supplierName1', 'supplierSurname1', 'testpassword', 'supplier'); // has ID 101
+    postUser(201, 'supplier12@ezwh.com', 'supplierName2', 'supplierSurname2', 'testpassword', 'supplier'); // has ID 102
 
     // * create Item successfully *
     postItemTest(201, {
@@ -61,16 +61,16 @@ describe('Item API tests', () => {
         "description": "a new item",
         "price": 10.99,
         "SKUId": 1,
-        "supplierId": 1
+        "supplierId": 101
     });
 
-    // supplier 1 already sells an item related to sku1
+    // supplier 101 already sells an item related to sku1
     postItemTest(422, {
         "id": 13,
         "description": "a new item",
         "price": 10.99,
         "SKUId": 1,
-        "supplierId": 1
+        "supplierId": 101
     });
 
     // already exist item with id=12
@@ -79,7 +79,7 @@ describe('Item API tests', () => {
         "description": "a new item",
         "price": 10.99,
         "SKUId": 2,
-        "supplierId": 1
+        "supplierId": 101
     });
 
     // * create Item successfully *
@@ -88,7 +88,7 @@ describe('Item API tests', () => {
         "description": "a new second item",
         "price": 1.89,
         "SKUId": 2,
-        "supplierId": 1
+        "supplierId": 101
     });
 
     getAllItemsTest(200, [
@@ -97,14 +97,14 @@ describe('Item API tests', () => {
             "description": "a new item",
             "price": 10.99,
             "SKUId": 1,
-            "supplierId": 1
+            "supplierId": 101
         },
         {
             "id": 13,
             "description": "a new second item",
             "price": 1.89,
             "SKUId": 2,
-            "supplierId": 1
+            "supplierId": 101
         }
     ]);
 
@@ -136,7 +136,7 @@ describe('Item API tests', () => {
         "description": "a new sku description",
         "price": 8.08,
         "SKUId": 1,
-        "supplierId": 1
+        "supplierId": 101
     });
 
     deleteItemTest(204, 12);
