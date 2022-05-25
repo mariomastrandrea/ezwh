@@ -48,6 +48,28 @@ describe('test testDescriptor apis', () => {
         'procedureDescription': 'this is a test desc',
         'idSKU': 1
     }]);
+});
+
+describe('test testResult apis', () => {
+    before(async () => {
+        await agent.get('/test/deleteAll');
+        await agent.post('/api/sku')
+            .send({ description: 'sku1', weight: 100, volume: 50, notes: 'testing SKU', price: 25.99, availableQuantity: 50 });
+        await agent.post('/api/skuItem')
+            .send({
+                RFID: '12345678901234567890123456789015',
+                SKUId: 1,
+                DateOfStock: '2021/11/29 12:30'
+            });
+        await agent.post('/api/testDescriptor')
+            .send({ name: 'test descriptor 1', procedureDescription: 'This test is described by...', idSKU: 1 });
+        await agent.post('/api/testDescriptor')
+            .send({ name: 'test descriptor 2', procedureDescription: 'This test is described by...', idSKU: 1 });
+    })
+
+    after(async () => {
+        await agent.get('/test/deleteAll');
+    })
 
     postTestResult(201, '12345678901234567890123456789015', 1, '2021/11/28', true);
     postTestResult(201, '12345678901234567890123456789015', 2, '2021/11/28', false);
@@ -84,8 +106,6 @@ describe('test testDescriptor apis', () => {
             "idTestDescriptor": 1
         }
     ]);
-
-
 });
 
 function getAllTestDesc(expectedHTTPStatus, expectedBody) {
