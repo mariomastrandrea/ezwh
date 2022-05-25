@@ -12,6 +12,7 @@ const itemsRouter     = require('./api/itemsRouter');
 const testsRouter     = require('./api/testsRouter');
 const usersRouter     = require('./api/usersRouter');
 const positionsRouter = require('./api/positionsRouter');
+const dbRouter        = require('./api/dbRouter');
 
 // init express
 const app = new express();
@@ -25,6 +26,7 @@ app.use('/api', itemsRouter);
 app.use('/api', testsRouter);
 app.use('/api', usersRouter);
 app.use('/api', positionsRouter);
+app.use('/test', dbRouter);
 
 // activate the server
 app.listen(port, () => {
