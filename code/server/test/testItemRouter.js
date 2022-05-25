@@ -139,6 +139,14 @@ describe('Item API tests', () => {
         "supplierId": 101
     });
 
+    getItemByIdTest(200, 13, {
+        "id": 13,
+        "description": "a new second item",
+        "price": 1.89,
+        "SKUId": 2,
+        "supplierId": 1
+    });
+
     deleteItemTest(204, 12);
 
     // item not found
@@ -146,9 +154,14 @@ describe('Item API tests', () => {
 
     // wrong item id format
     deleteItemTest(422, "aa");
+
+    // wrong item id format
+    deleteItemTest(422, "123a");
     
     //item not found
     getItemByIdTest(404, 12);
+
+    deleteItemTest(204, 13);
 
     deleteAll(200);
 });
