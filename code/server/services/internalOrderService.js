@@ -54,7 +54,6 @@ class InternalOrderService {
 
     getInternalOrderById = async (id) => {
         const parsedId = typeof id === 'number' ? id : int(id);
-
         const io = await this.#dao.getInternalOrder(parsedId);
         if (!io) 
             return statusCodes.NOT_FOUND(`No internal order found with id: ${id}`);
@@ -66,7 +65,6 @@ class InternalOrderService {
             const skuItems = await this.#dao.getInternalOrderSkuItems(io.getId());
             io.setSkuItems(skuItems);
         }
-
         return statusCodes.OK(io);
     };
 

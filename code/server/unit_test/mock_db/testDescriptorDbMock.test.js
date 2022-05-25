@@ -13,7 +13,7 @@ describe('get all test descriptors', () => {
             .mockReturnValueOnce(
                 [new TestDescriptor(1, 'test desc 1', 'this test is...', 1),
                 new TestDescriptor(2, 'test desc 2', 'this test is...', 2),
-                new TestDescriptor(3, 'test desc 3', 'this test is...', 3),
+                new TestDescriptor(3, 'test desc 3', 'this test is...', 3)
                 ]); //200 data
     });
 
@@ -37,7 +37,7 @@ describe('get test descriptor by id', () => {
 
     beforeEach(() => {
         dao.getTestDescriptor.mockReset()
-            .mockReturnValueOnce(new TestDescriptor(1, 'test desc 1', 'this test is...', 1)) //202
+            .mockReturnValueOnce(new TestDescriptor(1, 'test desc 1', 'this test is...', 1)) //200
             .mockReturnValueOnce(null); //404
     });
 

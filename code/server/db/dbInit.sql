@@ -69,7 +69,6 @@ VALUES ('12345678901234567890123456789011',10.99,'a sku',1,1),
 INSERT INTO Sku (Price,AvailableQuantity,Position,Notes,Volume,Weight,Description,ID)
 VALUES (10.99,2,800234523417,'first sku',50,100,'a sku',1),
        (10.99,0,800234523415,'third sku',60,101,'another sku',3),
-       (10.99,0,1234,'notessss',20,100,'desc234',4),
        (10.99,1,800234523412,'second sku',5,10,'another sku',5);
 
 INSERT INTO SkuItem (DateOfStock, Available, SkuId, RFID)

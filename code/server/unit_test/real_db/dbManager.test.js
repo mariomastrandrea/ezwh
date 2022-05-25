@@ -1122,4 +1122,20 @@ describe('[DB] Items functions', () => {
     });
 });
 
+//#region TESTING FUNCTIONS
+describe('[DB] delete and fill', () =>{
+    let tables = [
+        "ReturnOrderSkuItem",
+        "ReturnOrder",
+        "RestockOrderSkuItem",
+        "RestockOrderSku",
+        "RestockOrder",
+    ]
+    for(const table of tables){
+        test(`delete ${table}`, async () => {
+            let result = await dao.deleteTable(table);
+            expect(typeof result === 'boolean').toBeTruthy();
+        });
+    }
+})
 //#endregion
