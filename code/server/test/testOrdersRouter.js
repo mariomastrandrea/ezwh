@@ -8,7 +8,22 @@ const app = require('../server');
 var agent = chai.request.agent(app);
 
 describe('test restock order apis', () => {
-    deleteAll(200);
+    before(async () => {
+        await agent.get('/test/deleteAll');
+        await agent.post('/api/sku')
+            .send({ description: 'a product', weight: 100, volume: 50, notes: 'sku1', price: 10.99, availableQuantity: 100 });
+        await agent.post('/api/sku')
+            .send({ description: 'another product', weight: 100, volume: 50, notes: 'sku2', price: 20.99, availableQuantity: 100 });
+        await agent.post('/api/newUser')
+            .send({ username: 'supplier1@ezwh.com', name: 'John', surname: 'Smith', password: 'testpassword', type: 'supplier' })
+        await agent.post('/api/skuItem')
+            .send({ RFID: '12345678901234567890123456789011', SKUId: 1, DateOfStock: '2021/11/29 12:30' });
+    })
+
+    after(async () => {
+        await agent.get('/test/deleteAll');
+    })
+
     getAllRestock(200, []);
     //insert position, sku, supplier
     postRestock(201, "2021/11/29 09:33",
@@ -19,7 +34,7 @@ describe('test restock order apis', () => {
             qty: 30
         },
         {
-            SKUId: 3,
+            SKUId: 2,
             description: "another product",
             price: 20.99,
             qty: 20
@@ -76,7 +91,7 @@ describe('test restock order apis', () => {
             qty: 30
         },
         {
-            SKUId: 3,
+            SKUId: 2,
             description: "another product",
             price: 20.99,
             qty: 20
@@ -96,7 +111,7 @@ describe('test restock order apis', () => {
                 qty: 30
             },
             {
-                SKUId: 3,
+                SKUId: 2,
                 description: "another product",
                 price: 20.99,
                 qty: 20
@@ -113,7 +128,7 @@ describe('test restock order apis', () => {
             qty: 30
         },
         {
-            SKUId: 3,
+            SKUId: 2,
             description: "another product",
             price: 20.99,
             qty: 20
@@ -140,7 +155,7 @@ describe('test restock order apis', () => {
                 qty: 30
             },
             {
-                SKUId: 3,
+                SKUId: 2,
                 description: "another product",
                 price: 20.99,
                 qty: 20
@@ -160,7 +175,7 @@ describe('test restock order apis', () => {
                 qty: 30
             },
             {
-                SKUId: 3,
+                SKUId: 2,
                 description: "another product",
                 price: 20.99,
                 qty: 20
@@ -175,49 +190,71 @@ describe('test restock order apis', () => {
     deleteRestock(204, 1);
     deleteRestock(422, "abc");
     deleteRestock(422, 901);
-
-    deleteAll(200);
 });
 
+
 describe('test return order api', () => {
-    deleteAll(200);
-    //#region restock order for return test
-    postRestock(201, "2021/11/29 09:33",
-        [{
-            SKUId: 1,
-            description: "a product",
-            price: 10.99,
-            qty: 30
-        },
-        {
-            SKUId: 3,
-            description: "another product",
-            price: 20.99,
-            qty: 20
-        }],
-        1
-    );
-    postRestock(201, "2021/11/30 09:33",
-        [{
-            SKUId: 1,
-            description: "a product",
-            price: 10.99,
-            qty: 30
-        },
-        {
-            SKUId: 3,
-            description: "another product",
-            price: 20.99,
-            qty: 20
-        }],
-        1
-    );
-    putRestockState(200, 2, "DELIVERED");
-    putRestockSkuItems(200, 2, [{ SKUId: 1, rfid: "12345678901234567890123456789015" }]);
-    //#endregion
+    before(async () => {
+        await agent.get('/test/deleteAll');
+        await agent.post('/api/sku')
+            .send({ description: 'a product', weight: 100, volume: 50, notes: 'sku1', price: 10.99, availableQuantity: 100 });
+        await agent.post('/api/sku')
+            .send({ description: 'another product', weight: 100, volume: 50, notes: 'sku2', price: 20.99, availableQuantity: 100 });
+        await agent.post('/api/newUser')
+            .send({ username: 'supplier1@ezwh.com', name: 'John', surname: 'Smith', password: 'testpassword', type: 'supplier' })
+        await agent.post('/api/newUser')
+            .send({ username: 'supplier2@ezwh.com', name: 'Mario', surname: 'Rossi', password: 'testpassword', type: 'supplier' })
+        await agent.post('/api/skuItem')
+            .send({ RFID: '12345678901234567890123456789011', SKUId: 1, DateOfStock: '2021/11/29 12:30' });
+        await agent.post('/api/testDescriptor')
+            .send({ name: 'test descriptor 1', procedureDescription: 'This test is described by...', idSKU: 1 });
+        await agent.post('/api/skuItems/testResult')
+            .send({ rfid: '12345678901234567890123456789011', idTestDescriptor: 1, Date: '2021/11/28', Result: false });
+        await agent.post('/api/restockOrder')
+            .send({
+                issueDate: "2021/11/29 09:33",
+                products: [{
+                    SKUId: 1,
+                    description: "a product",
+                    price: 10.99,
+                    qty: 30
+                },
+                {
+                    SKUId: 2,
+                    description: "another product",
+                    price: 20.99,
+                    qty: 20
+                }],
+                supplierId: 1
+            });
+        await agent.post('/api/restockOrder')
+            .send({
+                issueDate: "2021/11/29 09:33",
+                products: [{
+                    SKUId: 1,
+                    description: "a product",
+                    price: 10.99,
+                    qty: 30
+                },
+                {
+                    SKUId: 2,
+                    description: "another product",
+                    price: 20.99,
+                    qty: 20
+                }],
+                supplierId: 1
+            });
+        await agent.put('/api/restockOrder/2')
+            .send({ newState: "DELIVERED" });
+        await agent.put('/api/restockOrder/2/skuItems')
+            .send({ skuItems: [{ SKUId: 1, rfid: "12345678901234567890123456789011" }] });
+    })
+
+    after(async () => {
+        await agent.get('/test/deleteAll');
+    })
 
     getAllReturn(200, []);
-    // insert restock order, sku, skuItem, position
     postReturn(422, "2021/11/29 09:33"); // missing body
     postReturn(404, "2021/11/30 09:33",
         [{
@@ -233,7 +270,7 @@ describe('test return order api', () => {
             SKUId: 1,
             description: "a product",
             price: 10.99,
-            RFID: "12345678901234567890123456789015"
+            RFID: "12345678901234567890123456789011"
         }],
         2
     ); // any of the skuItems has negative result
@@ -244,19 +281,35 @@ describe('test return order api', () => {
             SKUId: 1,
             description: "a product",
             price: 10.99,
-            RFID: "12345678901234567890123456789015"
+            RFID: "12345678901234567890123456789011"
         }],
         2
     );
     deleteReturn(204, 1);
     deleteReturn(422, "abc");
     deleteReturn(422, 901);
-
-    deleteAll(200);
 });
 
+
 describe('test internal order api', () => {
-    deleteAll(200);
+    before(async () => {
+        await agent.get('/test/deleteAll');
+        await agent.post('/api/sku')
+            .send({ description: 'a product', weight: 100, volume: 50, notes: 'sku1', price: 10.99, availableQuantity: 100 });
+        await agent.post('/api/sku')
+            .send({ description: 'another product', weight: 100, volume: 50, notes: 'sku2', price: 20.99, availableQuantity: 100 });
+        await agent.post('/api/newUser')
+            .send({ username: 'customer1@ezwh.com', name: 'John', surname: 'Smith', password: 'testpassword', type: 'customer' })
+        await agent.post('/api/newUser')
+            .send({ username: 'supplier2@ezwh.com', name: 'Mario', surname: 'Rossi', password: 'testpassword', type: 'supplier' })
+        await agent.post('/api/skuItem')
+            .send({ RFID: '12345678901234567890123456789011', SKUId: 1, DateOfStock: '2021/11/29 12:30' });
+    })
+
+    after(async () => {
+        await agent.get('/test/deleteAll');
+    })
+
     getAllInternal(200, []);
     getIssuedInternal(200, []);
     getAcceptedInternal(200, []);
@@ -273,12 +326,12 @@ describe('test internal order api', () => {
             qty: 3
         },
         {
-            SKUId: 3,
+            SKUId: 2,
             description: "another product",
             price: 20.99,
             qty: 2
         }],
-        5);
+        1);
     postInternal(201,
         "2021/11/29 09:33",
         [{
@@ -288,12 +341,12 @@ describe('test internal order api', () => {
             qty: 3
         },
         {
-            SKUId: 3,
+            SKUId: 2,
             description: "another product",
             price: 20.99,
             qty: 2
         }],
-        5);
+        1);
     getIssuedInternal(200, [
         {
             id: 1,
@@ -306,12 +359,12 @@ describe('test internal order api', () => {
                 qty: 3
             },
             {
-                SKUId: 3,
+                SKUId: 2,
                 description: "another product",
                 price: 20.99,
                 qty: 2
             }],
-            customerId: 5
+            customerId: 1
         },
         {
             id: 2,
@@ -324,12 +377,12 @@ describe('test internal order api', () => {
                 qty: 3
             },
             {
-                SKUId: 3,
+                SKUId: 2,
                 description: "another product",
                 price: 20.99,
                 qty: 2
             }],
-            customerId: 5
+            customerId: 1
         },
     ]);
     putInternal(422, "abc", "ACCEPTED"); // id is not a number
@@ -346,12 +399,12 @@ describe('test internal order api', () => {
             qty: 3
         },
         {
-            SKUId: 3,
+            SKUId: 2,
             description: "another product",
             price: 20.99,
             qty: 2
         }],
-        customerId: 5
+        customerId: 1
     }]);
     // insert skuItem
     putInternal(200, 1, "COMPLETED",
@@ -366,36 +419,13 @@ describe('test internal order api', () => {
             price: 10.99,
             RFID: "12345678901234567890123456789011",
         }],
-        5);
+        1);
     putInternal(422, 2, "COMPLETED", [{ as: 1, rat: "12345678901234567890123456789011" }]); // wrong body
 
     deleteInternal(204, 1);
     deleteInternal(422, "abc"); // id is not a number
     deleteInternal(422, 901); // id does not exist
-
-    deleteAll(200);
-    insertSamples(200);
 })
-
-function deleteAll(expectedHTTPStatus) {
-    it('deleting data', function (done) {
-        agent.get('/test/deleteAll')
-            .then(function (res) {
-                res.should.have.status(expectedHTTPStatus);
-                done();
-            }).catch(err => done(err));
-    });
-}
-
-function insertSamples(expectedHTTPStatus) {
-    it('adding samples', function (done) {
-        agent.get('/test/insertSamples')
-            .then(function (res) {
-                res.should.have.status(expectedHTTPStatus);
-                done();
-            }).catch(err => done(err));
-    });
-}
 
 //#region restock orders api
 function getRestock(expectedHTTPStatus, id, issueDate, state, products, supplierId, skuItems, transportNote) {
@@ -760,19 +790,5 @@ function deleteInternal(expectedHTTPStatus, id) {
     });
 }
 
-//#endregion
-
-//#region dependency api
-function postSkuTest(expectedHttpStatus, requestBody) {
-    it('create sku', function(done) {
-        agent.post("/api/sku")
-            .send(requestBody)
-            .then(function(res) {
-                res.should.have.status(expectedHttpStatus);
-                done();
-            })
-            .catch(err => done(err));
-    });
-}
 //#endregion
 
