@@ -7,7 +7,7 @@ const { expect } = require('chai');
 const app = require('../server');
 var agent = chai.request.agent(app);
 
-describe('test testDescriptor & result apis', () => {
+describe('test testDescriptor apis', () => {
     before(async () => {
         await agent.get('/test/deleteAll');
         await agent.post('/api/sku')
