@@ -11,6 +11,44 @@ var agent = chai.request.agent(app);
 describe('test user apis', function () {
     deleteAll(200);
 
+    getAllUsers(200, [
+        {
+            id: 95,
+            name: "John",
+            surname: "Smith",
+            email: "user1@ezwh.com",
+            type: "customer"
+        },
+        {
+            id: 96,
+            name: "John",
+            surname: "Smith",
+            email: "qualityEmployee1@ezwh.com",
+            type: "qualityEmployee"
+        },
+        {
+            id: 97,
+            name: "John",
+            surname: "Smith",
+            email: "clerk1@ezwh.com",
+            type: "clerk"
+        },
+        {
+            id: 98,
+            name: "John",
+            surname: "Smith",
+            email: "deliveryEmployee1@ezwh.com",
+            type: "deliveryEmployee"
+        },
+        {
+            id: 99,
+            name: "John",
+            surname: "Smith",
+            email: "supplier1@ezwh.com",
+            type: "supplier"
+        }
+    ]);
+
     postUser(201, "dog@ezwh.com", "Dog", "Labrador", "puppy1234567", "customer");
     postCustomerS(200, "dog@ezwh.com", "puppy1234567", {
         "username": "dog@ezwh.com",
@@ -86,7 +124,8 @@ describe('test user apis', function () {
             email: "cat@gmail.com",
             type: "supplier",
         }
-    ])
+    ]);
+
     postUser(201, "testa@gmail.com", "Martin", "Scorsese", "martino1234567", "deliveryEmployee");
     postDeliveryEmployeeSessions(200, "testa@gmail.com", "martino1234567", {
         "username": "testa@gmail.com",
