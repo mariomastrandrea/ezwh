@@ -2,7 +2,7 @@
 
 Date: 25/05/2022
 
-Version: 0.9
+Version: 1.0
 
 # Contents
 
@@ -16,14 +16,7 @@ Version: 0.9
   - [Step 3 - API testing with Mocha and Chai (A+B+C)](#step-3---api-testing-with-mocha-and-chai-abc)
 - [Coverage of Scenarios and FR](#coverage-of-scenarios-and-fr)
 - [Coverage of Non Functional Requirements](#coverage-of-non-functional-requirements)
-    - [](#)
-
-- [Tests](#tests)
-
-- [Scenarios](#scenarios)
-
-- [Coverage of scenarios and FR](#scenario-coverage)
-- [Coverage of non-functional requirements](#nfr-coverage)
+  
 
 
 
@@ -142,45 +135,46 @@ The db used for testing is code/server/db/EZWHDB.sqlite
 ## Step 3 - API testing with Mocha and Chai (A+B+C)
 
    
-| Classes        | Test                      |
-| -------------- | ------------------------- |
-| RestockOrder   | test restock order apis   |
-| ReturnOrder    | test return order apis    |
-| InternalOrder  | test internal order apis  |
-| Position       | test position apis        |
-| User           | test user apis            |
-| TestDescriptor | test test descriptor apis |
+| Classes        | Mocha Test Suite                  |
+| -------------- | --------------------------------- |
+| RestockOrder   | test restock order apis           |
+| ReturnOrder    | test return order apis            |
+| InternalOrder  | test internal order apis          |
+| Position       | test position apis                |
+| User           | test user apis                    |
+| Sku            | Sku API tests                     |
+| SkuItem        | SkuItem API tests                 |
+| Item           | Item API tests                    |
+| TestDescriptor | test testDescriptor & result apis |
+| TestResult     | test testDescriptor & result apis |
 
 
 # Coverage of Scenarios and FR
 
 
-<Report in the following table the coverage of  scenarios (from official requirements and from above) vs FR. 
-Report also for each of the scenarios the (one or more) API Mocha tests that cover it. >  Mocha test cases should be here code/server/test
-
-
-
-
-| Scenario ID | Functional Requirements covered | Mocha  Test(s) |
-| ----------- | ------------------------------- | -------------- |
-| ..          | FRx                             |                |
-| ..          | FRy                             |                |
-| ...         |                                 |                |
-| ...         |                                 |                |
-| ...         |                                 |                |
-| ...         |                                 |                |
+| Scenario ID | Functional Requirements covered | Mocha  Test(s) Suite                                                                              |
+| :---------: | ------------------------------- | ------------------------------------------------------------------------------------------------- |
+|  1 - (UC1)  | FR2                             | Sku API Test                                                                                      |
+|  2 - (UC2)  | FR3.1                           | test position apis                                                                                |
+|  3 - (UC3)  | FR5                             | test restock order apis, test user apis                                                           |
+|  4 - (UC4)  | FR1                             | test user apis                                                                                    |
+|  5 - (UC5)  | FR5.8                           | test restock order apis, SkuItem API tests, test testDescriptor & result apis, test position apis |
+|  6 - (UC6)  | FR5.9                           | test return order apis, test testDescriptor & result apis, SkuItem API tests                      |
+|  7 - (UC7)  | FR1.5                           | test user apis                                                                                    |
+|  9 - (UC9)  | FR6.1 -> FR6.6                  | test internal order apis, Sku API Test, test position apis, test user apis                        |
+| 10 - (UC10) | FR6.7 -> 6.10                   | test internal order apis, Sku API Test, test position apis, SkuItem API tests                     |
+| 11 - (UC11) | FR7                             | Item API tests, Sku API Test, test user apis                                                      |
+| 12 - (UC12) | FR3.2                           | test testDescriptor & result apis, Sku API Test                                                   |
 
 
 
 # Coverage of Non Functional Requirements
 
+| Non Functional Requirement                                                                        | Test suite                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| NFR2 - no function completes in >= 0.5s                                                           | all tests                                                                                                                                      |
+| NFR4                                                                                              | test position apis                                                                                                                             |
+| NFR6                                                                                              | SkuItem API tests                                                                                                                              |
+| NFR9 - Note that date format can be YYYY/MM/DD HH:mm, but in same case (TestResult) is YYYY/MM/DD | SkuItemAPI tests, test internal order api, test restock order api, test return order api, test position api, test testDescription & result api |
 
-<Report in the following table the coverage of the Non Functional Requirements of the application - only those that can be tested with automated testing frameworks.>
-
-
-### 
-
-| Non Functional Requirement | Test name |
-| -------------------------- | --------- |
-|                            |           |
 
