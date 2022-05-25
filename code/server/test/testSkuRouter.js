@@ -122,10 +122,11 @@ function getAllSkuTest(expectedHttpStatus, expectedResponseBody) {
         agent.get("/api/skus")
             .then(function (res) {
                 res.should.have.status(expectedHttpStatus);
-                res.body.should.be.an('array');
 
-                if (expectedHttpStatus === 200)
+                if (expectedHttpStatus === 200) {
+                    res.body.should.be.an('array');
                     res.body.should.be.deep.equal(expectedResponseBody);
+                }
 
                 done();
             })
@@ -139,8 +140,9 @@ function getSkuByIdTest(expectedHttpStatus, skuId, expectedResponseBody) {
             .then(function (res) {
                 res.should.have.status(expectedHttpStatus);
 
-                if (expectedHttpStatus === 200)
+                if (expectedHttpStatus === 200) {
                     res.body.should.be.deep.equal(expectedResponseBody);
+                }
 
                 done();
             })
