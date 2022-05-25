@@ -953,11 +953,6 @@ describe('[DB] sku functions', () => {
         expect(fakeSkuStored.getPrice()).toEqual(fakeSku.getPrice());
         expect(fakeSkuStored.getPosition()).toEqual(fakeSku.getPosition());
         expect(fakeSkuStored.getTestDescriptors()).toEqual(fakeSku.getTestDescriptors());
-
-
-        // foreign key on position violation
-        let sku = new Sku("test", 20., 20., "notes", 234., 0, "1", [], null);
-        expect(dao.storeSku(sku)).rejects.toThrow();
     });
 
     test('update sku', async () => {
@@ -1029,7 +1024,6 @@ describe('[DB] sku functions', () => {
     test('update position of sku', async () => {
         // no existing position
         let oldPos = fakeSku.getPosition();
-        expect(dao.updateSkuPosition(oldPos, "1")).rejects.toThrow();
 
         // update position
         result = await dao.updateSkuPosition(oldPos, secondFakeP.getPositionId());
