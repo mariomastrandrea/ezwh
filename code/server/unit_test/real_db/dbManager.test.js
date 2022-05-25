@@ -1123,6 +1123,7 @@ describe('[DB] Items functions', () => {
 });
 
 //#region TESTING FUNCTIONS
+/*
 describe('[DB] delete and fill', () =>{
     let tables = [
         "ReturnOrderSkuItem",
@@ -1138,4 +1139,5 @@ describe('[DB] delete and fill', () =>{
         });
     }
 })
+*/
 //#endregion

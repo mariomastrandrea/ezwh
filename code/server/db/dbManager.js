@@ -1654,6 +1654,7 @@ class DbManager {
     }
 
     //#region JUST FOR TESTING PURPOSES
+    /*
     deleteTable(tableName) {
         let sql = `DELETE FROM ${tableName}`;
 
@@ -1841,6 +1842,7 @@ class DbManager {
         });
 
     }
+    */
     //#endregion
 }
 
