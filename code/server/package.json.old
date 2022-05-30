@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "@joi/date": "^2.1.0",
+    "@mapbox/cloudfriend": "^5.1.1",
+    "@mapbox/node-pre-gyp": "^1.0.9",
+    "aws-sdk": "^2.1129.0",
+    "bcrypt": "^5.0.1",
+    "dayjs": "^1.11.1",
+    "express": "^4.17.3",
+    "joi": "^17.6.0",
+    "sqlite3": "^5.0.8"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
+    "jest": "^27.5.1",
+    "mocha": "^9.2.2"
+  },
+  "scripts": {
+    "apiTest": "./node_modules/.bin/mocha test --exit",
+    "test": "node_modules/.bin/jest"
+  }
+}
