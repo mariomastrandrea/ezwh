@@ -14,6 +14,8 @@ const dbConnection = new sqlite.Database(dbSource, async (err) => {
     //console.log('Connected to the SQLite database.');
 });
 dbConnection.get("PRAGMA foreign_keys=ON");
+// added due to pipeline jobs
+dbConnection.get("PRAGMA busy_timeout = 10000");
 
 
 //#region - db initialization utilities
