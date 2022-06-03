@@ -58,20 +58,16 @@ describe('get item by id', () => {
 describe('create item', () => {
 
     beforeEach(() => {
+        dao.getSkuById.mockReset()
+            .mockReturnValueOnce(null) //404
+            .mockReturnValue(new Sku('a sku', 100, 50, 'first sku', 9.99, 2, '800234523417', [], 1)) //all the rest
+
         dao.getItemById.mockReset()
             .mockReturnValueOnce(new Item(1, 'first item', 9.99, 1, 1)) //422 item exists
-            .mockReturnValueOnce(null) //404
             .mockReturnValueOnce(null) //422 supplier not found
             .mockReturnValueOnce(null) //422 supplier already sells
             .mockReturnValueOnce(null) //503
-            .mockReturnValueOnce(null) //201
-
-        dao.getSkuById.mockReset()
-            .mockReturnValueOnce(null) //404
-            .mockReturnValueOnce(new Sku('a sku', 100, 50, 'first sku', 9.99, 2, '800234523417', [], 1)) //422 supplier not found
-            .mockReturnValueOnce(new Sku('a sku', 100, 50, 'first sku', 9.99, 2, '800234523417', [], 1)) //422 supplier already sells
-            .mockReturnValueOnce(new Sku('a sku', 100, 50, 'first sku', 9.99, 2, '800234523417', [], 1)) //503
-            .mockReturnValueOnce(new Sku('a sku', 100, 50, 'first sku', 9.99, 2, '800234523417', [], 1)) //201
+            .mockReturnValueOnce(null) //201 
 
         dao.getUserByIdAndType.mockReset()
             .mockReturnValueOnce(null) //422 supplier not found
@@ -92,13 +88,13 @@ describe('create item', () => {
     test('create item', async () => {
         let res = await itemService.createItem(1, 'first item', 9.99, 1, 1);
 
-        //expect 422
-        expect(res.code).toBe(422);
-        expect(res.error).toContain('item');
-
         //expect 404
-        res = await itemService.createItem(1, 'first item', 9.99, 1, 1);
         expect(res.code).toBe(404);
+
+        //expect 422
+        res = await itemService.createItem(1, 'first item', 9.99, 1, 1);
+        expect(res.code).toBe(422);
+        expect(res.error).toContain('item');        
 
         //expect 422
         res = await itemService.createItem(1, 'first item', 9.99, 1, 1);

@@ -366,18 +366,18 @@ describe('specific internal order errors', () => {
         expect(res.code).toBe(404);
     })
 
-    test('sku not found during update', async () => {
-        let res = await internalOrderService.updateInternalOrder(1, 2);
-        expect(res.code).toBe(404);
+    // test('sku not found during update', async () => {
+    //     let res = await internalOrderService.updateInternalOrder(1, 2);
+    //     expect(res.code).toBe(404);
 
-        let body = {
-            newState: "COMPLETED",
-            products: [{
-                SkuID: 1,
-                RFID: "123456789"
-            }]
-        }
-        res = await internalOrderService.updateInternalOrder(1, body);
-        expect(res.code).toBe(422);
-    })
+    //     let body = {
+    //         newState: "COMPLETED",
+    //         products: [{
+    //             SkuID: 1,
+    //             RFID: "123456789"
+    //         }]
+    //     }
+    //     res = await internalOrderService.updateInternalOrder(1, body);
+    //     expect(res.code).toBe(422);
+    // })
 })

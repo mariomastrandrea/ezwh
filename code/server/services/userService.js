@@ -162,7 +162,7 @@ class UserService {
             //return SERVICE_UNAVAILABLE("ErrorDB");
 
         if (!user) 
-            return UNPROCESSABLE_ENTITY("User not found");
+            return NO_CONTENT(); //UNPROCESSABLE_ENTITY("User not found");
 
         const result = await this.#dao.deleteUser(user.getId());//.catch(err => "ErrorDB");
 

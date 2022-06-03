@@ -48,18 +48,17 @@ class SkuItemService {
     };
 
     async createSkuItem(rfid, skuId, dateOfStock) {
+        // check if exist the sku
+        skuId = int(skuId);
+        const sku = await this.#dao.getSkuById(skuId);
+ 
+        if (!sku)
+            return NOT_FOUND(`sku ${skuId} does not exist`);
         // check if rfid already exists
         const tempSkuItem = await this.#dao.getSkuItemByRfid(rfid);
 
         if (tempSkuItem)
             return UNPROCESSABLE_ENTITY(`rfid ${rfid} already present`);
-
-        // check if exist the sku
-        skuId = int(skuId);
-        const sku = await this.#dao.getSkuById(skuId);
-
-        if (!sku)
-            return NOT_FOUND(`sku ${skuId} does not exist`);
 
         // * create skuItem * 
         const skuItem = new SkuItem(rfid, skuId, dateOfStock);

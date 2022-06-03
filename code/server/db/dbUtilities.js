@@ -11,7 +11,7 @@ const dbConnection = new sqlite.Database(dbSource, async (err) => {
         throw err;
     }
 
-    console.log('Connected to the SQLite database.');
+    //console.log('Connected to the SQLite database.');
 });
 dbConnection.get("PRAGMA foreign_keys=ON");
 
@@ -255,7 +255,7 @@ function createTable(tableName) {
             sql = `CREATE TABLE IF NOT EXISTS ReturnOrder (
                 ID             INTEGER PRIMARY KEY AUTOINCREMENT,
                 ReturnDate     DATE,
-                RestockOrderId INT     REFERENCES RestockOrder (ID) ON DELETE RESTRICT
+                RestockOrderId INT     REFERENCES RestockOrder (ID) ON DELETE SET NULL
                                                                     ON UPDATE CASCADE
             );`;
             break;
@@ -289,7 +289,7 @@ function createTable(tableName) {
         case 'SkuItem':
             sql = `CREATE TABLE IF NOT EXISTS SkuItem (
                 RFID        VARCHAR (32) PRIMARY KEY,
-                SkuId       INT          REFERENCES Sku (ID) ON DELETE RESTRICT
+                SkuId       INT          REFERENCES Sku (ID) ON DELETE SET NULL
                                                              ON UPDATE CASCADE,
                 Available   BOOLEAN,
                 DateOfStock DATETIME
@@ -369,7 +369,7 @@ function createAll() {
     dbConnection.serialize(() => {
         for (let t of tablesReverse) {
             createTable(t);
-            console.log(`Table ${t} created`);
+            //console.log(`Table ${t} created`);
         }
         insertHardcodedUsers();
     })

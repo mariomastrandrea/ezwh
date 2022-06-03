@@ -34,11 +34,6 @@ class ItemService {
     };
 
     async createItem(itemId, description, price, skuId, supplierId) {
-        // check if id already present
-        let tempItem = await this.#dao.getItemById(itemId);
-
-        if (tempItem)
-            return UNPROCESSABLE_ENTITY(`item ${itemId} already exists`);
 
         // check sku existence
         const sku = await this.#dao.getSkuById(skuId);
@@ -46,12 +41,18 @@ class ItemService {
         if (!sku)
             return NOT_FOUND(`sku ${skuId} not found`);
 
+        // check if id already present
+        let tempItem = await this.#dao.getItemById(itemId);
+
+        if (tempItem)
+            return UNPROCESSABLE_ENTITY(`item ${itemId} already exists`);
+
+
         // check supplier existence
         const supplier = await this.#dao.getUserByIdAndType(supplierId, 'supplier');
 
-        if (!supplier) {
+        if (!supplier)
             return UNPROCESSABLE_ENTITY(`supplier ${supplierId} not found`);
-        }
 
         // check if supplier already sells this sku
         tempItem = await this.#dao.getItemBySkuIdAndSupplier(skuId, supplierId);

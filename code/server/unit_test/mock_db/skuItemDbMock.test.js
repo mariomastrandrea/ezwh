@@ -86,16 +86,16 @@ describe('get skuItem', () => {
 describe('create skuItem', () => {
 
     beforeEach(() => {
-        dao.getSkuItemByRfid.mockReset()
-            .mockReturnValueOnce(new SkuItem('12345678901234567890123456789011', 1, '2021/11/29', 1)) //422
-            .mockReturnValueOnce(null) //404
-            .mockReturnValueOnce(null) //503
-            .mockReturnValueOnce(null) //201
-
         dao.getSkuById.mockReset()
             .mockReturnValueOnce(null) //404
+            .mockReturnValueOnce(new Sku('a sku', 100, 50, 'first sku', 9.99, 2, '800234523417', [], 1)) //422
             .mockReturnValueOnce(new Sku('a sku', 100, 50, 'first sku', 9.99, 2, '800234523417', [], 1)) //503
             .mockReturnValueOnce(new Sku('a sku', 100, 50, 'first sku', 9.99, 2, '800234523417', [], 1)) //201
+
+        dao.getSkuItemByRfid.mockReset()
+            .mockReturnValueOnce(new SkuItem('12345678901234567890123456789011', 1, '2021/11/29', 1)) //422
+            .mockReturnValueOnce(null) //503
+            .mockReturnValueOnce(null) //201
 
         dao.storeSkuItem.mockReset()
             .mockReturnValueOnce(null) //503
@@ -105,12 +105,12 @@ describe('create skuItem', () => {
     test('create skuItem', async () => {
         let res = await skuItemService.createSkuItem('12345678901234567890123456789011', 1, '2022/02/02');
 
-        //expect 422
-        expect(res.code).toBe(422);
-
-        //expect 404
-        res = await skuItemService.createSkuItem('12345678901234567890123456789011', 1, '2022/02/02');
+        //expect 404        
         expect(res.code).toBe(404);
+
+        //expect 422
+        res = await skuItemService.createSkuItem('12345678901234567890123456789011', 1, '2022/02/02');
+        expect(res.code).toBe(422);
 
         //expect 503
         res = await skuItemService.createSkuItem('12345678901234567890123456789011', 1, '2022/02/02');

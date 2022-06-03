@@ -108,9 +108,9 @@ describe('Sku API tests', () => {
         "testDescriptors": []
     });
 
-    deleteSkuTest(422, 999);
+    deleteSkuTest(204, 999);
     deleteSkuTest(204, 1);
-    deleteSkuTest(422, 1);
+    deleteSkuTest(204, 1);
     getSkuByIdTest(404, 1);
 
     deleteAll(200);

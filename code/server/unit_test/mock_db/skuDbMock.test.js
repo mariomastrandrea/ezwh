@@ -207,7 +207,7 @@ describe('delete sku', () => {
 
     beforeEach(() => {
         dao.getSkuById.mockReset()
-            .mockReturnValueOnce(null) //404
+            .mockReturnValueOnce(null) //204
             .mockReturnValueOnce(new Sku('a sku', 50, 50, 'first sku', 9.99, 2, '800234523417', [], 1)) //503
             .mockReturnValueOnce(new Sku('a sku', 50, 50, 'first sku', 9.99, 2, '800234523417', [], 1)); //204
 
@@ -225,8 +225,9 @@ describe('delete sku', () => {
     test('delete sku', async () => {
         let res = await skuService.deleteSku(1);
 
-        //expect 422
-        expect(res.code).toBe(422);
+        //expect 204
+        // changed to 204 because of acceptanceTest (it was 422)
+        expect(res.code).toBe(204);
 
         //expect 503
         res = await skuService.deleteSku(1);

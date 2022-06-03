@@ -221,7 +221,7 @@ describe('delete user', () => {
 
     beforeEach(async () => {
         dao.getUser.mockReset()
-            .mockReturnValueOnce(null) //422 user not found
+            .mockReturnValueOnce(null) //204 user not found
             .mockReturnValueOnce(new User(1, 'N1', 'S1', 'e1@gmail.com', 'supplier', await encryption.hashPassword('pass1'))) //503
             .mockReturnValueOnce(new User(2, 'N1', 'S1', 'e1@gmail.com', 'clerk', await encryption.hashPassword('pass2'))) //204
 
@@ -233,8 +233,8 @@ describe('delete user', () => {
     test('delete user', async () => {
         let res = await userServie.deleteUser('e1@gmail.com', 'supplier');
 
-        //expect 422 user not found
-        expect(res.code).toBe(422);
+        //expect 204 user not found
+        expect(res.code).toBe(204);
 
         //expect 503
         res = await userServie.deleteUser('e1@gmail.com', 'supplier');

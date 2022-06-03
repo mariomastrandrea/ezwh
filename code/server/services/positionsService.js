@@ -25,7 +25,7 @@ class PositionsService {
     };
 
     // POST /api/position
-    async createPosition(positionID, aisleID, row, col, maxWeight, maxVolume) {
+    async createPosition(positionID, aisleID, row, col, maxWeight, maxVolume, occupiedWeight, occupiedVolume) {
         // * Q: Has to be properly checked the case in which the new positionId already exists?
         //      (and it cannot be duplicated) *
         const tempPosition = await this.#dao.getPosition(positionID);
@@ -34,7 +34,9 @@ class PositionsService {
             return UNPROCESSABLE_ENTITY(`${positionID} already present`);
 
         // * store the new position *
-        const newPosition = new Position(positionID, aisleID, row, col, maxWeight, maxVolume, 0, 0);
+        const newPosition = 
+            new Position(positionID, aisleID, row, col, maxWeight, maxVolume, occupiedWeight, occupiedVolume);
+
         const positionWasCreated = await this.#dao.storePosition(newPosition);
 
         if (!positionWasCreated)

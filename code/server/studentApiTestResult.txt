@@ -1,0 +1,226 @@
+Server listening at http://localhost:3001
+
+
+  test position apis
+    ✔ deleting data
+    ✔ getting all positions
+    ✔ creating position
+    ✔ creating position
+    ✔ creating position
+    ✔ creating position
+    ✔ updating position
+    ✔ updating position
+    ✔ updating position
+    ✔ getting all positions
+    ✔ deleting position
+    ✔ deleting position
+    ✔ deleting position
+    ✔ deleting data
+
+  Sku API tests
+    ✔ deleting data
+    ✔ create sku
+    ✔ create sku
+    ✔ create sku
+    ✔ create sku
+    ✔ get all skus
+    ✔ get sku by id
+    ✔ get sku by id
+    ✔ update sku
+    ✔ update sku
+    ✔ update sku
+    ✔ update sku
+    ✔ get sku by id
+    ✔ creating position
+    ✔ update sku position
+    ✔ get sku by id
+    ✔ delete sku
+    ✔ delete sku
+    ✔ delete sku
+    ✔ get sku by id
+    ✔ deleting data
+
+  test user apis
+    ✔ deleting data
+    ✔ getting all users
+    ✔ creating user (94ms)
+    ✔ customer sessions (93ms)
+    ✔ creating user (95ms)
+    ✔ clerk sessions (93ms)
+    ✔ creating user (93ms)
+    ✔ supplier sessions (93ms)
+    ✔ getting all users
+    ✔ creating user (93ms)
+    ✔ delivery employee sessions (93ms)
+    ✔ creating user
+    ✔ creating user
+    ✔ creating user
+    ✔ updating user
+    ✔ updating user
+    ✔ deleting user
+    ✔ deleting user
+    ✔ deleting user
+    ✔ getting supplier
+    ✔ getting user info
+    ✔ updating user
+    ✔ getting user info
+    ✔ quality employee sessions (92ms)
+    ✔ logout
+    ✔ deleting data
+
+  Item API tests
+    ✔ deleting data
+    ✔ get all items
+    ✔ create item
+    ✔ create sku
+    ✔ create sku
+    ✔ create item
+    ✔ creating user (93ms)
+    ✔ creating user (94ms)
+    ✔ create item
+    ✔ create item
+    ✔ create item
+    ✔ create item
+    ✔ get all items
+    ✔ modify item
+    ✔ modify item
+    ✔ modify item
+    ✔ modify item
+    ✔ modify item
+    ✔ get item
+    ✔ get item
+    ✔ delete item
+    ✔ delete item
+    ✔ delete item
+    ✔ delete item
+    ✔ get item
+    ✔ delete item
+    ✔ deleting data
+
+  test restock order apis
+    ✔ reading all restock orders
+    ✔ creating restock order
+    ✔ creating restock order
+    ✔ creating restock order
+    ✔ creating restock order
+    ✔ creating restock order
+    ✔ reading restock order with id abc
+    ✔ reading restock order with id 99999
+    ✔ reading restock order with id 1
+    ✔ reading issued restock orders
+    ✔ creating restock order
+    ✔ updating restock order state of abc
+    ✔ updating restock order transport note of 1
+    ✔ updating restock order state of 1
+    ✔ updating restock order transport note of 1
+    ✔ updating restock order state of 1
+    ✔ updating restock order sku items of 1
+    ✔ reading all restock orders
+    ✔ reading return items of restock orders
+    ✔ updating restock order state of 1
+    ✔ reading return items of restock orders
+    ✔ deleting restock order
+    ✔ deleting restock order
+    ✔ deleting restock order
+
+  test return order api
+    ✔ reading all return orders
+    ✔ creating return order
+    ✔ creating return order
+    ✔ creating return order
+    ✔ reading return order abc
+    ✔ reading return order 99999
+    ✔ reading return order 1
+    ✔ deleting return order 1
+    ✔ deleting return order abc
+    ✔ deleting return order 901
+
+  test internal order api
+    ✔ reading all internal orders
+    ✔ reading issued internal orders
+    ✔ reading accepted internal orders
+    ✔ reading internal order abc
+    ✔ reading internal order 99999
+    ✔ creating internal order
+    ✔ creating internal order
+    ✔ creating internal order
+    ✔ reading issued internal orders
+    ✔ updating internal order abc
+    ✔ updating internal order 999
+    ✔ updating internal order 1
+    ✔ reading accepted internal orders
+    ✔ updating internal order 1
+    ✔ reading internal order 1
+    ✔ updating internal order 2
+    ✔ deleting internal order 1
+    ✔ deleting internal order abc
+    ✔ deleting internal order 901
+
+  SkuItem API tests
+    ✔ deleting data
+    ✔ create sku item
+    ✔ create sku
+    ✔ create sku
+    ✔ create sku item
+    ✔ create sku item
+    ✔ create sku item
+    ✔ create sku item
+    ✔ create sku item
+    ✔ get sku item
+    ✔ get sku item
+    ✔ get sku item
+    ✔ modify sku item
+    ✔ modify sku item
+    ✔ modify sku item
+    ✔ modify sku item
+    ✔ modify sku item
+    ✔ modify sku item
+    ✔ modify sku item
+    ✔ get sku item
+    ✔ create sku item
+    ✔ get sku items of a sku
+    ✔ get sku items of a sku
+    ✔ modify sku item
+    ✔ modify sku item
+    ✔ get sku items of a sku
+    ✔ get all sku items
+    ✔ delete sku item
+    ✔ delete sku item
+    ✔ delete sku item
+    ✔ deleting data
+
+  test testDescriptor apis
+    ✔ getting all test descriptors
+    ✔ creating test descriptor
+    ✔ creating test descriptor
+    ✔ creating test descriptor
+    ✔ creating test descriptor
+    ✔ reading test descriptor
+    ✔ reading test descriptor
+    ✔ updating test descriptor
+    ✔ updating test descriptor
+    ✔ updating test descriptor
+    ✔ deleting test desc
+    ✔ deleting test desc
+    ✔ getting all test descriptors
+
+  test testResult apis
+    ✔ creating test result
+    ✔ creating test result
+    ✔ creating test result
+    ✔ reading test result of sku item
+    ✔ reading test result of sku item
+    ✔ reading test result of sku item
+    ✔ reading all test result of sku item
+    ✔ reading all test result of sku item
+    ✔ reading all test result of sku item
+    ✔ updating test result
+    ✔ updating test result
+    ✔ updating test result
+    ✔ deleting test result
+    ✔ deleting test result
+    ✔ reading all test result of sku item
+
+
+  200 passing (2s)
+
