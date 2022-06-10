@@ -46,17 +46,17 @@ describe('create position', () => {
     });
 
     test('create position', async () => {
-        let res = await positionService.createPosition('800234523415', '8002', '3452', '3415', 1000, 1000);
+        let res = await positionService.createPosition('800234523415', '8002', '3452', '3415', 1000, 1000, 0, 0);
 
         //expect 422
         expect(res.code).toBe(422);
 
         //expect 503
-        res = await positionService.createPosition('800234523415', '8002', '3452', '3415', 1000, 1000);
+        res = await positionService.createPosition('800234523415', '8002', '3452', '3415', 1000, 1000, 0, 0);
         expect(res.code).toBe(503);
 
         //expect 201
-        res = await positionService.createPosition('800234523415', '8002', '3452', '3415', 1000, 1000);
+        res = await positionService.createPosition('800234523415', '8002', '3452', '3415', 1000, 1000, 0, 0);
         expect(res.code).toBe(201);
         expect(dao.storePosition.mock.calls[0][0].toJSON()).toEqual(
             new Position('800234523415', '8002', '3452', '3415', 1000, 1000, 0, 0).toJSON()

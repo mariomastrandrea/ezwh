@@ -51,7 +51,9 @@ router.post("/position", async (req, res) => {
             row: Joi.string().min(4).max(4).required(),
             col: Joi.string().min(4).max(4).required(),
             maxWeight: Joi.number().min(0).required(),
-            maxVolume: Joi.number().min(0).required()
+            maxVolume: Joi.number().min(0).required(),
+            occupiedWeight: Joi.number().min(0),
+            occupiedVolume: Joi.number().min(0)
         })
 
         const result = schema.validate(req.body);
@@ -60,8 +62,11 @@ router.post("/position", async (req, res) => {
             return res.status(422).send('Unprocessable Entity');
         }
 
-        const { positionID, aisleID, row, col, maxWeight, maxVolume } = req.body;
-        const { error, code } = await positionsService.createPosition(positionID, aisleID, row, col, maxWeight, maxVolume);
+        const { positionID, aisleID, row, col, maxWeight, 
+            maxVolume, occupiedWeight, occupiedVolume } = req.body;
+
+        const { error, code } = await positionsService.createPosition(positionID, aisleID, row, col,
+                                    maxWeight, maxVolume, occupiedWeight ?? 0, occupiedVolume ?? 0);
 
         if (error) {
             return res.status(code).send(error);

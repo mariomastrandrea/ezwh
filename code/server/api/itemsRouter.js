@@ -87,7 +87,7 @@ router.post('/sku', async (req, res) => {
             description: Joi.string().required(),
             weight: Joi.number().min(0).required(),
             volume: Joi.number().min(0).required(),
-            notes: Joi.string().min(0).required(),
+            notes: Joi.string().min(1).required(),
             price: Joi.number().min(0).required(),
             availableQuantity: Joi.number().integer().min(0).required()
         })
@@ -123,7 +123,7 @@ router.put('/sku/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().min(1).required().validate(id).error) {
+        if (Joi.number().integer().min(0).required().validate(id).error) {
             return res.status(422).send('Unprocessable Entity');
         }
 
@@ -169,7 +169,7 @@ router.put('/sku/:id/position', async (req, res) => {
         // validate URL parameter
         const skuId = req.params.id;
 
-        if (Joi.number().integer().min(1).required().validate(skuId).error) {
+        if (Joi.number().integer().min(0).required().validate(skuId).error) {
             return res.status(422).send('Unprocessable Entity');
         }
 
@@ -205,7 +205,8 @@ router.delete('/skus/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().min(1).required().validate(id).error) {
+        // modified min 1 to 0 due to failed acceptance tests   
+        if (Joi.number().integer().min(0).required().validate(id).error) {  
             return res.status(422).send('Unprocessable Entity');
         }
 
@@ -450,7 +451,7 @@ router.get('/items/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().min(1).required().validate(id).error)
+        if (Joi.number().integer().min(0).required().validate(id).error)
             return res.status(422).send('Unprocessable entity');
 
         const { error, code, obj } = await itemService.getItemById(id);
@@ -476,7 +477,7 @@ router.post('/item', async (req, res) => {
     try {
         // validate request body
         const schema = Joi.object({
-            id: Joi.number().integer().min(1).required(),
+            id: Joi.number().integer().min(0).required(),
             description: Joi.string().required(),
             price: Joi.number().min(0).required(),
             SKUId: Joi.number().integer().min(0).required(),
@@ -514,7 +515,7 @@ router.put('/item/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().min(1).required().validate(id).error)
+        if (Joi.number().integer().min(0).required().validate(id).error)
             return res.status(422).send('Unprocessable entity');
 
         const schema = Joi.object({
@@ -550,7 +551,7 @@ router.delete('/items/:id', async (req, res) => {
         // validate URL parameter
         const { id } = req.params;
 
-        if (Joi.number().integer().min(1).required().validate(id).error)
+        if (Joi.number().integer().min(0).required().validate(id).error)
             return res.status(422).send('Unprocessable entity');
 
         const { error, code } = await itemService.deleteItem(id);

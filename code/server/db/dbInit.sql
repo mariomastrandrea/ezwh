@@ -99,3 +99,12 @@ VALUES ('$2b$10$DpP7/.UA1BBIJh1HLIzfEuL9i76YtSNRFqxI2jOSzdd7JZjeooBqK', 'supplie
        ('$2b$10$ltVGctpeT1WmH2eDNS4.yeLXYywbOO9RFtiUQyCP8KqXSwwd5MzU.', 'deliveryEmployee', 'deliveryEmployee1@ezwh.com', 'ezwh', 'deliveryEmployee1', 13),
        ('$2b$10$BuNuZgCIaTdEqK6.5vDVx.TF97zrcyDcRxaEt7BLNEZ9Kze/BlS1y', 'supplier', 'supplier1@ezwh.com', 'ezwh', 'supplier1', 14),
        ('$2b$10$w6ssb3.pV/HiWEHYr9btM.IA5J..eaHP3JEFBRy2AeCsyUz9N1hp.', 'manager', 'manager1@ezwh.com', 'ezwh', 'manager1', 16);
+
+--hardcoded users
+INSERT INTO User (Password,Type,Email,Surname,Name,ID)
+VALUES ('$2b$10$1Aj6mgLmWO8bdNMRPJLmXujV8PbSqw2xE53QfEB9/w/twxHOSypFy','customer','user1@ezwh.com','Smith','John',95),
+       ('$2b$10$1Aj6mgLmWO8bdNMRPJLmXujV8PbSqw2xE53QfEB9/w/twxHOSypFy','qualityEmployee','qualityEmployee1@ezwh.com','Smith','John',96),
+       ('$2b$10$1Aj6mgLmWO8bdNMRPJLmXujV8PbSqw2xE53QfEB9/w/twxHOSypFy','clerk','clerk1@ezwh.com','Smith','John',97),
+       ('$2b$10$1Aj6mgLmWO8bdNMRPJLmXujV8PbSqw2xE53QfEB9/w/twxHOSypFy','deliveryEmployee','deliveryEmployee1@ezwh.com','Smith','John',98),
+       ('$2b$10$1Aj6mgLmWO8bdNMRPJLmXujV8PbSqw2xE53QfEB9/w/twxHOSypFy','supplier','supplier1@ezwh.com','Smith','John',99),
+       ('$2b$10$1Aj6mgLmWO8bdNMRPJLmXujV8PbSqw2xE53QfEB9/w/twxHOSypFy','manager','manager1@ezwh.com','Smith','John',100);
