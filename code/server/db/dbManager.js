@@ -1142,6 +1142,7 @@ class DbManager {
                 else resolve(rows.map(row => {
                     return {
                         SKUId: row.SkuId,
+                        itemId: row.ItemId,
                         description: row.Description,
                         price: row.Price,
                         RFID: row.RFID,
@@ -1175,12 +1176,12 @@ class DbManager {
     // INPUT - return orderId, {skuId, description, price, RFID}
     // OUTPUT - true if successful else false
     storeReturnOrderSkuItems(id, skuItems) {
-        let sql = `INSERT INTO ReturnOrderSkuItem (ReturnOrderId, SkuId, Description, Price, RFID) 
-                   VALUES (?, ?, ?, ?, ?)`;
+        let sql = `INSERT INTO ReturnOrderSkuItem (ReturnOrderId, SkuId, ItemId, Description, Price, RFID) 
+                   VALUES (?, ?, ?, ?, ?, ?)`;
 
         const params = [];
         for (const skuItem of skuItems) {
-            params.push([id, skuItem.SKUId, skuItem.description, skuItem.price, skuItem.RFID]);
+            params.push([id, skuItem.SKUId, skuItem.itemId, skuItem.description, skuItem.price, skuItem.RFID]);
         }
 
         return new Promise((resolve, reject) => {

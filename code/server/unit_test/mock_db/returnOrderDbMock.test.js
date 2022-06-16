@@ -10,12 +10,14 @@ const fakeReturn = new ReturnOrder(
     [
         {
             SKUId: 1,
+            itemId: 1,
             description: "Product 1",
             price: 1.00,
             RFID: "123456789",
         },
         {
             SKUId: 2,
+            itemId: 1,
             description: "Product 2",
             price: 2.00,
             RFID: "123456779",
@@ -30,12 +32,14 @@ const fakeRestockOrder = new RestockOrder(
     [
         {
             SKUId: 1,
+            itemId: 1,
             description: "description",
             price: 10.99,
             quantity: 2,
         },
         {
             SKUId: 2,
+            itemId: 2,
             description: "description 2",
             price: 10.99,
             quantity: 2,
@@ -47,10 +51,12 @@ const fakeRestockOrder = new RestockOrder(
     [
         {
             SKUId: 1,
+            itemId: 1,
             RFID: "123456789",
         },
         {
             SKUId: 1,
+            itemId: 1,
             RFID: "123456709",
         }
     ],
@@ -70,12 +76,14 @@ describe('get return orders', () => {
                 [
                     {
                         SKUId: 1,
+                        itemId: 1,
                         description: "Product 1",
                         price: 1.00,
                         RFID: "123456789",
                     },
                     {
                         SKUId: 2,
+                        itemId: 2,
                         description: "Product 2",
                         price: 2.00,
                         RFID: "123456779",
@@ -92,12 +100,14 @@ describe('get return orders', () => {
         dao.getReturnOrderSkuItems.mockReturnValueOnce([
             {
                 SKUId: 1,
+                itemId: 1,
                 description: "Product 1",
                 price: 1.00,
                 RFID: "123456789",
             },
             {
                 SKUId: 2,
+                itemId: 2,
                 description: "Product 2",
                 price: 2.00,
                 RFID: "123456779",
@@ -264,12 +274,14 @@ describe('create return order', () => {
             [
                 {
                     SKUId: 1,
+                    itemId: 1,
                     description: "Product 1",
                     price: 1.00,
                     RFID: "123456789",
                 },
                 {
                     SKUId: 2,
+                    itemId: 2,
                     description: "Product 2",
                     price: 2.00,
                     RFID: "123456779",
@@ -289,12 +301,14 @@ describe('create return order', () => {
             [
                 {
                     SKUId: 1,
+                    itemId: 1,
                     description: "Product 1",
                     price: 1.00,
                     RFID: "123456789",
                 },
                 {
                     SKUId: 2,
+                    itemId: 2,
                     description: "Product 2",
                     price: 2.00,
                     RFID: "123456779",
@@ -313,7 +327,7 @@ describe('delete return order', () => {
         dao.getReturnOrder.mockReset();
 
         dao.getReturnOrder.mockReturnValueOnce(fakeReturn)
-        .mockReturnValueOnce(null).mockReturnValue(fakeReturn);
+            .mockReturnValueOnce(null).mockReturnValue(fakeReturn);
 
         dao.deleteReturnOrder.mockReturnValueOnce(1).mockReturnValue(0);
     });

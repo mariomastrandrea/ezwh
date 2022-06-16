@@ -232,12 +232,14 @@ describe('test return order api', () => {
                 issueDate: "2021/11/29 09:33",
                 products: [{
                     SKUId: 1,
+                    itemId: 1,
                     description: "a product",
                     price: 10.99,
                     qty: 30
                 },
                 {
                     SKUId: 2,
+                    itemId: 2,
                     description: "another product",
                     price: 20.99,
                     qty: 20
@@ -259,6 +261,7 @@ describe('test return order api', () => {
     postReturn(404, "2021/11/30 09:33",
         [{
             SKUId: 1,
+            itemId: 1,
             description: "a product",
             price: 10.99,
             RFID: "12345678901234567890123456789011"
@@ -268,22 +271,24 @@ describe('test return order api', () => {
     postReturn(201, "2021/11/30 09:33",
         [{
             SKUId: 1,
+            itemId: 1,
             description: "a product",
             price: 10.99,
             RFID: "12345678901234567890123456789011"
         }],
-        2
+        1
     ); // any of the skuItems has negative result
     getReturn(422, "abc"); // id is not a number
     getReturn(404, 99999); // id does not exist
     getReturn(200, 1, "2021/11/30 09:33",
         [{
             SKUId: 1,
+            itemId: 1,
             description: "a product",
             price: 10.99,
             RFID: "12345678901234567890123456789011"
         }],
-        2
+        1
     );
     deleteReturn(204, 1);
     deleteReturn(422, "abc");

@@ -190,6 +190,7 @@ describe('[DB] return orders functions', () => {
     let exOder;
     let fakeProducts = [{
         SKUId: 1,
+        itemId: 1,
         description: "a product",
         price: 10.99,
         RFID: "123456789",
@@ -197,6 +198,7 @@ describe('[DB] return orders functions', () => {
     },
     {
         SKUId: 1,
+        itemId: 1,
         description: "a product two",
         price: 13.99,
         RFID: "223456789",
@@ -231,6 +233,7 @@ describe('[DB] return orders functions', () => {
         for (const item of items) {
             expect(item).toEqual({
                 SKUId: expect.any(Number),
+                itemId: expect.any(Number),
                 description: expect.any(String),
                 price: expect.any(Number),
                 RFID: expect.any(String),

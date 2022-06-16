@@ -276,6 +276,7 @@ router.post('/returnOrder', async (req, res) => {
         // validate body
         const productSchema = Joi.object({
             SKUId: Joi.number().integer().min(1).required(),
+            itemId: Joi.number().integer().min(0).required(),
             description: Joi.string().required(),
             price: Joi.number().min(0).required(),
             RFID: Joi.string().regex(/^[0-9]{32}$/).required()

@@ -106,9 +106,9 @@ function insertIntoTable(tableName) {
             VALUES (1, '2021/11/29', 1);`;
             break;
         case 'ReturnOrderSkuItem':
-            sql = `INSERT INTO ReturnOrderSkuItem (RFID, Price, Description, SkuId, ReturnOrderId) 
-            VALUES ('12345678901234567890123456789011',10.99,'a sku',1,1),
-                   ('12345678901234567890123456789012',11,'a sku',1,1);`;
+            sql = `INSERT INTO ReturnOrderSkuItem (RFID, Price, Description, SkuId, ItemId, ReturnOrderId) 
+            VALUES ('12345678901234567890123456789011',10.99,'a sku',1, 1, 1),
+                   ('12345678901234567890123456789012',11,'a sku',1, 1, 1);`;
             break;
         case 'Sku':
             sql = `INSERT INTO Sku (Price,AvailableQuantity,Position,Notes,Volume,Weight,Description,ID)
@@ -270,6 +270,7 @@ function createTable(tableName) {
                 ReturnOrderId INT            REFERENCES ReturnOrder (ID) ON DELETE CASCADE
                                                                          ON UPDATE CASCADE,
                 SkuId         INT,
+                ItemId        INT,
                 Description   VARCHAR (1000),
                 Price         DOUBLE,
                 RFID          VARCHAR (32),
