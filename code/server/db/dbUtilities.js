@@ -197,12 +197,16 @@ function createTable(tableName) {
             break;
         case 'Item':
             sql = `CREATE TABLE IF NOT EXISTS Item (
-                ID          INTEGER        PRIMARY KEY AUTOINCREMENT,
+                ID          INTEGER,
                 Description VARCHAR (1000),
                 Price       DOUBLE,
                 SkuId       INT            REFERENCES Sku (ID) ON DELETE SET NULL
                                                                ON UPDATE CASCADE,
-                SupplierId  INT
+                SupplierId  INT,
+                PRIMARY KEY (
+                    ID,
+                    SupplierId
+                )
             );`;
             break;
         case 'Position':

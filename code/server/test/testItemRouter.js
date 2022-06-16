@@ -109,29 +109,29 @@ describe('Item API tests', () => {
     ]);
 
     // wrong id format
-    putItemTest(422, "aa", {});
+    putItemTest(422, "aa", 101, {});
 
     // empty body
-    putItemTest(422, 12, {});
+    putItemTest(422, 12, 101, {});
 
     // item not found
-    putItemTest(404, 24, {
+    putItemTest(404, 24, 101, {
         "newDescription": "a new sku",
         "newPrice": 10.99
     });
 
     // missing price
-    putItemTest(422, 12, {
+    putItemTest(422, 12, 101, {
         "newDescription": "a new sku description",
     });
 
     // * item successfully updated *
-    putItemTest(200, 12, {
+    putItemTest(200, 12, 101, {
         "newDescription": "a new sku description",
         "newPrice": 8.08
     });
 
-    getItemByIdTest(200, 12, {
+    getItemByIdTest(200, 12, 101, {
         "id": 12,
         "description": "a new sku description",
         "price": 8.08,
@@ -139,7 +139,7 @@ describe('Item API tests', () => {
         "supplierId": 101
     });
 
-    getItemByIdTest(200, 13, {
+    getItemByIdTest(200, 13, 101, {
         "id": 13,
         "description": "a new second item",
         "price": 1.89,
@@ -147,21 +147,21 @@ describe('Item API tests', () => {
         "supplierId": 101
     });
 
-    deleteItemTest(204, 12);
+    deleteItemTest(204, 12, 101);
 
     // item not found
-    deleteItemTest(422, 12);
+    deleteItemTest(422, 12, 101);
 
     // wrong item id format
-    deleteItemTest(422, "aa");
+    deleteItemTest(422, "aa", 101);
 
     // wrong item id format
-    deleteItemTest(422, "123a");
-    
+    deleteItemTest(422, "123a", 101);
+
     //item not found
-    getItemByIdTest(404, 12);
+    getItemByIdTest(404, 12, 101);
 
-    deleteItemTest(204, 13);
+    deleteItemTest(204, 13, 101);
 
     deleteAll(200);
 });
@@ -184,9 +184,9 @@ function getAllItemsTest(expectedHttpStatus, expectedResponseBody) {
     });
 }
 
-function getItemByIdTest(expectedHttpStatus, itemId, expectedResponseBody) {
+function getItemByIdTest(expectedHttpStatus, itemId, supplierId, expectedResponseBody) {
     it('get item', function (done) {
-        agent.get(`/api/items/${itemId}`)
+        agent.get(`/api/items/${itemId}/${supplierId}`)
             .then(function (res) {
                 res.should.have.status(expectedHttpStatus);
 
@@ -211,9 +211,9 @@ function postItemTest(expectedHttpStatus, requestBody) {
     });
 }
 
-function putItemTest(expectedHttpStatus, itemId, requestBody) {
+function putItemTest(expectedHttpStatus, itemId, supplierId, requestBody) {
     it('modify item', function (done) {
-        agent.put(`/api/item/${itemId}`).send(requestBody)
+        agent.put(`/api/item/${itemId}/${supplierId}`).send(requestBody)
             .then(function (res) {
                 res.should.have.status(expectedHttpStatus);
                 done();
@@ -222,9 +222,9 @@ function putItemTest(expectedHttpStatus, itemId, requestBody) {
     });
 }
 
-function deleteItemTest(expectedHttpStatus, itemId) {
+function deleteItemTest(expectedHttpStatus, itemId, supplierId) {
     it('delete item', function (done) {
-        agent.delete(`/api/items/${itemId}`)
+        agent.delete(`/api/items/${itemId}/${supplierId}`)
             .then(function (res) {
                 res.should.have.status(expectedHttpStatus);
                 done();

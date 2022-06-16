@@ -159,7 +159,7 @@ class DbManager {
             this.#db.get(sqlQuery, [positionId], (err, row) => {
                 if (err)
                     reject(err);
-                else 
+                else
                     resolve({
                         weight: row.weight ?? 0,
                         volume: row.volume ?? 0
@@ -464,13 +464,13 @@ class DbManager {
     }
 
     // returns the Item corresponding to the given skuId; 'null' if the item is not found
-    getItemById(itemId) {
+    getItemById(itemId, supplierId) {
         return new Promise((resolve, reject) => {
             const sqlQuery = `SELECT *
                               FROM Item
-                              WHERE ID=?`;
+                              WHERE ID=? AND SupplierId=?`;
 
-            this.#db.get(sqlQuery, [itemId], (err, row) => {
+            this.#db.get(sqlQuery, [itemId, supplierId], (err, row) => {
                 if (err)
                     reject(err);
                 else if (!row)
@@ -492,7 +492,7 @@ class DbManager {
                     reject(err);
                 else if (!row)
                     resolve(null);
-                else 
+                else
                     resolve(new Item(row.ID, row.Description, row.Price, row.SkuId, row.SupplierId));
             });
         });
@@ -516,7 +516,7 @@ class DbManager {
                 if (err)
                     reject(err);
                 else
-                    resolve(new Item(this.lastID, newDescription, newPrice, newSkuId, newSupplierId));
+                    resolve(new Item(newId, newDescription, newPrice, newSkuId, newSupplierId));
             });
         });
     }
@@ -547,12 +547,12 @@ class DbManager {
     }
 
     // returns 'true' if the Item was successfully deleted; 'false' otherwise
-    deleteItem(itemId) {
+    deleteItem(itemId, supplierId) {
         return new Promise((resolve, reject) => {
             const sqlStatement = `DELETE FROM Item
-                                  WHERE ID=?`;
+                                  WHERE ID=? AND SupplierId=?`;
 
-            this.#db.run(sqlStatement, [itemId], function (err) {
+            this.#db.run(sqlStatement, [itemId, supplierId], function (err) {
                 if (err)
                     reject(err);
                 else
