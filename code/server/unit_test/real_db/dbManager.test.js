@@ -54,6 +54,7 @@ describe('[DB] restock orders GET functions', () => {
         for (const sku of skus) {
             expect(sku).toEqual({
                 SKUId: expect.any(Number),
+                itemId: expect.any(Number),
                 description: expect.any(String),
                 price: expect.any(Number),
                 qty: expect.any(Number),
@@ -70,6 +71,7 @@ describe('[DB] restock orders GET functions', () => {
         for (const item of items) {
             expect(item).toEqual({
                 SKUId: expect.any(Number),
+                itemId: expect.any(Number),
                 rfid: expect.any(String),
             })
         }

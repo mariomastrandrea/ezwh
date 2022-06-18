@@ -138,7 +138,7 @@ router.post('/internalOrders', async (req, res) => {
         if (result.error) {
             return res.status(422).send('Unprocessable Entity')
         }
-        const { error, code, obj } = 
+        const { error, code, obj } =
             await internalService.createInternalOrder(req.body.issueDate, req.body.products, req.body.customerId);
 
         if (error) {
@@ -252,7 +252,7 @@ router.get('/returnOrders/:id', async (req, res) => {
         if (Joi.number().integer().min(1).required().validate(req.params.id).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code, obj } = 
+        const { error, code, obj } =
             await returnService.getReturnOrderById(req.params.id);
 
         if (error) {
@@ -435,6 +435,7 @@ router.post('/restockOrder', async (req, res) => {
         // validate body
         const productSchema = Joi.object({
             SKUId: Joi.number().integer().min(1).required(),
+            itemId: Joi.number().integer().min(1).required(),
             description: Joi.string().required(),
             price: Joi.number().min(0).required(),
             qty: Joi.number().integer().min(0).required()
@@ -487,7 +488,7 @@ router.put('/restockOrder/:id', async (req, res) => {
         if (result.error) {
             return res.status(422).send('Unprocessable Entity')
         }
-        const { error, code, obj } = 
+        const { error, code, obj } =
             await restockService.updateRestockOrder(restockUpdateType.state, req.params.id, req.body);
 
         if (error) {
@@ -514,6 +515,7 @@ router.put('/restockOrder/:id/skuItems', async (req, res) => {
         // validate body
         const productSchema = Joi.object({
             SKUId: Joi.number().integer().min(1).required(),
+            itemId: Joi.number().integer().min(1).required(),
             rfid: Joi.string().regex(/^[0-9]{32}$/).required()
         })
         const schema = Joi.object({
@@ -525,7 +527,7 @@ router.put('/restockOrder/:id/skuItems', async (req, res) => {
             return res.status(422).send('Unprocessable Entity')
         }
 
-        const { error, code, obj } = 
+        const { error, code, obj } =
             await restockService.updateRestockOrder(restockUpdateType.skuItems, req.params.id, req.body);
 
         if (error) {
@@ -556,7 +558,7 @@ router.put('/restockOrder/:id/transportNote', async (req, res) => {
             !dayjs(req.body.transportNote.deliveryDate, 'YYYY/MM/DD', true).isValid()) {
             return res.status(422).send('Unprocessable Entity')
         }
-        const { error, code, obj } = 
+        const { error, code, obj } =
             await restockService.updateRestockOrder(restockUpdateType.transportNote, req.params.id, req.body);
 
         if (error) {
@@ -587,7 +589,7 @@ router.delete('/restockOrder/:id', async (req, res) => {
         if (error) {
             return res.status(code).send(error);
         }
-        
+
         return res.status(code).json(obj);
     }
     catch (err) {
@@ -619,25 +621,25 @@ const add_tables = [
 ]
 
 router.delete('/allOrders', async (req, res) => {
-    try{
-        for(const table of delete_tables){
+    try {
+        for (const table of delete_tables) {
             await dao.deleteTable(table);
             await dao.deleteFromSequence(table);
         }
         return res.status(204).send();
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(503).send();
     }
 });
 
 router.post('/allOrders', async (req, res) => {
-    try{
-        for(const table of add_tables){
+    try {
+        for (const table of add_tables) {
             await dao.insertSamples(table);
         }
         return res.status(201).send();
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return res.status(503).send();
     }

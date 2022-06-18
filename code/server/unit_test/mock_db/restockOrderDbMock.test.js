@@ -1,7 +1,7 @@
 const RestockOrderService = require('../../services/restockOrderService');
 const dao = require('../mock/mockDbManager');
 const RestockOrder = require('../../models/restockOrder');
-
+const Item = require('../../models/item');
 
 const restockOrderService = new RestockOrderService(dao);
 const fakeRestockOrder = new RestockOrder(
@@ -9,12 +9,14 @@ const fakeRestockOrder = new RestockOrder(
     [
         {
             SKUId: 1,
+            itemId: 1,
             description: "description",
             price: 10.99,
             qty: 2,
         },
         {
             SKUId: 2,
+            itemId: 2,
             description: "description 2",
             price: 10.99,
             qty: 2,
@@ -26,10 +28,12 @@ const fakeRestockOrder = new RestockOrder(
     [
         {
             SKUId: 1,
+            itemId: 1,
             RFID: "123456789",
         },
         {
             SKUId: 1,
+            itemId: 1,
             RFID: "123456709",
         }
     ],
@@ -40,12 +44,14 @@ const fakeIssuedRestockOrder = new RestockOrder(
     [
         {
             SKUId: 1,
+            itemId: 1,
             description: "description",
             price: 10.99,
             qty: 2,
         },
         {
             SKUId: 2,
+            itemId: 2,
             description: "description 2",
             price: 10.99,
             qty: 2,
@@ -85,12 +91,14 @@ describe('get restock orders', () => {
         dao.getRestockOrderSku.mockReturnValueOnce([
             {
                 SKUId: 1,
+                itemId: 1,
                 description: "description",
                 price: 10.99,
                 qty: 2,
             },
             {
                 SKUId: 2,
+                itemId: 2,
                 description: "description 2",
                 price: 10.99,
                 qty: 2,
@@ -98,12 +106,14 @@ describe('get restock orders', () => {
         ]).mockReturnValue([
             {
                 SKUId: 1,
+                itemId: 1,
                 description: "description",
                 price: 10.99,
                 qty: 2,
             },
             {
                 SKUId: 2,
+                itemId: 2,
                 description: "description 2",
                 price: 10.99,
                 qty: 2,
@@ -114,19 +124,23 @@ describe('get restock orders', () => {
         dao.getRestockOrderSkuItems.mockReturnValueOnce([
             {
                 SKUId: 1,
+                itemId: 1,
                 RFID: "123456789",
             },
             {
                 SKUId: 1,
+                itemId: 1,
                 RFID: "123456709",
             }
         ]).mockReturnValue([
             {
                 SKUId: 2,
+                itemId: 2,
                 RFID: "133456789",
             },
             {
                 SKUId: 2,
+                itemId: 2,
                 RFID: "113456709",
             }
         ]);
@@ -172,10 +186,12 @@ describe('get restock orders', () => {
             [
                 {
                     SKUId: 1,
+                    itemId: 1,
                     RFID: "123456789",
                 },
                 {
                     SKUId: 1,
+                    itemId: 1,
                     RFID: "123456709",
                 }
             ]
@@ -240,10 +256,12 @@ describe('get restock orders', () => {
         expect(res.obj).toEqual([
             {
                 SKUId: 1,
+                itemId: 1,
                 RFID: "123456789",
             },
             {
                 SKUId: 1,
+                itemId: 1,
                 RFID: "123456709",
             }
         ]);
@@ -266,6 +284,7 @@ describe("create restock order", () => {
                 "2021/11/29 09:33",
                 [{
                     SKUId: 1,
+                    itemId: 1,
                     description: "description",
                     price: 10.99,
                     qty: 2,
@@ -285,11 +304,14 @@ describe("create restock order", () => {
         dao.getUserByIdAndType.mockReturnValue(1);
         dao.getSkuById.mockReset();
         dao.getSkuById.mockReturnValue(1);
+        dao.getItemById.mockReset();
+        dao.getItemById.mockReturnValue(new Item(1, 'item1', 1.99, 1, 101));
         //expected 200
         let res = await restockOrderService.createRestockOrder(
             "2021/11/29 09:33",
             [{
                 SKUId: 1,
+                itemId: 1,
                 description: "description",
                 price: 10.99,
                 qty: 2,
@@ -302,6 +324,7 @@ describe("create restock order", () => {
                 "2021/11/29 09:33",
                 [{
                     SKUId: 1,
+                    itemId: 1,
                     description: "description",
                     price: 10.99,
                     qty: 2,
@@ -314,6 +337,7 @@ describe("create restock order", () => {
         expect(dao.storeRestockOrderSku.mock.calls[0][1]).toEqual([
             {
                 SKUId: 1,
+                itemId: 1,
                 description: "description",
                 price: 10.99,
                 qty: 2,
@@ -327,6 +351,7 @@ describe("create restock order", () => {
             "2021/11/29 09:33",
             [{
                 SKUId: 1,
+                itemId: 1,
                 description: "description",
                 price: 10.99,
                 qty: 2,
@@ -339,6 +364,7 @@ describe("create restock order", () => {
                 "2021/11/29 09:33",
                 [{
                     SKUId: 1,
+                    itemId: 1,
                     description: "description",
                     price: 10.99,
                     qty: 2,
@@ -351,6 +377,7 @@ describe("create restock order", () => {
         expect(dao.storeRestockOrderSku.mock.calls[0][1]).toEqual([
             {
                 SKUId: 1,
+                itemId: 1,
                 description: "description",
                 price: 10.99,
                 qty: 2,

@@ -71,6 +71,12 @@ class RestockOrderService {
     };
 
     createRestockOrder = async (issueDate, products, supplierId) => {
+        // check existence of the supplier
+        const supplier = await this.#dao.getUserByIdAndType(supplierId, 'supplier');
+
+        if (!supplier)
+            return statusCodes.UNPROCESSABLE_ENTITY(`supplier ${supplierId} is not found`);
+
         // check existence of all SKUs in products
         for (let product of products) {
             const skuId = product.SKUId;
@@ -78,13 +84,15 @@ class RestockOrderService {
 
             if (!sku) // an SKU id was not found
                 return statusCodes.UNPROCESSABLE_ENTITY(`sku ${skuId} is not found`);
+
+            const itemId = product.itemId;
+            const item = await this.#dao.getItemById(itemId, supplierId);
+            if (!item)
+                return statusCodes.UNPROCESSABLE_ENTITY(`supplier doesnt sell this itemid`);
+
+            if (item.getSkuId() !== skuId)
+                return statusCodes.UNPROCESSABLE_ENTITY(`sku ${skuId} does not correspond to item ${itemId}`);
         }
-
-        // check existence of the supplier
-        const supplier = await this.#dao.getUserByIdAndType(supplierId, 'supplier');
-
-        if (!supplier) 
-            return statusCodes.UNPROCESSABLE_ENTITY(`supplier ${supplierId} is not found`);
 
         // * create the restock order *
         const ro = new RestockOrder(
@@ -146,7 +154,7 @@ class RestockOrderService {
                     ro.getState() !== 'DELIVERY' ||
                     dayjs(body.transportNote.deliveryDate) < dayjs(ro.getIssueDate())
                 )
-                return statusCodes.UNPROCESSABLE_ENTITY(`Restock order with id: ${id} is not in DELIVERY state or delivery date is before issue date`);
+                    return statusCodes.UNPROCESSABLE_ENTITY(`Restock order with id: ${id} is not in DELIVERY state or delivery date is before issue date`);
 
                 ro.setTransportNote(body.transportNote);
                 result = await this.#dao.updateRestockOrder(ro);
@@ -175,7 +183,7 @@ class RestockOrderService {
         result += await this.#dao.deleteRestockOrder(ro.getId());
         result += await this.#dao.deleteRestockOrderSkuItems(ro.getId());
 
-        if (result) 
+        if (result)
             return statusCodes.NO_CONTENT();
 
         return statusCodes.SERVICE_UNAVAILABLE(`There was an error deleting the restock order with id: ${id}`);
