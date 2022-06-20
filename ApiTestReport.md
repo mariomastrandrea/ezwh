@@ -1,8 +1,14 @@
 # Integration and API Test Report
 
-Date: 25/05/2022
 
-Version: 1.0
+Last modified Date: 20/06/2022
+
+Version: 1.1
+
+| Version Number | Description     |
+| :------------: | :-------------- |
+|      1.0       | Initial version |
+|      1.1       | change 1        |
 
 # Contents
 
@@ -11,6 +17,7 @@ Version: 1.0
 - [Dependency graph](#dependency-graph)
 - [Integration approach](#integration-approach)
 - [Integration Tests](#integration-tests)
+    - [UPDATE Change 1](#update-change-1)
   - [Step 1 - Unit testing dbManager with real db by Jest (A)](#step-1---unit-testing-dbmanager-with-real-db-by-jest-a)
   - [Step 2 - Unit testing Services with mock db by Jest (B)](#step-2---unit-testing-services-with-mock-db-by-jest-b)
   - [Step 3 - API testing with Mocha and Chai (A+B+C)](#step-3---api-testing-with-mocha-and-chai-abc)
@@ -43,6 +50,10 @@ In summary this is the sequence we followed:
 
 Jest test cases are in the folder code/server/unit_test
 Integration test cases are in the folder code/server/test
+
+### UPDATE Change 1
+Tests' implementation have been changed to satisfy change 1. Tests' names and description have been kept the same as before for simplicity.
+
 *The first two steps correspond to unit testing presented in UnitTestReport.md*
 
 ## Step 1 - Unit testing dbManager with real db by Jest (A)
@@ -159,22 +170,22 @@ The db used for testing is code/server/db/EZWHDB.sqlite
 |  3 - (UC3)  | FR5                             | test restock order apis, test user apis                                                                        |
 |  4 - (UC4)  | FR1                             | test user apis                                                                                                 |
 |  5 - (UC5)  | FR5.8                           | test restock order apis, SkuItem API tests, test testDescriptor apis, test testResult apis, test position apis |
-|  6 - (UC6)  | FR5.9                           | test return order apis, test testResult apis, SkuItem API tests                                   |
+|  6 - (UC6)  | FR5.9                           | test return order apis, test testResult apis, SkuItem API tests                                                |
 |  7 - (UC7)  | FR1.5                           | test user apis                                                                                                 |
 |  9 - (UC9)  | FR6.1 -> FR6.6                  | test internal order apis, Sku API Test, test position apis, test user apis                                     |
 | 10 - (UC10) | FR6.7 -> 6.10                   | test internal order apis, Sku API Test, test position apis, SkuItem API tests                                  |
 | 11 - (UC11) | FR7                             | Item API tests, Sku API Test, test user apis                                                                   |
-| 12 - (UC12) | FR3.2                           | test testDescriptor apis, test testResult apis, Sku API Test                                                                |
+| 12 - (UC12) | FR3.2                           | test testDescriptor apis, test testResult apis, Sku API Test                                                   |
 
 
 
 # Coverage of Non Functional Requirements
 
-| Non Functional Requirement                                                                        | Test suite                                                                                                                                     |
-| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| NFR2 - no function completes in >= 0.5s                                                           | all tests                                                                                                                                      |
-| NFR4                                                                                              | test position apis                                                                                                                             |
-| NFR6                                                                                              | SkuItem API tests                                                                                                                              |
+| Non Functional Requirement                                                                        | Test suite                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| NFR2 - no function completes in >= 0.5s                                                           | all tests                                                                                                                                                    |
+| NFR4                                                                                              | test position apis                                                                                                                                           |
+| NFR6                                                                                              | SkuItem API tests                                                                                                                                            |
 | NFR9 - Note that date format can be YYYY/MM/DD HH:mm, but in same case (TestResult) is YYYY/MM/DD | SkuItemAPI tests, test internal order api, test restock order api, test return order api, test position api, test testDescription apis, test testResult apis |
 
 

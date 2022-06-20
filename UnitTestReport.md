@@ -1,8 +1,15 @@
 # Unit Testing Report
 
-Date: 25/05/2022
+Last-modified date: 20/06/2022
 
-Version: 1.0
+Version: 1.2
+
+Date: 04 May 2022
+
+| Change | Description     |
+| ------ | --------------- |
+| 1.1    | change 1        |
+| 1.0    | initial release |
 
 # Contents
 
@@ -206,6 +213,7 @@ Because of complexity of the system, we have decided to test only some of the mo
 | Attribute of Item | Constraints              |
 | ----------------- | ------------------------ |
 | SKUId             | is a String of 12 digits |
+| itemId            | is a number              |
 | description       | is a String              |
 | price             | 0 to maxDouble           |
 | qty               | 1 to maxInt              |
@@ -307,6 +315,9 @@ Unit tests are divided in two folders:
 - *code/server/unit_test/mock*: contains jest mock functions for the services classes
 
 Services with real db will be tested during the API integration tests. 
+
+#### UPDATE CHANGE 1:
+Tests' implementation are changed to satisfy the change 1. Test's names have been kept the same as before for simplicity.
 
 ### Test cases definition
 
@@ -479,8 +490,12 @@ Services with real db will be tested during the API integration tests.
 ### Code coverage report
 <img src="./assets/coding/coverage.png" alt="EzWh Unit Test coverage">
 
-
 Note: dbManager has a lower % branch coverage because all queries are explicited, so it's difficult for the test to cover rejected queries. The idea is to force a reject and this is possible only closing the database connection. We did for some of the functions, but to cover all functions we would have to copy paste the test for each function.
+
+#### UPDATE CHANGE 1
+After change 1, the unit test coverage is:
+<img src="./assets/change1/new_coverage.png" alt="Ezwh UPDATED Unit Test coverage">
+
 
 ### Loop coverage analysis
 In our project there aren't significant loops so we didn't do a loop coverage analysis.

@@ -3,9 +3,9 @@
 
 Authors: Samuele Lo Truglio, Mario Mastrandrea, Kristi Gjerko
 
-Last-modified date: 27/04/2022
+Last-modified date: 20/06/2022
 
-Version: 1.0
+Version: 1.1
 
 
 | Version Number | Description                                                                                                 |
@@ -18,6 +18,7 @@ Version: 1.0
 |      0.5       | Final design diagrams: high-level and low-level                                                             |
 |      0.6       | Fixed verification sequence diagrams                                                                        |
 |      1.0       | Final version                                                                                               |
+|      1.1       | Added change 1 params                                                                                        |
 
 # Contents
 
@@ -26,6 +27,8 @@ Version: 1.0
 - [Instructions](#instructions)
 - [High level design](#high-level-design)
 - [Low level design](#low-level-design)
+    - [UPDATE:](#update)
+    - [UPDATE2 CHANGE1](#update2-change1)
 - [Verification traceability matrix](#verification-traceability-matrix)
 - [Verification sequence diagrams](#verification-sequence-diagrams)
 
@@ -68,12 +71,18 @@ The *DbManager* class complies with **Repository Pattern**, so it represents the
 
 *All data types (class attributes, method parameters and method return types) refers to Java primitive types or Java main classes, and are expressed according to Java language conventions. Regarding the collections we used interfaces like List instead of specific classes in order to increase the level of abstraction and give to developers the possibility of choosing the best implementation*
 
-**UPDATE:**
+### UPDATE:
 In the following diagram the *EzWh class* is split in all the services that it implements, to better understand low level interactions.
 
 <img src="./assets/coding/DesignDiagram.png" alt="EzWh Low Level Design - UML class diagram" style="background-color:#eee">
 
 *Data types have been omitted because of in Javascript they are not necessary, and the code is more readable. Constructor methods have been omitted too for the previous reason*
+
+
+### UPDATE2 CHANGE1
+
+**CHANGE 1** changes the way to think item with his item id and sku id that now are strictly unique only to the supplier. In our case this new constraint is not a problem because relationships between classes don't change, we have only to change their representation in the database.
+
 
 # Verification traceability matrix
 

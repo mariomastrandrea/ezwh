@@ -43,15 +43,15 @@ Server listening at http://localhost:3001
   test user apis
     ✔ deleting data
     ✔ getting all users
-    ✔ creating user (58ms)
-    ✔ customer sessions (57ms)
-    ✔ creating user (58ms)
-    ✔ clerk sessions (56ms)
-    ✔ creating user (57ms)
-    ✔ supplier sessions (57ms)
+    ✔ creating user (94ms)
+    ✔ customer sessions (92ms)
+    ✔ creating user (95ms)
+    ✔ clerk sessions (93ms)
+    ✔ creating user (94ms)
+    ✔ supplier sessions (93ms)
     ✔ getting all users
-    ✔ creating user (58ms)
-    ✔ delivery employee sessions (56ms)
+    ✔ creating user (93ms)
+    ✔ delivery employee sessions (93ms)
     ✔ creating user
     ✔ creating user
     ✔ creating user
@@ -64,7 +64,7 @@ Server listening at http://localhost:3001
     ✔ getting user info
     ✔ updating user
     ✔ getting user info
-    ✔ quality employee sessions (56ms)
+    ✔ quality employee sessions (92ms)
     ✔ logout
     ✔ deleting data
 
@@ -75,8 +75,8 @@ Server listening at http://localhost:3001
     ✔ create sku
     ✔ create sku
     ✔ create item
-    ✔ creating user (58ms)
-    ✔ creating user (57ms)
+    ✔ creating user (93ms)
+    ✔ creating user (94ms)
     ✔ create item
     ✔ create item
     ✔ create item
@@ -222,5 +222,5 @@ Server listening at http://localhost:3001
     ✔ reading all test result of sku item
 
 
-  200 passing (1s)
+  200 passing (2s)
 

@@ -952,7 +952,7 @@ class DbManager {
     };
 
     // Function to store the info about sku of a restock order in the database
-    // INPUT - restock order id, {skuId, description, price, quantity}
+    // INPUT - restock order id, {skuId, itemId, description, price, quantity}
     // OUTPUT - true if successful else false
     storeRestockOrderSku(id, products) {
         const sql = `INSERT INTO RestockOrderSku(RestockOrderId, SkuId, ItemId, Description, Price, Quantity) 

@@ -20,7 +20,7 @@ Report effort figures from the timesheet, compute size from the source code.
 | effort E (report here effort in person hours, for all activities in the period, from your timesheet) |  283  |
 | size S (report here size in LOC of all code written, excluding test cases)                           | 6310  |
 | productivity P = S/E                                                                                 | 22,3  |
-| defects before release D_before (number of defects found and fixed before may 25)                    |  TODO   |
+| defects before release D_before (number of defects found and fixed before may 25)                    |  80   |
 
 
 
@@ -30,8 +30,8 @@ Report effort figures from the timesheet, compute size from the source code.
 | ------------------------------------------------------------------------------------------------------------------------------------------ | :---: |
 | effort for non-quality ENQ (effort for all activities in release 2, or effort to fix defects found when running official acceptance tests) |  26   |
 | effort for non quality, relative = ENQ / E                                                                                                 | 0,09  |
-| defects after release D (number of defects found running official acceptance tests and  fixed in release 2)                                |  51 TODO  |
-| defects before release vs defects after release = D/D_before                                                                               |   TODO    |
+| defects after release D (number of defects found running official acceptance tests and  fixed in release 2)                                |  51   |
+| defects before release vs defects after release = D/D_before                                                                               | 0,64  |
 | DD = defect density = D/S                                                                                                                  | 0,008 |
 | D_fix = average effort to fix a defect = ENQ / D                                                                                           | 0,51  |
 | overall productivity OP = S/(E + ENQ)                                                                                                      | 20,42 |
@@ -47,5 +47,5 @@ Now it is possible to repeat the estimate using values from the past. We can als
 | S_e = Estimated size of project, in LOC (= NC * A)                       |   6000   |
 | E = Estimated effort, in person hours (here use overall productivity OP) |   300    |
 | C = Estimated cost, in euro (here use 1 person hour cost = 30 euro)      |   9000   |
-| D_e = Estimated number of defects = DD * S_e                             |   48 TODO    |
-| Estimated effort for non quality = D_e * D_fix                           |    24,50 TODO   |
+| D_e = Estimated number of defects = DD * S_e                             |    48    |
+| Estimated effort for non quality = D_e * D_fix                           |  24,50   |
