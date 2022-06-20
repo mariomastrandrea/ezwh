@@ -494,6 +494,7 @@ Note: dbManager has a lower % branch coverage because all queries are explicited
 
 #### UPDATE CHANGE 1
 After change 1, the unit test coverage is:
+
 <img src="./assets/change1/new_coverage.png" alt="Ezwh UPDATED Unit Test coverage">
 
 
