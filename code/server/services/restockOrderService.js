@@ -87,11 +87,12 @@ class RestockOrderService {
 
             const itemId = product.itemId;
             const item = await this.#dao.getItemById(itemId, supplierId);
+            
             if (!item)
-                return statusCodes.UNPROCESSABLE_ENTITY(`supplier doesnt sell this itemid`);
+                return statusCodes.UNPROCESSABLE_ENTITY(`supplier ${supplierId} does not sell item ${itemId}`);
 
             if (item.getSkuId() !== skuId)
-                return statusCodes.UNPROCESSABLE_ENTITY(`sku ${skuId} does not correspond to item ${itemId}`);
+                return statusCodes.UNPROCESSABLE_ENTITY(`sku ${skuId} does not correspond to item ${itemId} for the supplier ${supplierId}`);
         }
 
         // * create the restock order *

@@ -435,7 +435,7 @@ router.post('/restockOrder', async (req, res) => {
         // validate body
         const productSchema = Joi.object({
             SKUId: Joi.number().integer().min(1).required(),
-            itemId: Joi.number().integer().min(1).required(),
+            itemId: Joi.number().integer().min(0).required(),
             description: Joi.string().required(),
             price: Joi.number().min(0).required(),
             qty: Joi.number().integer().min(0).required()
@@ -515,7 +515,7 @@ router.put('/restockOrder/:id/skuItems', async (req, res) => {
         // validate body
         const productSchema = Joi.object({
             SKUId: Joi.number().integer().min(1).required(),
-            itemId: Joi.number().integer().min(1).required(),
+            itemId: Joi.number().integer().min(0).required(),
             rfid: Joi.string().regex(/^[0-9]{32}$/).required()
         })
         const schema = Joi.object({
