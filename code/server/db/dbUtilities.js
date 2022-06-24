@@ -76,7 +76,7 @@ function insertIntoTable(tableName) {
             break;
         case 'Item':
             sql = `INSERT INTO Item (SupplierId, SkuId, Price, Description, ID)
-            VALUES (1, 1, 10.99, 'a new item', 1),      (2, 5, 11.99, 'another item', 2);`;
+            VALUES (101, 1, 10.99, 'a new item', 1),      (102, 5, 11.99, 'another item', 2);`;
             break;
         case 'Position':
             sql = `INSERT INTO Position (OccupiedVolume, OccupiedWeight, MaxVolume, MaxWeight, Col, [Row], Aisle, ID) 
@@ -92,23 +92,23 @@ function insertIntoTable(tableName) {
                    (NULL, 2, 'ISSUED', '2021/11/29 09:33', 8);`;
             break;
         case 'RestockOrderSku':
-            sql = `INSERT INTO RestockOrderSku (Quantity, Price, Description, SkuId, RestockOrderId) 
-            VALUES (20, 10.99, 'a sku', 1, 1), 
-                   (30, 10.99, 'a product', 12, 8), 
-                   (20, 11.99, 'another product', 180, 8);`;
+            sql = `INSERT INTO RestockOrderSku (Quantity, Price, Description, SkuId, ItemId, RestockOrderId) 
+            VALUES (20, 10.99, 'a sku', 1, 1, 1), 
+                   (30, 10.99, 'a product', 12, 12, 8), 
+                   (20, 11.99, 'another product', 180, 180, 8);`;
             break;
         case 'RestockOrderSkuItem':
-            sql = `INSERT INTO RestockOrderSkuItem (RFID, SkuId, RestockOrderId) 
-            VALUES ('12345678901234567890123456789011', 1, 1);`;
+            sql = `INSERT INTO RestockOrderSkuItem (RFID, SkuId, ItemId, RestockOrderId) 
+            VALUES ('12345678901234567890123456789011', 1, 1, 1);`;
             break;
         case 'ReturnOrder':
             sql = `INSERT INTO ReturnOrder (RestockOrderId, ReturnDate, ID) 
             VALUES (1, '2021/11/29', 1);`;
             break;
         case 'ReturnOrderSkuItem':
-            sql = `INSERT INTO ReturnOrderSkuItem (RFID, Price, Description, SkuId, ReturnOrderId) 
-            VALUES ('12345678901234567890123456789011',10.99,'a sku',1,1),
-                   ('12345678901234567890123456789012',11,'a sku',1,1);`;
+            sql = `INSERT INTO ReturnOrderSkuItem (RFID, Price, Description, SkuId, ItemId, ReturnOrderId) 
+            VALUES ('12345678901234567890123456789011',10.99,'a sku',1, 1, 1),
+                   ('12345678901234567890123456789012',11,'a sku',1, 1, 1);`;
             break;
         case 'Sku':
             sql = `INSERT INTO Sku (Price,AvailableQuantity,Position,Notes,Volume,Weight,Description,ID)
@@ -197,12 +197,16 @@ function createTable(tableName) {
             break;
         case 'Item':
             sql = `CREATE TABLE IF NOT EXISTS Item (
-                ID          INTEGER        PRIMARY KEY AUTOINCREMENT,
+                ID          INTEGER,
                 Description VARCHAR (1000),
                 Price       DOUBLE,
                 SkuId       INT            REFERENCES Sku (ID) ON DELETE SET NULL
                                                                ON UPDATE CASCADE,
-                SupplierId  INT
+                SupplierId  INT,
+                PRIMARY KEY (
+                    ID,
+                    SupplierId
+                )
             );`;
             break;
         case 'Position':
@@ -231,6 +235,7 @@ function createTable(tableName) {
                 RestockOrderId INT            REFERENCES RestockOrder (ID) ON DELETE CASCADE
                                                                            ON UPDATE CASCADE,
                 SkuId          INT,
+                ItemId         INT,
                 Description    VARCHAR (1000),
                 Price          DOUBLE,
                 Quantity       INT,
@@ -245,6 +250,7 @@ function createTable(tableName) {
                 RestockOrderId INT          REFERENCES RestockOrder (ID) ON DELETE CASCADE
                                                                          ON UPDATE CASCADE,
                 SkuId          INT,
+                ItemId         INT,
                 RFID           VARCHAR (32),
                 PRIMARY KEY (
                     RestockOrderId,
@@ -266,6 +272,7 @@ function createTable(tableName) {
                 ReturnOrderId INT            REFERENCES ReturnOrder (ID) ON DELETE CASCADE
                                                                          ON UPDATE CASCADE,
                 SkuId         INT,
+                ItemId        INT,
                 Description   VARCHAR (1000),
                 Price         DOUBLE,
                 RFID          VARCHAR (32),

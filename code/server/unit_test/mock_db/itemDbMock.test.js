@@ -43,14 +43,14 @@ describe('get item by id', () => {
     });
 
     test('get item by id', async () => {
-        let res = await itemService.getItemById(1);
+        let res = await itemService.getItemById(1, 1);
 
         // expect 200
         expect(res.code).toBe(200);
         expect(res.obj.toJSON()).toEqual(new Item(1, 'first item', 9.99, 1, 1).toJSON());
 
         // expect 404
-        res = await itemService.getItemById(1);
+        res = await itemService.getItemById(1, 1);
         expect(res.code).toBe(404);
     });
 })
@@ -94,7 +94,7 @@ describe('create item', () => {
         //expect 422
         res = await itemService.createItem(1, 'first item', 9.99, 1, 1);
         expect(res.code).toBe(422);
-        expect(res.error).toContain('item');        
+        expect(res.error).toContain('item');
 
         //expect 422
         res = await itemService.createItem(1, 'first item', 9.99, 1, 1);
@@ -133,17 +133,17 @@ describe('update item', () => {
     });
 
     test('update item', async () => {
-        let res = await itemService.updateItem(1, 'updated item', 19.99);
+        let res = await itemService.updateItem(1, 1, 'updated item', 19.99);
 
         //expect 404
         expect(res.code).toBe(404);
 
         //expect 503
-        res = await itemService.updateItem(1, 'updated item', 19.99);
+        res = await itemService.updateItem(1, 1, 'updated item', 19.99);
         expect(res.code).toBe(503);
 
         //expect 200
-        res = await itemService.updateItem(1, 'updated item', 19.99);
+        res = await itemService.updateItem(1, 1, 'updated item', 19.99);
         expect(res.code).toBe(200);
         expect(dao.updateItem.mock.calls[0][0].toJSON()).toEqual(
             new Item(1, 'updated item', 19.99, 1, 1).toJSON()
@@ -165,17 +165,17 @@ describe('delete item', () => {
     });
 
     test('delete item', async () => {
-        let res = await itemService.deleteItem(1);
+        let res = await itemService.deleteItem(1, 1);
 
         //expect 422
         expect(res.code).toBe(422);
 
         //expect 503
-        res = await itemService.deleteItem(1);
+        res = await itemService.deleteItem(1, 1);
         expect(res.code).toBe(503);
 
         //expect 204
-        res = await itemService.deleteItem(1);
+        res = await itemService.deleteItem(1, 1);
         expect(res.code).toBe(204);
     })
 })

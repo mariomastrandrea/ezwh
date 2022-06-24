@@ -54,6 +54,7 @@ describe('[DB] restock orders GET functions', () => {
         for (const sku of skus) {
             expect(sku).toEqual({
                 SKUId: expect.any(Number),
+                itemId: expect.any(Number),
                 description: expect.any(String),
                 price: expect.any(Number),
                 qty: expect.any(Number),
@@ -70,6 +71,7 @@ describe('[DB] restock orders GET functions', () => {
         for (const item of items) {
             expect(item).toEqual({
                 SKUId: expect.any(Number),
+                itemId: expect.any(Number),
                 rfid: expect.any(String),
             })
         }
@@ -190,6 +192,7 @@ describe('[DB] return orders functions', () => {
     let exOder;
     let fakeProducts = [{
         SKUId: 1,
+        itemId: 1,
         description: "a product",
         price: 10.99,
         RFID: "123456789",
@@ -197,6 +200,7 @@ describe('[DB] return orders functions', () => {
     },
     {
         SKUId: 1,
+        itemId: 1,
         description: "a product two",
         price: 13.99,
         RFID: "223456789",
@@ -231,6 +235,7 @@ describe('[DB] return orders functions', () => {
         for (const item of items) {
             expect(item).toEqual({
                 SKUId: expect.any(Number),
+                itemId: expect.any(Number),
                 description: expect.any(String),
                 price: expect.any(Number),
                 RFID: expect.any(String),
@@ -1194,8 +1199,8 @@ describe('[DB] Items functions', () => {
     });
 
     afterAll(async () => {
-        await dao.deleteItem(storedItem1.getId());
-        await dao.deleteItem(storedItem2.getId());
+        await dao.deleteItem(storedItem1.getId(),storedItem1.getSupplierId());
+        await dao.deleteItem(storedItem2.getId(),storedItem2.getSupplierId());
     });
 
     test('get all items test', async () => {
@@ -1213,9 +1218,9 @@ describe('[DB] Items functions', () => {
 
     test('get item by id', async () => {
         // item not found
-        expect(await dao.getItemById(11110000)).toBe(null);
+        expect(await dao.getItemById(11110000,1111111)).toBe(null);
 
-        const item1 = await dao.getItemById(fakeItem1.getId());
+        const item1 = await dao.getItemById(fakeItem1.getId(),fakeItem1.getSupplierId());
         expect(item1).toBeInstanceOf(Item);
         expect(item1.getId()).toBeGreaterThan(0);
         expect(item1.getDescription()).toBeDefined();
@@ -1265,7 +1270,7 @@ describe('[DB] Items functions', () => {
         expect(createdItem.toJSON()).toEqual(fakeNewItem.toJSON());
 
         expect(dao.storeItem(fakeNewItem)).rejects.toThrow();   // insert the same item the 2nd time
-        await dao.deleteItem(createdItem.getId());
+        await dao.deleteItem(createdItem.getId(),createdItem.getSupplierId());
     });
 
 
@@ -1281,7 +1286,7 @@ describe('[DB] Items functions', () => {
         wasItemUpdated = await dao.updateItem(itemToUpdate);
         expect(wasItemUpdated).toBe(true);
 
-        const itemUpdated = await dao.getItemById(storedItem1.getId());
+        const itemUpdated = await dao.getItemById(storedItem1.getId(),storedItem1.getSupplierId());
         expect(itemUpdated).toBeInstanceOf(Item);
         expect(itemUpdated).not.toEqual(storedItem1);
         expect(itemUpdated.getId()).toEqual(storedItem1.getId());
@@ -1301,10 +1306,10 @@ describe('[DB] Items functions', () => {
 
     test('delete item test', async () => {
         // delete item
-        expect(await dao.deleteItem(storedItem1.getId())).toBe(true);
+        expect(await dao.deleteItem(storedItem1.getId(),storedItem1.getSupplierId())).toBe(true);
 
         // not found item, no delete
-        expect(await dao.deleteItem(storedItem1.getId())).toBe(false);
+        expect(await dao.deleteItem(storedItem1.getId(),storedItem1.getSupplierId())).toBe(false);
 
         // restore item
         expect(await dao.storeItem(storedItem1)).toBeInstanceOf(Item);
@@ -1410,14 +1415,14 @@ describe('[DB] close db and testing functions', () => {
     });
     test('getItemById reject', async () => {
         try {
-            await dao.getItemById(1);
+            await dao.getItemById(1,1);
         } catch (err) {
             expect(err.message).toMatch(/SQLITE_MISUSE/);
         }
     });
     test('deleteItem reject', async () => {
         try {
-            await dao.deleteItem(1);
+            await dao.deleteItem(1,1);
         } catch (err) {
             expect(err.message).toMatch(/SQLITE_MISUSE/);
         }

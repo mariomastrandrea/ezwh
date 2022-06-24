@@ -18,6 +18,10 @@ describe('test restock order apis', () => {
             .send({ username: 'supplier11@ezwh.com', name: 'John', surname: 'Smith', password: 'testpassword', type: 'supplier' })
         await agent.post('/api/skuItem')
             .send({ RFID: '12345678901234567890123456789011', SKUId: 1, DateOfStock: '2021/11/29 12:30' });
+        await agent.post('/api/item')
+            .send({ id: 1, description: "a new item", price: 10.99, SKUId: 1, supplierId: 101 });
+        await agent.post('/api/item')
+            .send({ id: 2, description: "a new item", price: 10.99, SKUId: 2, supplierId: 101 });
     })
 
     after(async () => {
@@ -29,15 +33,10 @@ describe('test restock order apis', () => {
     postRestock(201, "2021/11/29 09:33",
         [{
             SKUId: 1,
+            itemId: 1,
             description: "a product",
             price: 10.99,
             qty: 30
-        },
-        {
-            SKUId: 2,
-            description: "another product",
-            price: 20.99,
-            qty: 20
         }],
         101
     );
@@ -46,12 +45,14 @@ describe('test restock order apis', () => {
         "dog",
         [{
             SKUId: 1,
+            itemId: 1,
             description: "a product",
             price: 10.99,
             qty: 30
         },
         {
             SKUId: 3,
+            itemId: 3,
             description: "another product",
             price: 20.99,
             qty: 20
@@ -66,12 +67,14 @@ describe('test restock order apis', () => {
     postRestock(422, "2021/11/29 09:33",
         [{
             SKUId: "testWrong",
+            itemId: 1,
             description: "a product",
             price: 10.99,
             qty: 30
         },
         {
             SKUId: 3,
+            itemId: 1,
             description: "another product",
             price: 20.99,
             qty: 20
@@ -86,12 +89,14 @@ describe('test restock order apis', () => {
         "ISSUED",
         [{
             SKUId: 1,
+            itemId: 1,
             description: "a product",
             price: 10.99,
             qty: 30
         },
         {
             SKUId: 2,
+            itemId: 2,
             description: "another product",
             price: 20.99,
             qty: 20
@@ -106,15 +111,10 @@ describe('test restock order apis', () => {
             state: "ISSUED",
             products: [{
                 SKUId: 1,
+                itemId: 1,
                 description: "a product",
                 price: 10.99,
                 qty: 30
-            },
-            {
-                SKUId: 2,
-                description: "another product",
-                price: 20.99,
-                qty: 20
             }],
             supplierId: 101,
             skuItems: [],
@@ -123,12 +123,14 @@ describe('test restock order apis', () => {
     postRestock(201, "2021/11/30 09:33",
         [{
             SKUId: 1,
+            itemId: 1,
             description: "a product",
             price: 10.99,
             qty: 30
         },
         {
             SKUId: 2,
+            itemId: 2,
             description: "another product",
             price: 20.99,
             qty: 20
@@ -141,7 +143,7 @@ describe('test restock order apis', () => {
     putRestockNote(200, 1, { "deliveryDate": "2021/12/29" });
     putRestockState(200, 1, "DELIVERED");
     // insert sku items
-    putRestockSkuItems(200, 1, [{ SKUId: 1, rfid: "12345678901234567890123456789011" }]);
+    putRestockSkuItems(200, 1, [{ SKUId: 1, itemId: 1, rfid: "12345678901234567890123456789011" }]);
     getAllRestock(200, [
 
         {
@@ -150,19 +152,14 @@ describe('test restock order apis', () => {
             state: "DELIVERED",
             products: [{
                 SKUId: 1,
+                itemId: 1,
                 description: "a product",
                 price: 10.99,
                 qty: 30
-            },
-            {
-                SKUId: 2,
-                description: "another product",
-                price: 20.99,
-                qty: 20
             }],
             supplierId: 101,
             transportNote: { "deliveryDate": "2021/12/29" },
-            skuItems: [{ SKUId: 1, rfid: "12345678901234567890123456789011" }],
+            skuItems: [{ SKUId: 1, itemId: 1, rfid: "12345678901234567890123456789011" }],
         },
         {
             id: 2,
@@ -170,12 +167,14 @@ describe('test restock order apis', () => {
             state: "ISSUED",
             products: [{
                 SKUId: 1,
+                itemId: 1,
                 description: "a product",
                 price: 10.99,
                 qty: 30
             },
             {
                 SKUId: 2,
+                itemId: 2,
                 description: "another product",
                 price: 20.99,
                 qty: 20
@@ -210,17 +209,23 @@ describe('test return order api', () => {
             .send({ name: 'test descriptor 1', procedureDescription: 'This test is described by...', idSKU: 1 });
         await agent.post('/api/skuItems/testResult')
             .send({ rfid: '12345678901234567890123456789011', idTestDescriptor: 1, Date: '2021/11/28', Result: false });
+        await agent.post('/api/item')
+            .send({ id: 1, description: "a new item", price: 10.99, SKUId: 1, supplierId: 101 });
+        await agent.post('/api/item')
+            .send({ id: 2, description: "a new item", price: 10.99, SKUId: 2, supplierId: 101 });
         await agent.post('/api/restockOrder')
             .send({
                 issueDate: "2021/11/29 09:33",
                 products: [{
                     SKUId: 1,
+                    itemId: 1,
                     description: "a product",
                     price: 10.99,
                     qty: 30
                 },
                 {
                     SKUId: 2,
+                    itemId: 2,
                     description: "another product",
                     price: 20.99,
                     qty: 20
@@ -232,12 +237,14 @@ describe('test return order api', () => {
                 issueDate: "2021/11/29 09:33",
                 products: [{
                     SKUId: 1,
+                    itemId: 1,
                     description: "a product",
                     price: 10.99,
                     qty: 30
                 },
                 {
                     SKUId: 2,
+                    itemId: 2,
                     description: "another product",
                     price: 20.99,
                     qty: 20
@@ -247,7 +254,7 @@ describe('test return order api', () => {
         await agent.put('/api/restockOrder/2')
             .send({ newState: "DELIVERED" });
         await agent.put('/api/restockOrder/2/skuItems')
-            .send({ skuItems: [{ SKUId: 1, rfid: "12345678901234567890123456789011" }] });
+            .send({ skuItems: [{ SKUId: 1, itemId: 1, rfid: "12345678901234567890123456789011" }] });
     })
 
     after(async () => {
@@ -259,6 +266,7 @@ describe('test return order api', () => {
     postReturn(404, "2021/11/30 09:33",
         [{
             SKUId: 1,
+            itemId: 1,
             description: "a product",
             price: 10.99,
             RFID: "12345678901234567890123456789011"
@@ -268,22 +276,24 @@ describe('test return order api', () => {
     postReturn(201, "2021/11/30 09:33",
         [{
             SKUId: 1,
+            itemId: 1,
             description: "a product",
             price: 10.99,
             RFID: "12345678901234567890123456789011"
         }],
-        2
+        1
     ); // any of the skuItems has negative result
     getReturn(422, "abc"); // id is not a number
     getReturn(404, 99999); // id does not exist
     getReturn(200, 1, "2021/11/30 09:33",
         [{
             SKUId: 1,
+            itemId: 1,
             description: "a product",
             price: 10.99,
             RFID: "12345678901234567890123456789011"
         }],
-        2
+        1
     );
     deleteReturn(204, 1);
     deleteReturn(422, "abc");

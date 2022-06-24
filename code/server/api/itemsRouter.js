@@ -206,7 +206,7 @@ router.delete('/skus/:id', async (req, res) => {
         const { id } = req.params;
 
         // modified min 1 to 0 due to failed acceptance tests   
-        if (Joi.number().integer().min(0).required().validate(id).error) {  
+        if (Joi.number().integer().min(0).required().validate(id).error) {
             return res.status(422).send('Unprocessable Entity');
         }
 
@@ -272,7 +272,7 @@ router.get('/skuitems/sku/:id', async (req, res) => {
 
         const availableSkuItems = obj;
         return res.status(code).json(availableSkuItems);
-    } 
+    }
     catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
@@ -296,13 +296,13 @@ router.get('/skuitems/:rfid', async (req, res) => {
 
         const { error, code, obj } = await skuItemService.getSkuItem(rfid);
 
-        if(error) {
+        if (error) {
             return res.status(code).send(error);
         }
-        
+
         const skuItem = obj;
         return res.status(code).json(skuItem);
-    } 
+    }
     catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
@@ -321,8 +321,8 @@ router.post('/skuitem', async (req, res) => {
             RFID: Joi.string().min(32).max(32).required(),
             SKUId: Joi.number().min(0).required(),
             DateOfStock: Joi.date().required()
-                    .format(["YYYY/MM/DD", "YYYY/MM/DD HH:mm"]) // permits either YYYY/MM/DD format and YYYY/MM/DD HH:mm format
-                    .allow(null)
+                .format(["YYYY/MM/DD", "YYYY/MM/DD HH:mm"]) // permits either YYYY/MM/DD format and YYYY/MM/DD HH:mm format
+                .allow(null)
         });
 
         const result = schema.validate(req.body);
@@ -334,10 +334,10 @@ router.post('/skuitem', async (req, res) => {
         const { RFID, SKUId, DateOfStock } = req.body;
         const { error, code } = await skuItemService.createSkuItem(RFID, SKUId, DateOfStock);
 
-        return error ? 
+        return error ?
             res.status(code).send(error) :
             res.status(code).end();
-    } 
+    }
     catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
@@ -364,8 +364,8 @@ router.put('/skuitems/:rfid', async (req, res) => {
             newRFID: Joi.string().min(32).max(32).required(),
             newAvailable: Joi.number().integer().valid(0, 1).required(),
             newDateOfStock: Joi.date().required()
-                            .format(["YYYY/MM/DD", "YYYY/MM/DD HH:mm"]) // permits either YYYY/MM/DD format and YYYY/MM/DD HH:mm format
-                            .allow(null)
+                .format(["YYYY/MM/DD", "YYYY/MM/DD HH:mm"]) // permits either YYYY/MM/DD format and YYYY/MM/DD HH:mm format
+                .allow(null)
         })
 
         const result = schema.validate(req.body);
@@ -375,13 +375,13 @@ router.put('/skuitems/:rfid', async (req, res) => {
         }
 
         const { newRFID, newAvailable, newDateOfStock } = req.body;
-        const { error, code } = 
+        const { error, code } =
             await skuItemService.updateSkuItem(rfid, newRFID, newAvailable, newDateOfStock);
 
-        return error ? 
+        return error ?
             res.status(code).send(error) :
             res.status(code).end();
-    } 
+    }
     catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
@@ -405,10 +405,10 @@ router.delete('/skuitems/:rfid', async (req, res) => {
 
         const { error, code } = await skuItemService.deleteSkuItem(rfid);
 
-        return error ? 
+        return error ?
             res.status(code).send(error) :
             res.status(code).end();
-    } 
+    }
     catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
@@ -441,7 +441,7 @@ router.get('/items', async (req, res) => {
     }
 });
 
-router.get('/items/:id', async (req, res) => {
+router.get('/items/:id/:supplierId', async (req, res) => {
     // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -449,19 +449,20 @@ router.get('/items/:id', async (req, res) => {
 
     try {
         // validate URL parameter
-        const { id } = req.params;
+        const { id, supplierId } = req.params;
 
-        if (Joi.number().integer().min(0).required().validate(id).error)
+        if (Joi.number().integer().min(0).required().validate(id).error ||
+            Joi.number().integer().min(0).required().validate(supplierId).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code, obj } = await itemService.getItemById(id);
+        const { error, code, obj } = await itemService.getItemById(id, supplierId);
 
-        if (error) 
+        if (error)
             return res.status(code).send(error);
 
         const item = obj;
         return res.status(code).json(item);
-    } 
+    }
     catch (err) {
         console.log(err);
         return res.status(500).send('Internal Server Error');
@@ -486,26 +487,26 @@ router.post('/item', async (req, res) => {
 
         const result = schema.validate(req.body);
 
-        if (result.error) 
+        if (result.error)
             return res.status(422).send('Unprocessable Entity')
 
         const { id, description, price, SKUId, supplierId } = req.body;
 
-        const { error, code } = 
+        const { error, code } =
             await itemService.createItem(id, description, price, SKUId, supplierId);
 
         if (error)
             return res.status(code).send(error);
 
         return res.status(code).end();
-    } 
+    }
     catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
 });
 
-router.put('/item/:id', async (req, res) => {
+router.put('/item/:id/:supplierId', async (req, res) => {
     // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -513,9 +514,10 @@ router.put('/item/:id', async (req, res) => {
 
     try {
         // validate URL parameter
-        const { id } = req.params;
+        const { id, supplierId } = req.params;
 
-        if (Joi.number().integer().min(0).required().validate(id).error)
+        if (Joi.number().integer().min(0).required().validate(id).error ||
+            Joi.number().integer().min(0).required().validate(supplierId).error)
             return res.status(422).send('Unprocessable entity');
 
         const schema = Joi.object({
@@ -525,23 +527,23 @@ router.put('/item/:id', async (req, res) => {
 
         const result = schema.validate(req.body);
 
-        if (result.error) 
+        if (result.error)
             return res.status(422).send('Unprocessable Entity')
 
         const { newDescription, newPrice } = req.body;
-        const { error, code } = await itemService.updateItem(id, newDescription, newPrice);
+        const { error, code } = await itemService.updateItem(id, supplierId, newDescription, newPrice);
 
         return error ?
-            res.status(code).send(error) : 
-            res.status(code).end();    
-    } 
+            res.status(code).send(error) :
+            res.status(code).end();
+    }
     catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');
     }
 });
 
-router.delete('/items/:id', async (req, res) => {
+router.delete('/items/:id/:supplierId', async (req, res) => {
     // TODO: add login check
     if (!true) {
         return res.status(401).send('Unauthorized');
@@ -549,17 +551,18 @@ router.delete('/items/:id', async (req, res) => {
 
     try {
         // validate URL parameter
-        const { id } = req.params;
+        const { id, supplierId } = req.params;
 
-        if (Joi.number().integer().min(0).required().validate(id).error)
+        if (Joi.number().integer().min(0).required().validate(id).error ||
+            Joi.number().integer().min(0).required().validate(supplierId).error)
             return res.status(422).send('Unprocessable entity');
 
-        const { error, code } = await itemService.deleteItem(id);
+        const { error, code } = await itemService.deleteItem(id, supplierId);
 
         return error ?
-            res.status(code).send(error) : 
-            res.status(code).end();       
-    } 
+            res.status(code).send(error) :
+            res.status(code).end();
+    }
     catch (err) {
         console.log(err);
         return res.status(503).send('Service Unavailable');

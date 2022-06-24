@@ -23,12 +23,12 @@ class ItemService {
         return OK(allItems);
     };
 
-    async getItemById(itemId) {
+    async getItemById(itemId, supplierId) {
         // check item existence
-        const item = await this.#dao.getItemById(itemId);
+        const item = await this.#dao.getItemById(itemId, supplierId);
 
         if (!item)
-            return NOT_FOUND(`item ${itemId} not found`);
+            return NOT_FOUND(`item ${itemId} not found for the supplier ${supplierId}`);
 
         return OK(item);
     };
@@ -42,10 +42,10 @@ class ItemService {
             return NOT_FOUND(`sku ${skuId} not found`);
 
         // check if id already present
-        let tempItem = await this.#dao.getItemById(itemId);
+        let tempItem = await this.#dao.getItemById(itemId, supplierId);
 
         if (tempItem)
-            return UNPROCESSABLE_ENTITY(`item ${itemId} already exists`);
+            return UNPROCESSABLE_ENTITY(`item ${itemId} already exists for the supplier ${supplierId}`);
 
 
         // check supplier existence
@@ -70,15 +70,15 @@ class ItemService {
         return CREATED();
     };
 
-    async updateItem(itemId, newDescription, newPrice) {
+    async updateItem(itemId, supplierId, newDescription, newPrice) {
         // check item existence
-        const item = await this.#dao.getItemById(itemId);
+        const item = await this.#dao.getItemById(itemId, supplierId);
 
         if (!item)
-            return NOT_FOUND(`item ${itemId} not found`);
+            return NOT_FOUND(`item ${itemId} not found for the supplier ${supplierId}`);
 
         // * update item *
-        const newItem = new Item(itemId, newDescription, newPrice, item.getSkuId(), item.getSupplierId());
+        const newItem = new Item(itemId, newDescription, newPrice, item.getSkuId(), supplierId);
         const itemWasUpdated = await this.#dao.updateItem(newItem);
 
         if (!itemWasUpdated) // a generic error occurred during update
@@ -87,19 +87,19 @@ class ItemService {
         return OK();
     };
 
-    async deleteItem(itemId) {
+    async deleteItem(itemId, supplierId) {
         // check item existence
-        const item = await this.#dao.getItemById(itemId);
+        const item = await this.#dao.getItemById(itemId, supplierId);
 
         if (!item)
-            return UNPROCESSABLE_ENTITY(`item ${itemId} not found`);
+            return UNPROCESSABLE_ENTITY(`item ${itemId} not found for the supplier ${supplierId}`);
 
         // * delete item *
-        const itemWasDeleted = await this.#dao.deleteItem(itemId);
+        const itemWasDeleted = await this.#dao.deleteItem(itemId, supplierId);
 
         if (!itemWasDeleted) // a generic error occurred during delete
             return SERVICE_UNAVAILABLE();
-        
+
         return NO_CONTENT();
     }
 }

@@ -159,7 +159,7 @@ class DbManager {
             this.#db.get(sqlQuery, [positionId], (err, row) => {
                 if (err)
                     reject(err);
-                else 
+                else
                     resolve({
                         weight: row.weight ?? 0,
                         volume: row.volume ?? 0
@@ -464,13 +464,13 @@ class DbManager {
     }
 
     // returns the Item corresponding to the given skuId; 'null' if the item is not found
-    getItemById(itemId) {
+    getItemById(itemId, supplierId) {
         return new Promise((resolve, reject) => {
             const sqlQuery = `SELECT *
                               FROM Item
-                              WHERE ID=?`;
+                              WHERE ID=? AND SupplierId=?`;
 
-            this.#db.get(sqlQuery, [itemId], (err, row) => {
+            this.#db.get(sqlQuery, [itemId, supplierId], (err, row) => {
                 if (err)
                     reject(err);
                 else if (!row)
@@ -492,7 +492,7 @@ class DbManager {
                     reject(err);
                 else if (!row)
                     resolve(null);
-                else 
+                else
                     resolve(new Item(row.ID, row.Description, row.Price, row.SkuId, row.SupplierId));
             });
         });
@@ -516,7 +516,7 @@ class DbManager {
                 if (err)
                     reject(err);
                 else
-                    resolve(new Item(this.lastID, newDescription, newPrice, newSkuId, newSupplierId));
+                    resolve(new Item(newId, newDescription, newPrice, newSkuId, newSupplierId));
             });
         });
     }
@@ -547,12 +547,12 @@ class DbManager {
     }
 
     // returns 'true' if the Item was successfully deleted; 'false' otherwise
-    deleteItem(itemId) {
+    deleteItem(itemId, supplierId) {
         return new Promise((resolve, reject) => {
             const sqlStatement = `DELETE FROM Item
-                                  WHERE ID=?`;
+                                  WHERE ID=? AND SupplierId=?`;
 
-            this.#db.run(sqlStatement, [itemId], function (err) {
+            this.#db.run(sqlStatement, [itemId, supplierId], function (err) {
                 if (err)
                     reject(err);
                 else
@@ -867,6 +867,7 @@ class DbManager {
                     resolve(rows.map(row => {
                         return {
                             SKUId: row.SkuId,
+                            itemId: row.ItemId,
                             description: row.Description,
                             price: row.Price,
                             qty: row.Quantity
@@ -894,6 +895,7 @@ class DbManager {
                     resolve(rows.map(row => {
                         return {
                             SKUId: row.SkuId,
+                            itemId: row.ItemId,
                             rfid: row.RFID,
                         }
                     }));
@@ -921,6 +923,7 @@ class DbManager {
                     resolve(rows.map(row => {
                         return {
                             SKUId: row.SkuId,
+                            itemId: row.ItemId,
                             rfid: row.RFID,
                         }
                     }));
@@ -949,12 +952,12 @@ class DbManager {
     };
 
     // Function to store the info about sku of a restock order in the database
-    // INPUT - restock order id, {skuId, description, price, quantity}
+    // INPUT - restock order id, {skuId, itemId, description, price, quantity}
     // OUTPUT - true if successful else false
     storeRestockOrderSku(id, products) {
-        const sql = `INSERT INTO RestockOrderSku(RestockOrderId, SkuId, Description, Price, Quantity) 
-                     VALUES (?,?,?,?,?)`;
-        let params = products.map(sku => [id, sku.SKUId, sku.description, sku.price, sku.qty]);
+        const sql = `INSERT INTO RestockOrderSku(RestockOrderId, SkuId, ItemId, Description, Price, Quantity) 
+                     VALUES (?,?,?,?,?,?)`;
+        let params = products.map(sku => [id, sku.SKUId, sku.itemId, sku.description, sku.price, sku.qty]);
 
         return new Promise((resolve, reject) => {
             let statement = this.#db.prepare(sql);
@@ -975,10 +978,10 @@ class DbManager {
     // INPUT - restock orderId, {skuId, RFID}
     // OUTPUT - true if successful else false
     storeRestockOrderSkuItems(id, skuItems) {
-        let sql = `INSERT INTO RestockOrderSkuItem (RestockOrderId, SkuId, RFID) 
-                   VALUES (?,?,?)`;
+        let sql = `INSERT INTO RestockOrderSkuItem (RestockOrderId, SkuId, ItemId, RFID) 
+                   VALUES (?,?,?,?)`;
 
-        const params = skuItems.map(skuItem => [id, skuItem.SKUId, skuItem.rfid]);
+        const params = skuItems.map(skuItem => [id, skuItem.SKUId, skuItem.itemId, skuItem.rfid]);
 
         return new Promise((resolve, reject) => {
             let statement = this.#db.prepare(sql);
@@ -1142,6 +1145,7 @@ class DbManager {
                 else resolve(rows.map(row => {
                     return {
                         SKUId: row.SkuId,
+                        itemId: row.ItemId,
                         description: row.Description,
                         price: row.Price,
                         RFID: row.RFID,
@@ -1175,12 +1179,12 @@ class DbManager {
     // INPUT - return orderId, {skuId, description, price, RFID}
     // OUTPUT - true if successful else false
     storeReturnOrderSkuItems(id, skuItems) {
-        let sql = `INSERT INTO ReturnOrderSkuItem (ReturnOrderId, SkuId, Description, Price, RFID) 
-                   VALUES (?, ?, ?, ?, ?)`;
+        let sql = `INSERT INTO ReturnOrderSkuItem (ReturnOrderId, SkuId, ItemId, Description, Price, RFID) 
+                   VALUES (?, ?, ?, ?, ?, ?)`;
 
         const params = [];
         for (const skuItem of skuItems) {
-            params.push([id, skuItem.SKUId, skuItem.description, skuItem.price, skuItem.RFID]);
+            params.push([id, skuItem.SKUId, skuItem.itemId, skuItem.description, skuItem.price, skuItem.RFID]);
         }
 
         return new Promise((resolve, reject) => {
